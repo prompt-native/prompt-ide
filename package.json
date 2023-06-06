@@ -14,7 +14,7 @@
   "contributes": {
     "commands": [
       {
-        "command": "prompt-studio.helloWorld",
+        "command": "prompt-studio.preview",
         "title": "Preview",
         "icon": "$(open-preview)"
       }
@@ -23,8 +23,8 @@
       "editor/title": [
         {
           "when": "resourceLangId == xml",
-          "command": "prompt-studio.helloWorld",
-          "alt": "prompt-studio.helloWorld",
+          "command": "prompt-studio.preview",
+          "alt": "prompt-studio.preview",
           "group": "navigation"
         }
       ]
