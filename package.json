@@ -12,6 +12,18 @@
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
+    "customEditors": [
+        {
+            "viewType": "catCustoms.catScratch",
+            "displayName": "Cat Scratch",
+            "selector": [
+                {
+                    "filenamePattern": "*.xml"
+                }
+            ],
+            "priority": "option"
+        }
+    ],
     "commands": [
       {
         "command": "prompt-studio.preview",

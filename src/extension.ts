@@ -3,6 +3,7 @@
 import * as vscode from 'vscode';
 
 import { PromptExplorer } from './prompt/promptExplorer';
+import { CatScratchEditorProvider } from './catScratchEditor';
 
 export function activate(context: vscode.ExtensionContext) {
     const rootPath = (vscode.workspace.workspaceFolders && (vscode.workspace.workspaceFolders.length > 0))
@@ -13,16 +14,21 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.window.registerTreeDataProvider('nodeDependencies', promptProvider));
     context.subscriptions.push(vscode.commands.registerCommand('prompt-studio.helloWorld', () => vscode.window.showInformationMessage(`Success!`)));
     context.subscriptions.push(vscode.commands.registerCommand('prompt-studio.preview', () => {
-        let panel = vscode.window.createWebviewPanel(
-            'myWebview', // 标识符，需要唯一
-            'My Webview', // 标题
-            vscode.ViewColumn.Two, // 第一列
-            {}
-        );
-        // 设置HTML内容
-        panel.webview.html = getWebviewContent();
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+            const uri = editor.document.uri;
+            vscode.commands.executeCommand(
+                "vscode.openWith",
+                uri,
+                CatScratchEditorProvider.viewType,
+                vscode.ViewColumn.Two
+            );
+        } else {
+            vscode.window.showInformationMessage(`No open document found`);
+        }
+        
     }));
-
+    context.subscriptions.push(CatScratchEditorProvider.register(context));
 }
 
 function getWebviewContent() {
