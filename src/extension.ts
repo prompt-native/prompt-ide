@@ -3,7 +3,7 @@
 import * as vscode from 'vscode';
 
 import { PromptExplorer } from './prompt/promptExplorer';
-import { CatScratchEditorProvider } from './catScratchEditor';
+import { PromptEditorProvider } from './promptEditor';
 
 export function activate(context: vscode.ExtensionContext) {
     const rootPath = (vscode.workspace.workspaceFolders && (vscode.workspace.workspaceFolders.length > 0))
@@ -20,28 +20,12 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.commands.executeCommand(
                 "vscode.openWith",
                 uri,
-                CatScratchEditorProvider.viewType,
+                PromptEditorProvider.viewType,
                 vscode.ViewColumn.Two
             );
         } else {
             vscode.window.showInformationMessage(`No open document found`);
         }
-        
     }));
-    context.subscriptions.push(CatScratchEditorProvider.register(context));
-}
-
-function getWebviewContent() {
-    return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Hello Webview</title>
-    </head>
-    <body>
-        <h1>Hello Webview!</h1>
-    </body>
-    </html>
-    `;
+    context.subscriptions.push(PromptEditorProvider.register(context));
 }

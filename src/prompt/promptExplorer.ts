@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import { PromptNode } from '../tree-view/prompt-node';
+import { PromptNode } from '../treeView/promptNode';
 import { ProviderResult } from 'vscode';
 
 export class PromptExplorer implements vscode.TreeDataProvider<PromptNode> {
@@ -21,7 +21,7 @@ export class PromptExplorer implements vscode.TreeDataProvider<PromptNode> {
     }
 
     async getChildren(element?: PromptNode): Promise<PromptNode[]> {
-        if(element) {
+        if (element) {
             return element.getChildren();
         } else {
             return this._findPrompts();
@@ -30,8 +30,8 @@ export class PromptExplorer implements vscode.TreeDataProvider<PromptNode> {
 
     async _findPrompts(): Promise<PromptNode[]> {
         const xmls = await vscode.workspace.findFiles('**/*.xml');
-        
 
-        return Promise.resolve([PromptNode.categoryNode("a/b/c"),PromptNode.promptNode("prompt1")]);
+
+        return Promise.resolve([PromptNode.categoryNode("a/b/c"), PromptNode.promptNode("prompt1")]);
     }
 }
