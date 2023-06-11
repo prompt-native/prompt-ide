@@ -17,7 +17,7 @@ interface CompletionEditorProps {
 
 function ChatEditor({ mode }: CompletionEditorProps) {
     return (
-        <div>
+        <div className="main-content">
             <VSCodePanels aria-label="Default">
                 <VSCodePanelTab id="tab-prompt">Prompt</VSCodePanelTab>
                 <VSCodePanelTab id="tab-context">Context</VSCodePanelTab>

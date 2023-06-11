@@ -16,7 +16,7 @@ interface CompletionEditorProps {
 function CompletionEditor({ mode }: CompletionEditorProps) {
     if (mode == EditorMode.FreeFormat) {
         return (
-            <div>
+            <div className="main-content">
                 <span className="label">Prompt</span>
                 <VSCodeTextArea
                     className="col"
