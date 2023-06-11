@@ -15,7 +15,7 @@ function StructuredEditor() {
 
     return (
         <div className="main-content">
-            <span className="label">Context</span>
+            <span className="label">Structured</span>
             <VSCodeTextArea
                 className="col"
                 resize="vertical"

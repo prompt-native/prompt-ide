@@ -24,13 +24,12 @@ function Topbar({ type, vendor, model,
                 onChange={(e) => onTypeSelected((e.target as HTMLInputElement).value as CreateType)}>
                 {Object.values(CreateType).map(t => <VSCodeOption>{t}</VSCodeOption>)}
             </VSCodeDropdown>
-            <span className="label">LLM Provider</span>
+            <span className="label">Model</span>
             <VSCodeDropdown className="button" position="below"
                 value={vendor}
                 onChange={(e) => onVendorSelected((e.target as HTMLInputElement).value as Vendor)}>
                 {Object.values(Vendor).map(v => <VSCodeOption>{v}</VSCodeOption>)}
             </VSCodeDropdown>
-            <span className="label">Model</span>
             <VSCodeDropdown className="button" position="below"
                 value={model}
                 onChange={(e) => onModelSelected((e.target as HTMLInputElement).value)}>

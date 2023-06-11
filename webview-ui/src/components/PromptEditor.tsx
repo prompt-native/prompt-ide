@@ -1,10 +1,7 @@
 import { vscode } from "../utilities/vscode";
 import {
-    VSCodeButton,
-    VSCodeDropdown,
-    VSCodeOption, VSCodePanels,
-    VSCodePanelTab,
-    VSCodePanelView
+    VSCodeButton, VSCodeDropdown,
+    VSCodeOption
 } from "@vscode/webview-ui-toolkit/react";
 import { useState } from "react";
 import CompletionEditor, { EditorMode } from "../components/CompletionEditor";
@@ -16,7 +13,7 @@ function PromptEditor() {
     const [editorType, setEditorType] = useState(CreateType.Chat);
     const [vendor, setVendor] = useState(Vendor.Google);
     const [model, setModel] = useState("");
-    const [editorMode, setEditorMode] = useState(EditorMode.Structured);
+    const [editorMode, setEditorMode] = useState(EditorMode.FreeFormat);
 
     function handleHowdyClick() {
         vscode.postMessage({
@@ -46,22 +43,12 @@ function PromptEditor() {
                         <VSCodeButton className="button" appearance="secondary" onClick={handleHowdyClick}>Preview</VSCodeButton>
                         <VSCodeButton className="button" appearance="secondary" onClick={handleHowdyClick}>Clear</VSCodeButton>
                     </div>
-                    <VSCodeDropdown position="below" value="Free Format" onChange={(v) => console.log(v)}>
-                        <VSCodeOption>Free Format</VSCodeOption>
-                        <VSCodeOption>Structured</VSCodeOption>
+                    <VSCodeDropdown position="below"
+                        value={editorMode}
+                        onChange={(e) => setEditorMode((e.target as HTMLInputElement).value as EditorMode)}>
+                        {Object.values(EditorMode).map(t => <VSCodeOption>{t}</VSCodeOption>)}
                     </VSCodeDropdown>
                 </div>
-
-                <VSCodePanels aria-label="Default">
-                    <VSCodePanelTab id="tab-context">Context</VSCodePanelTab>
-                    <VSCodePanelTab id="tab-configuration">Configuration</VSCodePanelTab>
-                    <VSCodePanelView id="view-context" className="content">
-
-                    </VSCodePanelView>
-                    <VSCodePanelView id="view-configuration">
-
-                    </VSCodePanelView>
-                </VSCodePanels>
             </div>
 
         </main>
