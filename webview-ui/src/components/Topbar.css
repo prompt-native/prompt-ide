@@ -1,0 +1,14 @@
+.topbar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.topbar .label{
+    margin-right: 10px;
+}
+
+.topbar .button{
+    margin-right: 20px;
+    width: 150px;
+}

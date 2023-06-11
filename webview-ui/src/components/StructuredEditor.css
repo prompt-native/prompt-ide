@@ -1,0 +1,19 @@
+.input-row {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-value {
+    flex: 1;
+}
+
+.title-with-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.title-input {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
