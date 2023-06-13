@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./App.css";
+import "./codicon.css";
 import ChatEditor from "./components/ChatEditor";
 import CompletionEditor from "./components/CompletionEditor";
 import ModelSelection from "./components/ModelSelection";

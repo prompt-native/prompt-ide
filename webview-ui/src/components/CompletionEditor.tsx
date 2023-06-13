@@ -13,6 +13,7 @@ import StructuredEditor from "./StructuredEditor";
 import { vscode } from "../utilities/vscode";
 import { useState } from "react";
 import './CompletionEditor.css';
+import ModelControl from "./ModelControl";
 
 export enum EditorMode {
     FreeFormat = "Free Format",
@@ -50,6 +51,7 @@ function CompletionEditor() {
                     {Object.values(EditorMode).map(t => <VSCodeOption>{t}</VSCodeOption>)}
                 </VSCodeDropdown>
             </div>
+            <ModelControl />
             <VSCodeDivider />
             <span className="label">Output</span>
             <VSCodeTextArea
