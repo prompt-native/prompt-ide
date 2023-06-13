@@ -1,0 +1,14 @@
+.selection-bar {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+.selection-bar .label{
+    margin-right: 10px;
+}
+
+.selection-bar .button{
+    margin-right: 10px;
+}

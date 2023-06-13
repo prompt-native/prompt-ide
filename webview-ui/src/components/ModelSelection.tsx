@@ -2,7 +2,7 @@ import {
     VSCodeDropdown,
     VSCodeOption
 } from "@vscode/webview-ui-toolkit/react";
-import './Topbar.css';
+import './ModelSelection.css';
 import { CreateType, Vendor, getModels } from "../config/models";
 
 interface ModelSelection {
@@ -14,10 +14,10 @@ interface ModelSelection {
     onModelSelected: (model: string) => any,
 }
 
-function Topbar({ type, vendor, model,
+function ModelSelection({ type, vendor, model,
     onTypeSelected, onVendorSelected, onModelSelected }: ModelSelection) {
     return (
-        <div className="topbar">
+        <div className="selection-bar">
             <span className="label">Type</span>
             <VSCodeDropdown className="button" position="below"
                 value={type}
@@ -39,4 +39,4 @@ function Topbar({ type, vendor, model,
     );
 }
 
-export default Topbar;
+export default ModelSelection;

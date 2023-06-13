@@ -6,16 +6,7 @@ import {
 } from "@vscode/webview-ui-toolkit/react";
 
 
-export enum EditorMode {
-    FreeFormat = "free",
-    Structured = "structured",
-}
-
-interface CompletionEditorProps {
-    mode: EditorMode,
-}
-
-function ChatEditor({ mode }: CompletionEditorProps) {
+function ChatEditor() {
     return (
         <div className="main-content">
             <VSCodePanels aria-label="Default">
@@ -27,7 +18,7 @@ function ChatEditor({ mode }: CompletionEditorProps) {
                     <VSCodeTextArea
                         className="col"
                         resize="vertical"
-                        rows={3}
+                        rows={1}
                         placeholder="Enter your prompt here">
                     </VSCodeTextArea>
                     <span className="label">Output</span>
@@ -35,7 +26,7 @@ function ChatEditor({ mode }: CompletionEditorProps) {
                         className="col"
                         resize="vertical"
                         readOnly
-                        rows={3}
+                        rows={1}
                         value="12345"
                         placeholder="Output from LLM">
                     </VSCodeTextArea>

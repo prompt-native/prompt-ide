@@ -17,10 +17,6 @@ main {
   flex: 1;
 }
 
-.main-content {
-    flex: 1;
-}
-
 .toolbar {
     display: flex;
     flex-direction: row;
@@ -34,15 +30,13 @@ main {
 
 .col {
     display: flex;
-    flex-grow: 1;
-    margin-bottom: 10px;
+    flex: 1;
 }
 
 span.label {
     font-size: 13px;
     font-weight: bold;
     display: inline-block;
-    
 }
 
 .content {
