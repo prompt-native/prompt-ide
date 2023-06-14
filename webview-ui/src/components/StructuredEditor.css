@@ -1,6 +1,7 @@
 .input-row {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    margin-bottom: 5px;
 }
 
 .input-value {
@@ -16,4 +17,13 @@
 .title-input {
     margin-top: 8px;
     margin-bottom: 8px;
+}
+
+.field-name {
+    margin-right: 10px;
+    max-width: 100px;
+}
+
+.field-value {
+    flex: 1;
 }

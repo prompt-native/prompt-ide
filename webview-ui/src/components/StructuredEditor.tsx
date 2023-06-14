@@ -18,13 +18,16 @@ function StructuredEditor() {
             <span className="label">Structured</span>
             <VSCodeTextArea
                 resize="vertical"
-                rows={3}
+                rows={2}
                 placeholder="This is the prompt that you will ask LLM">
             </VSCodeTextArea>
             <div className="title-with-actions">
                 <span className="label">Examples</span>
                 <VSCodeLink>Add example</VSCodeLink>
             </div>
+            <StructuredInputRow />
+            <StructuredInputRow />
+            <StructuredInputRow />
             <VSCodeDivider />
             <div className="title-with-actions">
                 <span className="label">Test</span>
