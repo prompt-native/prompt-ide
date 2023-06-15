@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import "./codicon.css";
 import ChatEditor from "./components/ChatEditor";
@@ -15,6 +15,21 @@ function App() {
     const [editorType, setEditorType] = useState(CreateType.Completion);
     const [vendor, setVendor] = useState(Vendor.Google);
     const [model, setModel] = useState("");
+
+    const messageListener = (event: MessageEvent<any>) => {
+        const message = event.data;
+
+        if (message.command === 'initialize') {
+            const xmlText = message.text;
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener('message', messageListener);
+        return () => {
+            window.removeEventListener('message', messageListener);
+        };
+    }, []);
 
     return (
         <main>

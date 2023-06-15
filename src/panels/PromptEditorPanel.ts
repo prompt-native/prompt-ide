@@ -14,43 +14,28 @@ import * as vscode from 'vscode';
  * - Setting message listeners so data can be passed between the webview and extension
  */
 export class PromptEditorPanel {
-    public static panels: Map<vscode.Uri, PromptEditorPanel> = new Map();
+    public static panels: Map<vscode.TextDocument, PromptEditorPanel> = new Map();
     private readonly _panel: WebviewPanel;
+    private static outputChannel: OutputChannel = window.createOutputChannel("Prompt Editor");
     private _disposables: Disposable[] = [];
+    private document: vscode.TextDocument;
 
-    /**
-     * The HelloWorldPanel class private constructor (called only from the render method).
-     *
-     * @param panel A reference to the webview panel
-     * @param extensionUri The URI of the directory containing the extension
-     */
-    private constructor(panel: WebviewPanel, extensionUri: Uri) {
+    private constructor(panel: WebviewPanel, extensionUri: Uri, document: vscode.TextDocument) {
+        this.document = document;
         this._panel = panel;
-
-        // Set an event listener to listen for when the panel is disposed (i.e. when the user closes
-        // the panel or when the panel is closed programmatically)
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
-
-        // Set the HTML content for the webview panel
         this._panel.webview.html = this._getWebviewContent(this._panel.webview, extensionUri);
-
-        // Set an event listener to listen for messages passed from the webview context
         this._setWebviewMessageListener(this._panel.webview);
+        this._loadDocument();
     }
 
-    /**
-     * Renders the current webview panel if it exists otherwise a new webview panel
-     * will be created and displayed.
-     *
-     * @param extensionUri The URI of the directory containing the extension.
-     */
-    public static render(extensionUri: Uri, document: vscode.Uri) {
+    public static open(extensionUri: Uri, document: vscode.TextDocument) {
         if (PromptEditorPanel.panels.has(document)) {
             PromptEditorPanel.panels.get(document)?._panel.reveal(ViewColumn.Two);
         } else {
             const panel = window.createWebviewPanel(
                 "prompt-studio.editor",
-                "Hello World",
+                document.fileName,
                 ViewColumn.Two,
                 {
                     enableScripts: true,
@@ -58,20 +43,15 @@ export class PromptEditorPanel {
                 }
             );
 
-            PromptEditorPanel.panels.set(document, new PromptEditorPanel(panel, extensionUri));
+            PromptEditorPanel.panels.set(document, new PromptEditorPanel(panel, extensionUri, document));
         }
     }
 
-    /**
-     * Cleans up and disposes of webview resources when the webview panel is closed.
-     */
     public dispose() {
         PromptEditorPanel.panels.clear();
 
-        // Dispose of the current webview panel
         this._panel.dispose();
 
-        // Dispose of all disposables (i.e. commands) for the current webview panel
         while (this._disposables.length) {
             const disposable = this._disposables.pop();
             if (disposable) {
@@ -80,17 +60,6 @@ export class PromptEditorPanel {
         }
     }
 
-    /**
-     * Defines and returns the HTML that should be rendered within the webview panel.
-     *
-     * @remarks This is also the place where references to the React webview build files
-     * are created and inserted into the webview HTML.
-     *
-     * @param webview A reference to the extension webview
-     * @param extensionUri The URI of the directory containing the extension
-     * @returns A template string literal containing the HTML that should be
-     * rendered within the webview panel
-     */
     private _getWebviewContent(webview: Webview, extensionUri: Uri) {
         // The CSS file from the React build output
         const stylesUri = getUri(webview, extensionUri, ["webview-ui", "build", "assets", "index.css"]);
@@ -118,26 +87,26 @@ export class PromptEditorPanel {
     `;
     }
 
-    /**
-     * Sets up an event listener to listen for messages passed from the webview context and
-     * executes code based on the message that is recieved.
-     *
-     * @param webview A reference to the extension webview
-     * @param context A reference to the extension context
-     */
+    private _loadDocument() {
+        this._panel.webview.postMessage({
+            command: "initialize",
+            text: this.document.getText()
+        });
+    }
+
     private _setWebviewMessageListener(webview: Webview) {
         webview.onDidReceiveMessage(
             (message: any) => {
                 const command = message.command;
                 const text = message.text;
-
+                PromptEditorPanel.outputChannel.appendLine(`Incoming message:${command} -> ${text}`);
                 switch (command) {
+                    case "initialize":
+                        window.showInformationMessage("loading data!");
+                        return;
                     case "hello":
                         // Code that should run in response to the hello message command
                         window.showInformationMessage(text);
-                        let outputChannel: OutputChannel;
-                        outputChannel = window.createOutputChannel("My Extension");
-                        outputChannel.appendLine(text);
                         return;
                     // Add more switch case statements here as more webview message commands
                     // are created within the webview context (i.e. inside media/main.js)

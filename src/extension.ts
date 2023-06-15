@@ -17,8 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand('prompt-studio.preview', () => {
         const editor = vscode.window.activeTextEditor;
         if (editor) {
-            const document = editor.document.uri;
-            PromptEditorPanel.render(context.extensionUri, document);
+            PromptEditorPanel.open(context.extensionUri, editor.document);
         } else {
             vscode.window.showInformationMessage(`No open document found`);
         }
