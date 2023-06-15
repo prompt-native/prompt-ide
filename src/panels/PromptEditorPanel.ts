@@ -1,6 +1,7 @@
 import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, OutputChannel } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
+import * as vscode from 'vscode';
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -12,8 +13,8 @@ import { getNonce } from "../utilities/getNonce";
  * - Setting the HTML (and by proxy CSS/JavaScript) content of the webview panel
  * - Setting message listeners so data can be passed between the webview and extension
  */
-export class HelloWorldPanel {
-    public static currentPanel: HelloWorldPanel | undefined;
+export class PromptEditorPanel {
+    public static panels: Map<vscode.Uri, PromptEditorPanel> = new Map();
     private readonly _panel: WebviewPanel;
     private _disposables: Disposable[] = [];
 
@@ -43,29 +44,21 @@ export class HelloWorldPanel {
      *
      * @param extensionUri The URI of the directory containing the extension.
      */
-    public static render(extensionUri: Uri) {
-        if (HelloWorldPanel.currentPanel) {
-            // If the webview panel already exists reveal it
-            HelloWorldPanel.currentPanel._panel.reveal(ViewColumn.One);
+    public static render(extensionUri: Uri, document: vscode.Uri) {
+        if (PromptEditorPanel.panels.has(document)) {
+            PromptEditorPanel.panels.get(document)?._panel.reveal(ViewColumn.Two);
         } else {
-            // If a webview panel does not already exist create and show a new one
             const panel = window.createWebviewPanel(
-                // Panel view type
-                "showHelloWorld",
-                // Panel title
+                "prompt-studio.editor",
                 "Hello World",
-                // The editor column the panel should be displayed in
                 ViewColumn.Two,
-                // Extra panel configurations
                 {
-                    // Enable JavaScript in the webview
                     enableScripts: true,
-                    // Restrict the webview to only load resources from the `out` and `webview-ui/build` directories
                     localResourceRoots: [Uri.joinPath(extensionUri, "out"), Uri.joinPath(extensionUri, "webview-ui/build")],
                 }
             );
 
-            HelloWorldPanel.currentPanel = new HelloWorldPanel(panel, extensionUri);
+            PromptEditorPanel.panels.set(document, new PromptEditorPanel(panel, extensionUri));
         }
     }
 
@@ -73,7 +66,7 @@ export class HelloWorldPanel {
      * Cleans up and disposes of webview resources when the webview panel is closed.
      */
     public dispose() {
-        HelloWorldPanel.currentPanel = undefined;
+        PromptEditorPanel.panels.clear();
 
         // Dispose of the current webview panel
         this._panel.dispose();

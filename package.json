@@ -10,8 +10,8 @@
   "contributes": {
     "customEditors": [
       {
-        "viewType": "catCustoms.catScratch",
-        "displayName": "Cat Scratch",
+        "viewType": "prompt-studio.editor",
+        "displayName": "Prompt Editor",
         "selector": [
           {
             "filenamePattern": "*.xml"
