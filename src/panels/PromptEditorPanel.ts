@@ -92,6 +92,15 @@ export class PromptEditorPanel {
             command: "initialize",
             text: this.document.getText()
         });
+        const disposable = vscode.workspace.onDidChangeTextDocument(event => {
+            if (event.document === this.document) {
+                this._panel.webview.postMessage({
+                    command: "text_updated",
+                    text: this.document.getText()
+                });
+            }
+        });
+        this._disposables.push(disposable);
     }
 
     private _setWebviewMessageListener(webview: Webview) {
@@ -103,6 +112,17 @@ export class PromptEditorPanel {
                 switch (command) {
                     case "initialize":
                         window.showInformationMessage("loading data!");
+                        return;
+                    case "text_edited":
+
+                        const fullRange = new vscode.Range(
+                            this.document.positionAt(0),
+                            this.document.positionAt(this.document.getText().length)
+                        );
+                        const replaceEdit = new vscode.TextEdit(fullRange, text);
+                        const edit = new vscode.WorkspaceEdit();
+                        edit.set(this.document.uri, [replaceEdit]);
+                        vscode.workspace.applyEdit(edit);
                         return;
                     case "hello":
                         // Code that should run in response to the hello message command
