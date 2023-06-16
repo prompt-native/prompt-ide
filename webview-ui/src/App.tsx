@@ -5,9 +5,9 @@ import ChatEditor from "./components/ChatEditor";
 import CompletionEditor from "./components/CompletionEditor";
 import ModelSelection from "./components/ModelSelection";
 import { CreateType, Vendor } from "./config/models";
-import { Prompt } from "./domain/Prompt";
 import { VSCodeTextArea } from "@vscode/webview-ui-toolkit/react";
 import { vscode } from "./utilities/vscode";
+import { Prompt } from 'prompt-runtime';
 
 enum EditorType {
     Completion = "completion",
@@ -18,6 +18,7 @@ function App() {
     const [editorType, setEditorType] = useState(CreateType.Completion);
     const [vendor, setVendor] = useState(Vendor.Google);
     const [model, setModel] = useState("");
+
     const [prompt, setPrompt] = useState(new Prompt(""));
 
     const messageListener = (event: MessageEvent<any>) => {
