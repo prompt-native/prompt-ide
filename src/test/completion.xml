@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Prompt>
+    <Type>Completion</Type>
+    <Vendor>
+        <Name>Google</Name>
+        <Model>text-bison</Model>
+    </Vendor>
+    <Parameters>
+        <Parameter>
+            <Name>temperature</Name>
+            <Value>0.5</Value>
+        </Parameter>
+    </Parameters>
+    <Text>
+        What's your name?
+    </Text>
+</Prompt>

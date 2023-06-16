@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Prompt>
+    <Type>Chat</Type>
+    <Vendor>
+        <Name>Google</Name>
+        <Model>text-bison</Model>
+    </Vendor>
+    <Parameters>
+        <Parameter>
+            <Name>temperature</Name>
+            <Value>0.5</Value>
+        </Parameter>
+    </Parameters>
+    <Context>
+        You're a smart assistant.
+    </Context>
+    <Examples>
+        <Example>
+            <User>What's your name?</User>
+            <AI>I'm smart guy.</AI>
+        </Example>
+    </Examples>
+    <Messages>
+        <Message>
+            <User>What's your name?</User>
+        </Message>
+    </Messages>
+</Prompt>
