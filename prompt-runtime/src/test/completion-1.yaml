@@ -1,0 +1,8 @@
+type: completion
+vendor: google
+model: text-bison
+parameters:
+  - name: temperature
+    value: 0.5
+prompt: |
+  What's your name?
