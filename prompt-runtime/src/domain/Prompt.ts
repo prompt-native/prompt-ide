@@ -1,7 +1,7 @@
 
 export enum Type {
-    completion,
-    chat,
+    completion = "completion",
+    chat = "chat",
 }
 
 export class Parameter {
@@ -44,8 +44,8 @@ export class StructuredExample {
 export class StructuredExamples {
     constructor(
         public fields: string[],
-        public values: StructuredExample[],
-        public test: StructuredExample,
+        public rows: StructuredExample[],
+        public test: string[],
     ) { }
 }
 

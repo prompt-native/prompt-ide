@@ -1,7 +1,7 @@
 import { YamlCompletionSerializer } from "./Serializer";
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { Type } from "../domain/Prompt";
+import { Completion, Model, Parameter, StructuredExample, StructuredExamples, Type } from "../domain/Prompt";
 
 export function syncReadFile(filename: string): string {
     const result = readFileSync(join(__dirname, filename), 'utf-8');
@@ -34,8 +34,27 @@ describe('parse completion', () => {
         expect(prompt.parameters[0].value).toBe(0.5);
         expect(prompt.examples).toBeDefined();
         expect(prompt.examples.fields).toStrictEqual(["input", "output"]);
-        expect(prompt.examples.values).toHaveLength(2);
-        expect(prompt.examples.values[0].values).toStrictEqual(["China", "China-中国"]);
-        expect(prompt.examples.test.values).toStrictEqual(["Japan"]);
+        expect(prompt.examples.rows).toHaveLength(2);
+        expect(prompt.examples.rows[0].values).toStrictEqual(["China", "China-中国"]);
+        expect(prompt.examples.test).toStrictEqual(["Japan"]);
+    });
+
+    test('serialize plain completion', () => {
+        const serializer = new YamlCompletionSerializer();
+        const c = new Completion(new Model("google", "text-bison"),
+            "What's your name?", [new Parameter("top_k", 0.95)]);
+        const prompt = serializer.serialize(c);
+        expect(prompt).toBe(syncReadFile("../test/completion-expected-1.yaml"));
+    });
+
+    test('serialize structured completion', () => {
+        const serializer = new YamlCompletionSerializer();
+        const c = new Completion(new Model("google", "text-bison"),
+            "What's your name?", [new Parameter("top_k", 0.95)],
+            new StructuredExamples(["input1", "input2", "output"], [new StructuredExample(["a", "b", "c"])],
+                ["x", "y"]));
+        const prompt = serializer.serialize(c);
+        console.log(prompt);
+        expect(prompt).toBe(syncReadFile("../test/completion-expected-2.yaml"));
     });
 });

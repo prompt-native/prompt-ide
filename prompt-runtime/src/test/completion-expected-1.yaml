@@ -1,0 +1,8 @@
+type: completion
+model:
+  vendor: google
+  model: text-bison
+parameters:
+  - name: top_k
+    value: 0.95
+prompt: What's your name?

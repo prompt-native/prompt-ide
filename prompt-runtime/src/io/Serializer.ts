@@ -20,7 +20,7 @@ export class YamlCompletionSerializer implements Serializer<Completion> {
     }
 
     serialize(obj: Completion): string {
-        throw new Error("Method not implemented.");
+        return YAML.stringify(obj);
     }
 
     private parseStructuredExamples(obj: any): StructuredExamples | undefined {
@@ -35,7 +35,7 @@ export class YamlCompletionSerializer implements Serializer<Completion> {
             return new StructuredExample(values);
         });
 
-        return new StructuredExamples(fields, rows, new StructuredExample(test));
+        return new StructuredExamples(fields, rows, test);
     }
 
     private parseParameters(obj: any): Parameter[] {
