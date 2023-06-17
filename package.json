@@ -14,7 +14,7 @@
         "displayName": "Prompt Editor",
         "selector": [
           {
-            "filenamePattern": "*.xml"
+            "filenamePattern": "*.yaml"
           }
         ],
         "priority": "option"
@@ -30,7 +30,7 @@
     "menus": {
       "editor/title": [
         {
-          "when": "resourceLangId == xml",
+          "when": "resourceLangId == yaml",
           "command": "prompt-studio.preview",
           "alt": "prompt-studio.preview",
           "group": "navigation"

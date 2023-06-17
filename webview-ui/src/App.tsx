@@ -7,7 +7,7 @@ import ModelSelection from "./components/ModelSelection";
 import { CreateType, Vendor } from "./config/models";
 import { VSCodeTextArea } from "@vscode/webview-ui-toolkit/react";
 import { vscode } from "./utilities/vscode";
-import { Prompt } from 'prompt-runtime';
+import { Completion, Model, YamlCompletionSerializer } from 'prompt-runtime';
 
 enum EditorType {
     Completion = "completion",
@@ -19,15 +19,18 @@ function App() {
     const [vendor, setVendor] = useState(Vendor.Google);
     const [model, setModel] = useState("");
 
-    const [prompt, setPrompt] = useState(new Prompt(""));
+    const [prompt, setPrompt] = useState(new Completion(new Model(model, vendor), ""));
+
+    const deserializer = new YamlCompletionSerializer();
 
     const messageListener = (event: MessageEvent<any>) => {
         const message = event.data;
 
         console.log('Received event:', event);
         if (message.command === 'initialize' || message.command === 'text_updated') {
-            const xmlText = message.text;
-            setPrompt(new Prompt(xmlText));
+            const text = message.text;
+            const p = deserializer.deserialize(text);
+            setPrompt(p);
         }
     };
 
@@ -47,7 +50,7 @@ function App() {
 
     return (
         <main>
-            <VSCodeTextArea value={prompt.xml} onChange={(e) => onTextChanged((e.target as HTMLInputElement).value)} />
+            <VSCodeTextArea value={prompt.prompt} onChange={(e) => onTextChanged((e.target as HTMLInputElement).value)} />
             {editorType == CreateType.Chat &&
                 <ChatEditor />
             }
