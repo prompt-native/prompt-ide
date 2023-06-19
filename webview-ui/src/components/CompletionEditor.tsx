@@ -10,13 +10,19 @@ import { vscode } from "../utilities/vscode";
 import { useState } from "react";
 import './CompletionEditor.css';
 import ModelControl from "./ModelControl";
+import { Completion } from 'prompt-runtime';
 
 export enum EditorMode {
     FreeFormat = "Free Format",
     Structured = "Structured",
 }
 
-function CompletionEditor() {
+interface CompletionProps {
+    data: Completion,
+    onPromptChanged: (data: Completion) => any;
+}
+
+function CompletionEditor({ data, onPromptChanged }: CompletionProps) {
     const [editorMode, setEditorMode] = useState(EditorMode.FreeFormat);
 
     function handleHowdyClick() {
@@ -33,6 +39,13 @@ function CompletionEditor() {
                 className="input"
                 resize="vertical"
                 rows={10}
+                value={data.prompt}
+                onChange={(e) => {
+                    const text = (e.target as HTMLInputElement).value;
+                    let updated = data;
+                    updated.prompt = text;
+                    onPromptChanged(updated);
+                }}
                 placeholder="Enter your prompt here">
             </VSCodeTextArea>
         </>
@@ -54,13 +67,12 @@ function CompletionEditor() {
                     {Object.values(EditorMode).map(t => <VSCodeOption>{t}</VSCodeOption>)}
                 </VSCodeDropdown>
             </div>
-            <ModelControl />
+            <ModelControl data={data} onPromptChanged={onPromptChanged} />
             <VSCodeDivider />
             <span className="label">Output</span>
             <VSCodeTextArea
                 className="output"
                 readOnly
-                value="12345"
                 placeholder="Output from LLM">
             </VSCodeTextArea>
         </div>
