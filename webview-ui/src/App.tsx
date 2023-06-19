@@ -6,24 +6,20 @@ import CompletionEditor from "./components/CompletionEditor";
 import ModelSelection from "./components/ModelSelection";
 import { Vendor } from "./config/models";
 import { vscode } from "./utilities/vscode";
-import { Chat, Completion, Model, Type, PromptToYaml, TestHelloWorld } from 'prompt-runtime';
+import { Chat, Completion, Model, Type, PromptToYaml } from 'prompt-runtime';
 
 function App() {
     const [vendor, setVendor] = useState(Vendor.Google);
     const [model, setModel] = useState("");
-
     const [prompt, setPrompt] = useState<Chat | Completion>(new Completion(new Model(model, vendor), "Hello world!"));
 
-    console.log(typeof Completion);
-    console.log(typeof Type);
-    console.log(typeof PromptToYaml);
-    console.log(typeof TestHelloWorld);
+    const serializer = new PromptToYaml();
     const onPromptChanged = (new_prompt: Completion | Chat) => {
         setPrompt(new_prompt);
 
         vscode.postMessage({
             command: "text_edited",
-            // text: serializer.serialize(new_prompt),
+            text: serializer.serialize(new_prompt),
         });
     };
 
@@ -33,15 +29,23 @@ function App() {
         console.log('Received event:', event);
         if (message.command === 'initialize' || message.command === 'text_updated') {
             const text = message.text;
-            // const p = serializer.deserialize(text);
-            // setPrompt(p);
+            const p = serializer.deserialize(text);
+            setPrompt(p);
         }
     };
 
     const onCreateTypeChange = (type: Type) => {
-        let newPrompt = prompt;
-        newPrompt.type = type;
-        onPromptChanged(newPrompt);
+        if (type !== prompt.type) {
+            let newPrompt: Completion | Chat;
+            if (type == Type.chat) {
+                newPrompt = (prompt as Completion).toChat();
+            } else if (type == Type.completion) {
+                newPrompt = (prompt as Chat).toCompletion();
+            } else {
+                throw new Error("Unsupported prompt type");
+            }
+            onPromptChanged(newPrompt);
+        }
     };
 
     useEffect(() => {

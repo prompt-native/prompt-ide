@@ -61,6 +61,11 @@ export class Completion extends Prompt {
         this.prompt = prompt;
         this.examples = examples;
     }
+
+    toChat(): Chat {
+        const chat = new Chat(this.model, undefined, this.parameters, this.prompt);
+        return chat;
+    }
 }
 
 export class Chat extends Prompt {
@@ -73,5 +78,14 @@ export class Chat extends Prompt {
         this.messages = messages;
         this.context = context;
         this.examples = examples;
+    }
+
+    toCompletion(): Completion {
+        let prompt = this.context || '';
+        if (this.messages && this.messages.length > 0) {
+            prompt += '\n' + this.messages[0].input;
+        }
+        const completion = new Completion(this.model, prompt, this.parameters);
+        return completion;
     }
 }
