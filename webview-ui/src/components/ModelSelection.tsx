@@ -3,13 +3,14 @@ import {
     VSCodeOption
 } from "@vscode/webview-ui-toolkit/react";
 import './ModelSelection.css';
-import { CreateType, Vendor, getModels } from "../config/models";
+import { Vendor, getModels } from "../config/models";
+import { Type } from "prompt-runtime";
 
 interface ModelSelection {
-    type: CreateType,
+    type: Type,
     vendor: Vendor,
     model: string,
-    onTypeSelected: (type: CreateType) => any,
+    onTypeSelected: (type: Type) => any,
     onVendorSelected: (vendor: Vendor) => any,
     onModelSelected: (model: string) => any,
 }
@@ -21,8 +22,8 @@ function ModelSelection({ type, vendor, model,
             <span className="label">Type</span>
             <VSCodeDropdown className="button" position="below"
                 value={type}
-                onChange={(e) => onTypeSelected((e.target as HTMLInputElement).value as CreateType)}>
-                {Object.values(CreateType).map(t => <VSCodeOption>{t}</VSCodeOption>)}
+                onChange={(e) => onTypeSelected((e.target as HTMLInputElement).value as Type)}>
+                {Object.values(Type).map(t => <VSCodeOption>{t}</VSCodeOption>)}
             </VSCodeDropdown>
             <span className="label">Model</span>
             <VSCodeDropdown className="button" position="below"
@@ -33,7 +34,7 @@ function ModelSelection({ type, vendor, model,
             <VSCodeDropdown className="button" position="below"
                 value={model}
                 onChange={(e) => onModelSelected((e.target as HTMLInputElement).value)}>
-                {getModels(type, vendor).map(m => <VSCodeOption>{m.name}</VSCodeOption>)}
+                {getModels(type, vendor).map(name => <VSCodeOption>{name}</VSCodeOption>)}
             </VSCodeDropdown>
         </div>
     );

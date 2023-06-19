@@ -4,29 +4,26 @@ import "./codicon.css";
 import ChatEditor from "./components/ChatEditor";
 import CompletionEditor from "./components/CompletionEditor";
 import ModelSelection from "./components/ModelSelection";
-import { CreateType, Vendor } from "./config/models";
+import { Vendor } from "./config/models";
 import { vscode } from "./utilities/vscode";
-import { Completion, Model, YamlCompletionSerializer } from 'prompt-runtime';
-
-enum EditorType {
-    Completion = "completion",
-    Chat = "chat",
-}
+import { Chat, Completion, Model, Type, PromptToYaml, TestHelloWorld } from 'prompt-runtime';
 
 function App() {
-    const serializer = new YamlCompletionSerializer();
-
-    const [editorType, setEditorType] = useState(CreateType.Completion);
     const [vendor, setVendor] = useState(Vendor.Google);
     const [model, setModel] = useState("");
 
-    const [prompt, setPrompt] = useState(new Completion(new Model(model, vendor), "Hello world!"));
-    const onPromptChanged = (new_prompt: Completion) => {
+    const [prompt, setPrompt] = useState<Chat | Completion>(new Completion(new Model(model, vendor), "Hello world!"));
+
+    console.log(typeof Completion);
+    console.log(typeof Type);
+    console.log(typeof PromptToYaml);
+    console.log(typeof TestHelloWorld);
+    const onPromptChanged = (new_prompt: Completion | Chat) => {
         setPrompt(new_prompt);
 
         vscode.postMessage({
             command: "text_edited",
-            text: serializer.serialize(new_prompt),
+            // text: serializer.serialize(new_prompt),
         });
     };
 
@@ -36,9 +33,15 @@ function App() {
         console.log('Received event:', event);
         if (message.command === 'initialize' || message.command === 'text_updated') {
             const text = message.text;
-            const p = serializer.deserialize(text);
-            setPrompt(p);
+            // const p = serializer.deserialize(text);
+            // setPrompt(p);
         }
+    };
+
+    const onCreateTypeChange = (type: Type) => {
+        let newPrompt = prompt;
+        newPrompt.type = type;
+        onPromptChanged(newPrompt);
     };
 
     useEffect(() => {
@@ -50,14 +53,14 @@ function App() {
 
     return (
         <main>
-            {editorType == CreateType.Chat &&
+            {prompt.type == Type.chat &&
                 <ChatEditor />
             }
-            {editorType == CreateType.Completion &&
-                <CompletionEditor data={prompt} onPromptChanged={onPromptChanged} />
+            {prompt.type == Type.completion &&
+                <CompletionEditor data={prompt as Completion} onPromptChanged={onPromptChanged} />
             }
-            <ModelSelection type={editorType} vendor={vendor} model={model}
-                onTypeSelected={t => setEditorType(t)}
+            <ModelSelection type={prompt.type} vendor={prompt.model.vendor as Vendor} model={prompt.model.model}
+                onTypeSelected={onCreateTypeChange}
                 onVendorSelected={v => setVendor(v)}
                 onModelSelected={m => setModel(m)}
             />

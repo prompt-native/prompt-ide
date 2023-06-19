@@ -1,4 +1,4 @@
-import { YamlSerializer } from "./Serializer";
+import { PromptToYaml } from "./Serializer";
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { Chat, Completion, Model, Parameter, StructuredExample, StructuredExamples, Type } from "../domain/Prompt";
@@ -10,7 +10,7 @@ function syncReadFile(filename: string): string {
 
 describe('parse completion', () => {
     test('should return plain completion prompt', () => {
-        const serializer = new YamlSerializer();
+        const serializer = new PromptToYaml();
         const prompt = serializer.deserialize(syncReadFile("../test/completion-1.yaml")) as Completion;
         expect(prompt.type).toBe(Type.completion);
         expect(prompt.model.vendor).toBe("google");
@@ -23,7 +23,7 @@ describe('parse completion', () => {
     });
 
     test('should return structured completion', () => {
-        const serializer = new YamlSerializer();
+        const serializer = new PromptToYaml();
         const prompt = serializer.deserialize(syncReadFile("../test/completion-2.yaml")) as Completion;
         expect(prompt.type).toBe(Type.completion);
         expect(prompt.model.vendor).toBe("google");
@@ -40,7 +40,7 @@ describe('parse completion', () => {
     });
 
     test('should return chat prompt', () => {
-        const serializer = new YamlSerializer();
+        const serializer = new PromptToYaml();
         const prompt = serializer.deserialize(syncReadFile("../test/chat-1.yaml")) as Chat;
         expect(prompt.parameters).toHaveLength(1);
         expect(prompt.parameters[0].name).toBe("temperature");
@@ -58,7 +58,7 @@ describe('parse completion', () => {
 
 describe('serialize completion', () => {
     test('serialize plain completion', () => {
-        const serializer = new YamlSerializer();
+        const serializer = new PromptToYaml();
         const c = new Completion(new Model("google", "text-bison"),
             "What's your name?", [new Parameter("top_k", 0.95)]);
         const prompt = serializer.serialize(c);
@@ -66,7 +66,7 @@ describe('serialize completion', () => {
     });
 
     test('serialize structured completion', () => {
-        const serializer = new YamlSerializer();
+        const serializer = new PromptToYaml();
         const c = new Completion(new Model("google", "text-bison"),
             "What's your name?", [new Parameter("top_k", 0.95)],
             new StructuredExamples(["input1", "input2", "output"], [new StructuredExample(["a", "b", "c"])],

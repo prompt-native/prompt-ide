@@ -1,12 +1,13 @@
 {
     "compilerOptions": {
-      "module": "commonjs",
+      "module": "esnext",
       "esModuleInterop": true,
       "declaration": true,
-      "target": "es6",
+      "target": "esnext",
       "sourceMap": true,
       "outDir": "lib",
       "skipLibCheck": true,
+      "moduleResolution": "nodenext",
     },
     "include": [
         "src"

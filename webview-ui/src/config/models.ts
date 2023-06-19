@@ -1,37 +1,33 @@
+import { Type } from "prompt-runtime";
+
 export enum Vendor {
-    OpenAI = "OpenAI",
-    Google = "Google",
-    Minimax = "Minimax",
+    OpenAI = "openai",
+    Google = "google",
+    Minimax = "minimax",
 };
 
-export enum CreateType {
-    Completion = "Completion",
-    Chat = "Chat",
-    Embedding = "Embedding",
-}
-
-export class Model {
+export class ModelDef {
     constructor(
         public name: string,
         public vendor: Vendor,
-        public supportedTypes: CreateType[]) {
+        public supportedTypes: Type[]) {
     }
 }
 
 export const AllModels = [
-    new Model("gpt-3.5", Vendor.OpenAI, [CreateType.Chat, CreateType.Completion]),
-    new Model("text-bison", Vendor.Google, [CreateType.Completion]),
-    new Model("chat-bison", Vendor.Google, [CreateType.Chat]),
-    new Model("code-bison", Vendor.Google, [CreateType.Completion]),
-    new Model("codechat-bison", Vendor.Google, [CreateType.Chat]),
-    new Model("textembedding-gecko", Vendor.Google, [CreateType.Embedding]),
-    new Model("code-gecko", Vendor.Google, [CreateType.Completion]),
-    new Model("abab4", Vendor.Minimax, [CreateType.Chat]),
-    new Model("abab5", Vendor.Minimax, [CreateType.Chat]),
+    new ModelDef("gpt-3.5", Vendor.OpenAI, [Type.chat, Type.completion]),
+    new ModelDef("text-bison", Vendor.Google, [Type.completion]),
+    new ModelDef("chat-bison", Vendor.Google, [Type.chat]),
+    new ModelDef("code-bison", Vendor.Google, [Type.completion]),
+    new ModelDef("codechat-bison", Vendor.Google, [Type.chat]),
+    new ModelDef("code-gecko", Vendor.Google, [Type.completion]),
+    new ModelDef("abab4", Vendor.Minimax, [Type.chat]),
+    new ModelDef("abab5", Vendor.Minimax, [Type.chat]),
 ];
 
 type VendorStrings = keyof typeof Vendor;
 
-export function getModels(type: CreateType, vendor: Vendor): Model[] {
-    return AllModels.filter(model => model.vendor == vendor && model.supportedTypes.includes(type));
+export function getModels(type: Type, vendor: Vendor): string[] {
+    return AllModels.filter(model => model.vendor == vendor && model.supportedTypes.includes(type))
+        .map(def => def.name);
 }

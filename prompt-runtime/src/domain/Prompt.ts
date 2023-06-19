@@ -28,7 +28,7 @@ export class Model {
 export class Prompt {
     type: Type = Type.completion;
     model: Model;
-    parameters: Parameter[];
+    parameters?: Parameter[];
     output?: string;
 
     constructor(type: Type, model: Model, parameters?: Parameter[]) {

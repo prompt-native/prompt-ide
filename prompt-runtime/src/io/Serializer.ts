@@ -1,12 +1,7 @@
 import YAML from 'yaml';
 import { Completion, Parameter, Model, StructuredExamples, StructuredExample, Chat, Type, Conversation } from '../domain/Prompt';
 
-export interface Serializer {
-    deserialize(text: string): Completion | Chat;
-    serialize(obj: Completion | Chat): string;
-}
-
-export class YamlSerializer implements Serializer {
+export class PromptToYaml {
     deserialize(text: string): Completion | Chat {
         const obj = YAML.parse(text);
         const type = this.requireString(obj, "type");
@@ -26,10 +21,12 @@ export class YamlSerializer implements Serializer {
             const context = obj["context"];
 
             return new Chat(new Model(vendor, model), messages, parameters, context, examples);
+        } else {
+            throw new Error("Unsupported prompt type");
         }
     }
 
-    serialize(obj: Completion): string {
+    serialize(obj: Completion | Chat): string {
         return YAML.stringify(obj);
     }
 
