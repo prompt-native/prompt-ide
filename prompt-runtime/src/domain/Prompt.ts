@@ -12,8 +12,10 @@ export class Parameter {
 }
 
 export class Conversation {
-    input: string;
-    output?: string;
+    constructor(
+        public input: string,
+        public output?: string
+    ) { }
 }
 
 export class Model {
@@ -27,6 +29,7 @@ export class Prompt {
     type: Type = Type.completion;
     model: Model;
     parameters: Parameter[];
+    output?: string;
 
     constructor(type: Type, model: Model, parameters?: Parameter[]) {
         this.type = type;

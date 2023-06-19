@@ -1,0 +1,13 @@
+type: chat
+vendor: google
+model: text-bison
+parameters:
+  - name: temperature
+    value: 0.5
+context: |
+  Give me translations, follow the format in my examples:
+examples:
+  - input: China
+    output: China(中国)
+messages:
+  - input: Japan

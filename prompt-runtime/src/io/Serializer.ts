@@ -1,26 +1,58 @@
 import YAML from 'yaml';
-import { Prompt, Completion, Parameter, Model, StructuredExamples, StructuredExample } from '../domain/Prompt';
+import { Completion, Parameter, Model, StructuredExamples, StructuredExample, Chat, Type, Conversation } from '../domain/Prompt';
 
-export interface Serializer<T extends Prompt> {
-    deserialize(text: string): T;
-    serialize(obj: T): string;
+export interface Serializer {
+    deserialize(text: string): Completion | Chat;
+    serialize(obj: Completion | Chat): string;
 }
 
-export class YamlCompletionSerializer implements Serializer<Completion> {
-    deserialize(text: string): Completion {
+export class YamlSerializer implements Serializer {
+    deserialize(text: string): Completion | Chat {
         const obj = YAML.parse(text);
         const type = this.requireString(obj, "type");
+        const typeEnum = Type[type as keyof Type];
+
         const vendor = this.requireString(obj, "vendor");
         const model = this.requireString(obj, "model");
-        const prompt = this.requireString(obj, "prompt");
         const parameters = this.parseParameters(obj);
-        const examples = this.parseStructuredExamples(obj);
 
-        return new Completion(new Model(vendor, model), prompt, parameters, examples);
+        if (typeEnum === Type.completion) {
+            const prompt = this.requireString(obj, "prompt");
+            const examples = this.parseStructuredExamples(obj);
+            return new Completion(new Model(vendor, model), prompt, parameters, examples);
+        } else if (typeEnum === Type.chat) {
+            const examples = this.parseExamples(obj);
+            const messages = this.parseMessages(obj);
+            const context = obj["context"];
+
+            return new Chat(new Model(vendor, model), messages, parameters, context, examples);
+        }
     }
 
     serialize(obj: Completion): string {
         return YAML.stringify(obj);
+    }
+
+    private parseExamples(obj: any): Conversation[] | undefined {
+        const examples = obj["examples"];
+        if (examples === undefined || examples === null) {
+            return undefined;
+        }
+        return this.requireArray(obj, "examples").map(row => {
+            const input = this.requireString(row, "input");
+            const output = this.requireString(row, "output");
+
+            return new Conversation(input, output);
+        });
+    }
+
+    private parseMessages(obj: any): Conversation[] {
+        return this.requireArray(obj, "messages").map(row => {
+            const input = this.requireString(row, "input");
+            const output = row["output"];
+
+            return new Conversation(input, output);
+        });
     }
 
     private parseStructuredExamples(obj: any): StructuredExamples | undefined {
