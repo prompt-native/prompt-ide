@@ -1,6 +1,7 @@
 type: chat
-vendor: google
-model: text-bison
+model:
+  vendor: google
+  model: text-bison
 parameters:
   - name: temperature
     value: 0.5

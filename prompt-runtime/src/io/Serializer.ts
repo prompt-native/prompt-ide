@@ -7,8 +7,9 @@ export class PromptToYaml {
         const type = this.requireString(obj, "type");
         const typeEnum = Type[type as keyof Type];
 
-        const vendor = this.requireString(obj, "vendor");
-        const model = this.requireString(obj, "model");
+        const modelObj = this.requireNonNull(obj, "model");
+        const vendor = this.requireString(modelObj, "vendor");
+        const model = this.requireString(modelObj, "model");
         const parameters = this.parseParameters(obj);
 
         if (typeEnum === Type.completion) {
