@@ -10,25 +10,35 @@ interface ModelControlProps {
 }
 
 function ModelControl({ data, onPromptChanged }: ModelControlProps) {
+    console.log('rendering...', data);
+
     const [addingParameter, setAddingParameter] = useState(false);
-    const [parameterName, setParameterName] = useState("");
+    const [parameterName, setParameterName] = useState("temperature");
     const [parameterValue, setParameterValue] = useState("");
+    const [error, setError] = useState("");
     const onConfirm = () => {
-        console.log(parameterName, parameterValue);
         if (parameterName !== '' && parameterValue !== '') {
-            let copy = data;
-            if (!copy.parameters) {
-                copy.parameters = [];
-            }
-            copy.parameters.push(new Parameter(parameterName, parameterValue));
+            const parameters = data.parameters?.filter(item => item.name != parameterName) || [];
+            parameters.push(new Parameter(parameterName, parameterValue));
+            let copy = { ...data, parameters } as Completion;
+
             onPromptChanged(copy);
             setAddingParameter(false);
+            setError("");
+        } else {
+            setError("Invalid parameter value");
         }
     };
+
     const onCancel = () => {
         setAddingParameter(false);
     };
-    console.log('~~~', data);
+
+    const onDelete = (name: string) => {
+        let parameters = data.parameters?.filter(item => item.name != name) || [];
+        onPromptChanged({ ...data, parameters } as Completion);
+    }
+
     return (
         <>
             <div className="arguments">
@@ -36,7 +46,7 @@ function ModelControl({ data, onPromptChanged }: ModelControlProps) {
                     return <VSCodeTag className="argument-value" key={parameter.name}>
                         {`${parameter.name}=${parameter.value}`}
                         <VSCodeButton appearance="icon">
-                            <span slot="start" className="codicon codicon-close"></span>
+                            <span slot="start" className="codicon codicon-close" onClick={() => onDelete(parameter.name)}></span>
                         </VSCodeButton>
                     </VSCodeTag>;
                 })
@@ -50,7 +60,8 @@ function ModelControl({ data, onPromptChanged }: ModelControlProps) {
                         onChange={(e) => {
                             setParameterName((e.target as HTMLInputElement).value)
                         }}>
-                        <VSCodeOption>Temperature</VSCodeOption>
+                        <VSCodeOption>temperature</VSCodeOption>
+                        <VSCodeOption>top_k</VSCodeOption>
                     </VSCodeDropdown>
                     <VSCodeTextField className="value-input"
                         value={parameterValue}
@@ -58,6 +69,7 @@ function ModelControl({ data, onPromptChanged }: ModelControlProps) {
                     />
                     <VSCodeButton className="button" appearance="primary" onClick={onConfirm}>OK</VSCodeButton>
                     <VSCodeButton className="button" appearance="secondary" onClick={onCancel}>Cancel</VSCodeButton>
+                    {error != '' && <small style={{ color: 'red', marginLeft: 10 }}>{error}</small>}
                 </div>
             }
         </>

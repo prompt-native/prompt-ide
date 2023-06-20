@@ -63,10 +63,13 @@ function App() {
             {prompt.type == Type.completion &&
                 <CompletionEditor data={prompt as Completion} onPromptChanged={onPromptChanged} />
             }
-            <ModelSelection type={prompt.type} vendor={prompt.model.vendor as Vendor} model={prompt.model.model}
+            <ModelSelection
+                type={prompt.type}
+                vendor={prompt.model.vendor as Vendor}
+                model={prompt.model.model}
                 onTypeSelected={onCreateTypeChange}
-                onVendorSelected={v => setVendor(v)}
-                onModelSelected={m => setModel(m)}
+                onVendorSelected={v => onPromptChanged({ ...prompt, model: new Model(v, prompt.model.model) } as typeof prompt)}
+                onModelSelected={m => onPromptChanged({ ...prompt, model: new Model(prompt.model.vendor, m) } as typeof prompt)}
             />
         </main>
     );
