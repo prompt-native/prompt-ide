@@ -7,16 +7,12 @@ parameters:
     value: 0.5
 prompt: |
   Give me translations, follow the format in my examples:
-examples:
-  fields:
-    - input
-    - output
-  rows:
-    - values:
-        - China
-        - China-中国
-    - values:
-        - US
-        - US-美国
+structured:
+  labels:
+    input1: English
+    output: Result
+  examples:
+    - input1: China
+      output: China-中国
   test:
-    - Japan
+    input1: Japan

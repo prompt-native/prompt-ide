@@ -6,16 +6,15 @@ parameters:
   - name: top_k
     value: 0.95
 prompt: What's your name?
-examples:
-  fields:
-    - input1
-    - input2
-    - output
-  rows:
-    - values:
-        - a
-        - b
-        - c
+structured:
+  examples:
+    - input1: a
+      input2: b
+      output: c
   test:
-    - x
-    - y
+    input1: x
+    input2: y
+  labels:
+    input1: name1
+    input2: name2
+    output: result

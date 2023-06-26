@@ -1,5 +1,5 @@
 import YAML from 'yaml';
-import { Completion, Parameter, Model, StructuredExamples, StructuredExample, Chat, Type, Conversation } from '../domain/Prompt';
+import { Completion, Parameter, Model, StructuredExamples, Chat, Type, Conversation } from '../domain/Prompt';
 
 export class PromptToYaml {
     deserialize(text: string): Completion | Chat {
@@ -54,18 +54,21 @@ export class PromptToYaml {
     }
 
     private parseStructuredExamples(obj: any): StructuredExamples | undefined {
-        const examples = obj["examples"];
-        if (examples === undefined || examples === null) {
+        const structured = obj["structured"];
+        if (structured === undefined || structured === null) {
             return undefined;
         }
-        const fields = this.requireStringArray(examples, "fields");
-        const test = this.requireStringArray(examples, "test");
-        const rows = this.requireArray(examples, "rows").map(row => {
-            const values = this.requireStringArray(row, "values");
-            return new StructuredExample(values);
+        const test = this.requireNonNull(structured, "test") as Record<string, string>;
+        const rows = this.requireArray(structured, "examples").map(row => {
+            return row as Record<string, string>;
         });
+        let labels = undefined;
 
-        return new StructuredExamples(fields, rows, test);
+        if (structured["labels"] !== undefined && structured["labels"] !== null) {
+            labels = structured["labels"] as Record<string, string>;
+        }
+
+        return new StructuredExamples(rows, test, labels);
     }
 
     private parseParameters(obj: any): Parameter[] {

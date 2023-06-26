@@ -6,7 +6,6 @@ export {
     Type,
     Conversation,
     Model,
-    StructuredExample,
     StructuredExamples
 } from './domain/Prompt';
 

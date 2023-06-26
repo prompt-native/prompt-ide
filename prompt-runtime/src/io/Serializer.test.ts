@@ -1,7 +1,7 @@
 import { PromptToYaml } from "./Serializer";
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { Chat, Completion, Model, Parameter, StructuredExample, StructuredExamples, Type } from "../domain/Prompt";
+import { Chat, Completion, Model, Parameter, StructuredExamples, Type } from "../domain/Prompt";
 
 function syncReadFile(filename: string): string {
     const result = readFileSync(join(__dirname, filename), 'utf-8');
@@ -19,7 +19,7 @@ describe('parse completion', () => {
         expect(prompt.parameters).toHaveLength(1);
         expect(prompt.parameters[0].name).toBe("temperature");
         expect(prompt.parameters[0].value).toBe(0.5);
-        expect(prompt.examples).toBeUndefined();
+        expect(prompt.structured).toBeUndefined();
     });
 
     test('should return structured completion', () => {
@@ -32,11 +32,11 @@ describe('parse completion', () => {
         expect(prompt.parameters).toHaveLength(1);
         expect(prompt.parameters[0].name).toBe("temperature");
         expect(prompt.parameters[0].value).toBe(0.5);
-        expect(prompt.examples).toBeDefined();
-        expect(prompt.examples.fields).toStrictEqual(["input", "output"]);
-        expect(prompt.examples.rows).toHaveLength(2);
-        expect(prompt.examples.rows[0].values).toStrictEqual(["China", "China-中国"]);
-        expect(prompt.examples.test).toStrictEqual(["Japan"]);
+        expect(prompt.structured).toBeDefined();
+        expect(prompt.structured?.labels).toStrictEqual({ "input1": "English", "output": "Result" });
+        expect(prompt.structured.examples).toHaveLength(1);
+        expect(prompt.structured.examples[0]).toStrictEqual({ "input1": "China", "output": "China-中国" });
+        expect(prompt.structured.test).toStrictEqual({ "input1": "Japan" });
     });
 
     test('should return chat prompt', () => {
@@ -69,8 +69,9 @@ describe('serialize completion', () => {
         const serializer = new PromptToYaml();
         const c = new Completion(new Model("google", "text-bison"),
             "What's your name?", [new Parameter("top_k", 0.95)],
-            new StructuredExamples(["input1", "input2", "output"], [new StructuredExample(["a", "b", "c"])],
-                ["x", "y"]));
+            new StructuredExamples([{ "input1": "a", "input2": "b", "output": "c" }],
+                { "input1": "x", "input2": "y" },
+                { "input1": "name1", "input2": "name2", "output": "result" }));
         const prompt = serializer.serialize(c);
         expect(prompt).toBe(syncReadFile("../test/completion-expected-2.yaml"));
     });

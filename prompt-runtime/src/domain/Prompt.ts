@@ -38,28 +38,22 @@ export class Prompt {
     }
 }
 
-export class StructuredExample {
-    constructor(
-        public values: string[]
-    ) { }
-}
-
 export class StructuredExamples {
     constructor(
-        public fields: string[],
-        public rows: StructuredExample[],
-        public test: string[],
+        public examples: Record<string, string>[],
+        public test: Record<string, string>,
+        public labels?: Record<string, string>,
     ) { }
 }
 
 export class Completion extends Prompt {
     prompt: string;
-    examples?: StructuredExamples;
+    structured?: StructuredExamples;
 
     constructor(model: Model, prompt: string, parameters?: Parameter[], examples?: StructuredExamples) {
         super(Type.completion, model, parameters);
         this.prompt = prompt;
-        this.examples = examples;
+        this.structured = examples;
     }
 
     toChat(): Chat {
