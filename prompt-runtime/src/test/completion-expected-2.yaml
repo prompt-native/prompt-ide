@@ -6,15 +6,15 @@ parameters:
   - name: top_k
     value: 0.95
 prompt: What's your name?
-structured:
-  examples:
-    - input1: a
-      input2: b
-      output: c
-  test:
-    input1: x
-    input2: y
-  labels:
-    input1: name1
-    input2: name2
-    output: result
+examples:
+  - name: name1
+    values:
+      - a
+    test: x
+  - name: name2
+    values:
+      - b
+    test: y
+  - name: result
+    values:
+      - c

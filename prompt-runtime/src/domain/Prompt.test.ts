@@ -1,53 +1,69 @@
-import { StructuredExampleBuilder } from "./Prompt";
+import { Completion, ExampleColumn, Model } from "./Prompt";
 
 describe('build structued examples', () => {
     test('init example', () => {
-        let builder = new StructuredExampleBuilder();
-        const result = builder.toStructuredExamples();
-        expect(result.labels).toBe(undefined);
-        expect(result.test).toStrictEqual({ "input": "" });
-        expect(result.examples).toStrictEqual([]);
+        let result = new Completion(new Model("google", "bard"), "who are you?");
+
+        expect(result.examples).toBeUndefined();
+        expect(result.getExampleCount()).toBe(0);
+
+        result.toStructured();
+        expect(result.getExampleCount()).toBe(0);
+        expect(result.examples).toStrictEqual([new ExampleColumn("input", []), new ExampleColumn("output", [])]);
     });
 
     test('add field', () => {
-        let builder = new StructuredExampleBuilder();
-        builder.addField();
-        const result = builder.toStructuredExamples();
-        expect(result.labels).toBe(undefined);
-        expect(result.test).toStrictEqual({ "input1": "", "input2": "" });
-        expect(result.examples).toStrictEqual([]);
+        let result = new Completion(new Model("google", "bard"), "who are you?", [], [new ExampleColumn("input", []), new ExampleColumn("output", [])]);
+        result.addColumn("test");
+        expect(result.examples).toBeDefined();
+        expect(result.getExampleCount()).toBe(0);
+        expect(result.examples).toStrictEqual([new ExampleColumn("input", []), new ExampleColumn("test", []), new ExampleColumn("output", [])]);
     });
 
     test('add field with value', () => {
-        let builder = new StructuredExampleBuilder();
-        builder.setTest("input1", "abc");
-        builder.addField();
-        builder.addField();
-        const result = builder.toStructuredExamples();
-        expect(result.labels).toBe(undefined);
-        expect(result.test).toStrictEqual({ "input1": "abc", "input2": "", "input3": "" });
-        expect(result.examples).toStrictEqual([]);
+        let result = new Completion(new Model("google", "bard"), "who are you?", [], [new ExampleColumn("input1", ["a"]), new ExampleColumn("output", ["b"])]);
+        result.addColumn("input2");
+        expect(result.examples).toBeDefined();
+        expect(result.getExampleCount()).toBe(1);
+        expect(result.examples).toStrictEqual([new ExampleColumn("input1", ["a"]), new ExampleColumn("input2", []), new ExampleColumn("output", ["b"])]);
+    });
+
+    test('set example', () => {
+        let result = new Completion(new Model("google", "bard"), "who are you?", [], [new ExampleColumn("input1", ["a"]), new ExampleColumn("output", ["b"])]);
+        result.setExamples(0, ["c", "d"]);
+        expect(result.examples).toBeDefined();
+        expect(result.getExampleCount()).toBe(1);
+        expect(result.examples).toStrictEqual([new ExampleColumn("input1", ["c"]), new ExampleColumn("output", ["d"])]);
     });
 
     test('add exampple', () => {
-        let builder = new StructuredExampleBuilder();
-        builder.addExample();
-        builder.setExample(0, "input1", "abc");
-        const result = builder.toStructuredExamples();
-        expect(result.labels).toBe(undefined);
-        expect(result.examples.length).toBe(1);
-        expect(result.examples[0]).toStrictEqual({ "input": "abc", "output": "" });
+        let result = new Completion(new Model("google", "bard"), "who are you?", [], [new ExampleColumn("input1", ["a"]), new ExampleColumn("output", ["b"])]);
+        result.addExamples(["c", "d"]);
+        expect(result.examples).toBeDefined();
+        expect(result.getExampleCount()).toBe(2);
+        expect(result.examples).toStrictEqual([new ExampleColumn("input1", ["a", "c"]), new ExampleColumn("output", ["b", "d"])]);
     });
 
-    test('add exampple and then add field', () => {
-        let builder = new StructuredExampleBuilder();
-        builder.addExample();
-        builder.addField();
-        builder.setExample(0, "input1", "abc");
-        builder.setExample(0, "output", "xyz");
-        const result = builder.toStructuredExamples();
-        expect(result.labels).toBe(undefined);
-        expect(result.examples.length).toBe(1);
-        expect(result.examples[0]).toStrictEqual({ "input1": "abc", "input2": "", "output": "xyz" });
+    test('remove exampple', () => {
+        let result = new Completion(new Model("google", "bard"), "who are you?", [], [new ExampleColumn("input1", []), new ExampleColumn("output", [])]);
+        result.removeExample(0);
+        expect(result.examples).toBeDefined();
+        expect(result.getExampleCount()).toBe(0);
+    });
+
+    test('remove column', () => {
+        let result = new Completion(new Model("google", "bard"), "who are you?", [], [new ExampleColumn("input1", ["a"]), new ExampleColumn("output", ["b"])]);
+        result.removeColumn(0);
+        console.log(result.examples);
+        expect(result.examples).toBeDefined();
+        expect(result.examples?.length).toBe(1);
+        expect(result.examples).toStrictEqual([new ExampleColumn("output", ["b"])]);
+    });
+
+
+    test('set test', () => {
+        let result = new Completion(new Model("google", "bard"), "who are you?", [], [new ExampleColumn("input1", ["a"]), new ExampleColumn("output", ["b"])]);
+        result.setTest(["x"]);
+        expect(result.examples).toStrictEqual([new ExampleColumn("input1", ["a"], "x"), new ExampleColumn("output", ["b"])]);
     });
 });

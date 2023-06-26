@@ -7,12 +7,13 @@ parameters:
     value: 0.5
 prompt: |
   Give me translations, follow the format in my examples:
-structured:
-  labels:
-    input1: English
-    output: Result
-  examples:
-    - input1: China
-      output: China-中国
-  test:
-    input1: Japan
+examples:
+  - name: input
+    values:
+      - China
+      - US
+    test: Japan
+  - name: output
+    values:
+      - China-中国
+      - US-美国

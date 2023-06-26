@@ -38,130 +38,96 @@ export class Prompt {
     }
 }
 
-export class StructuredExampleBuilder {
-    private _labels: Record<string, string>;
-    private _test: Record<string, string>;
-    private _examples: Record<string, string>[];
-
-    constructor() {
-        this._labels = {};
-        this._test = { "input1": "" };
-        this._examples = [];
-    }
-
-    addField() {
-        const key = `input${Object.keys(this._test).length + 1}`;
-        this._test[key] = "";
-        this._examples.forEach(example => {
-            example[key] = "";
-        });
-    }
-
-    deleteField(name: string) {
-        delete this._test[name];
-        this._examples.forEach(example => {
-            delete example[name];
-        });
-    }
-
-    addExample() {
-        let example = {};
-        for (let key in this._test) {
-            example[key] = "";
-        }
-        example["output"] = "";
-        this._examples.push(example);
-    }
-
-    setExample(index: number, key: string, value: string) {
-        if (index >= this._examples.length) {
-            throw new Error("Index out of range");
-        }
-        this._examples[index][key] = value;
-    }
-
-    setTest(name: string, value: string) {
-        if (!(name in this._test)) {
-            throw new Error("Field not found");
-        }
-        this._test[name] = value;
-    }
-
-    setLabel(name: string, label: string) {
-        if (!(name in this._test)) {
-            throw new Error("Field not found");
-        }
-        this._labels[name] = label;
-    }
-
-    removeLabel(name: string) {
-        if (!(name in this._test)) {
-            throw new Error("Field not found");
-        }
-        delete this._labels[name];
-    }
-
-    toStructuredExamples() {
-        let test: Record<string, string> = {};
-        let examples: Record<string, string>[] = [];
-        let labels: Record<string, string> = {};
-
-        let keyMapping: Record<string, string> = {};
-        let count = 1;
-        let keys = Object.keys(this._test);
-        keys.sort();
-
-        keys.forEach(key => {
-            const newKey = Object.keys(this._test).length === 1 ? "input" : `input${count}`;
-            keyMapping[key] = newKey;
-            test[newKey] = this._test[key];
-            count += 1;
-        });
-
-        for (let key in this._labels) {
-            const newKey = keyMapping[key];
-            labels[newKey] = this._labels[key];
-        }
-
-        examples = this._examples.map(item => {
-            let example: Record<string, string> = {};
-            for (let key in item) {
-                const newKey = keyMapping[key] || key;
-                example[newKey] = item[key];
-            }
-            return example;
-        });
-
-        if (Object.keys(labels).length === 0) {
-            labels = undefined;
-        }
-
-        return new StructuredExamples(examples, test, labels);
-    }
-
-}
-
-export class StructuredExamples {
+export class ExampleColumn {
     constructor(
-        public examples: Record<string, string>[],
-        public test: Record<string, string>,
-        public labels?: Record<string, string>,
+        public name: string,
+        public values: string[],
+        public test?: string,
     ) { }
 }
 
 export class Completion extends Prompt {
     prompt: string;
-    structured?: StructuredExamples;
+    examples?: ExampleColumn[];
 
-    constructor(model: Model, prompt: string, parameters?: Parameter[], examples?: StructuredExamples) {
+    constructor(model: Model, prompt: string, parameters?: Parameter[], examples?: ExampleColumn[]) {
         super(Type.completion, model, parameters);
         this.prompt = prompt;
-        this.structured = examples;
+        this.examples = examples;
     }
 
     toChat(): Chat {
         const chat = new Chat(this.model, undefined, this.parameters, this.prompt);
         return chat;
+    }
+
+    toStructured() {
+        if (!this.examples) {
+            this.examples = [
+                new ExampleColumn("input", []),
+                new ExampleColumn("output", [])];
+        }
+    }
+
+    getExampleCount(): number {
+        if (this.examples) {
+            return this.examples[0].values.length;
+        }
+        return 0;
+    }
+
+    addColumn(name: string) {
+        const output = this.examples.pop();
+        this.examples.push(new ExampleColumn(name, []));
+        this.examples.push(output);
+    }
+
+    removeColumn(index: number) {
+        this.examples.splice(index, 1);
+    }
+
+    setExamples(index: number, values: string[]) {
+        if (values.length !== this.examples.length) {
+            throw new Error("Columns not match");
+        }
+        for (let i = 0; i < this.examples.length; i++) {
+            this.examples[i].values[index] = values[i];
+        }
+    }
+
+    addExamples(values: string[]) {
+        if (values.length !== this.examples.length) {
+            throw new Error("Columns not match");
+        }
+        const count = this.getExampleCount();
+
+        for (let i = 0; i < this.examples.length; i++) {
+            this.examples[i].values[count] = values[i];
+        }
+    }
+
+    setTest(values: string[]) {
+        if (values.length !== this.examples.length - 1) {
+            throw new Error("Columns not match");
+        }
+        for (let i = 0; i < this.examples.length - 1; i++) {
+            this.examples[i].test = values[i];
+        }
+    }
+
+    removeExample(index: number) {
+        for (let i = 0; i < this.examples.length; i++) {
+            this.examples[i].values.slice(index, 1);
+        }
+    }
+
+    updateExample(index: number, values: string[]) {
+        if (values.length !== this.examples.length) {
+            throw new Error("Columns not match");
+        }
+        for (let i = 0; i < this.examples.length; i++) {
+            this.examples[i].values[index] = values[i];
+        }
     }
 }
 
