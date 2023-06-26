@@ -126,7 +126,7 @@ export class StructuredExampleBuilder {
         examples = this._examples.map(item => {
             let example: Record<string, string> = {};
             for (let key in item) {
-                const newKey = keyMapping[key];
+                const newKey = keyMapping[key] || key;
                 example[newKey] = item[key];
             }
             return example;
