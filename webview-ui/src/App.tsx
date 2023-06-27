@@ -83,17 +83,15 @@ function App() {
 
     return (
         <main>
-            <div className="content">
-                {prompt.type == Type.chat &&
-                    <ChatEditor />
-                }
-                {isStructuredMode &&
-                    <StructuredEditor data={prompt as Completion} onPromptChanged={onPromptChanged} />
-                }
-                {isFreeMode &&
-                    <FreeEditor data={prompt as Completion} onPromptChanged={onPromptChanged} />
-                }
-            </div>
+            {prompt.type == Type.chat &&
+                <ChatEditor />
+            }
+            {isStructuredMode &&
+                <StructuredEditor data={prompt as Completion} onPromptChanged={onPromptChanged} />
+            }
+            {isFreeMode &&
+                <FreeEditor data={prompt as Completion} onPromptChanged={onPromptChanged} />
+            }
             <div className="sidebar">
                 <VSCodeRadioGroup>
                     <label slot="label">Mode</label>
