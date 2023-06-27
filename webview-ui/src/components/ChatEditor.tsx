@@ -2,8 +2,6 @@ import {
     VSCodeDivider,
     VSCodeTextArea
 } from "@vscode/webview-ui-toolkit/react";
-import ToolButtons from "./ToolButtons";
-import './ChatEditor.css';
 import ConversationRow from "./ConversationRow";
 
 function ChatEditor() {
@@ -28,7 +26,6 @@ function ChatEditor() {
                 rows={2}
                 placeholder="Enter your question here">
             </VSCodeTextArea>
-            <ToolButtons />
 
             <VSCodeDivider />
         </div>
