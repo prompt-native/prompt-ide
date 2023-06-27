@@ -19,22 +19,20 @@ function ModelSelection({ type, vendor, model,
     onTypeSelected, onVendorSelected, onModelSelected }: ModelSelection) {
     return (
         <div className="selection-bar">
-            <span className="label">Type</span>
             <VSCodeDropdown className="button" position="below"
                 value={type}
                 onChange={(e) => onTypeSelected((e.target as HTMLInputElement).value as Type)}>
-                {Object.values(Type).map(t => <VSCodeOption>{t}</VSCodeOption>)}
+                {Object.values(Type).map(t => <VSCodeOption key={t}>{t}</VSCodeOption>)}
             </VSCodeDropdown>
-            <span className="label">Model</span>
             <VSCodeDropdown className="button" position="below"
                 value={vendor}
                 onChange={(e) => onVendorSelected((e.target as HTMLInputElement).value as Vendor)}>
-                {Object.values(Vendor).map(v => <VSCodeOption>{v}</VSCodeOption>)}
+                {Object.values(Vendor).map(v => <VSCodeOption key={v}>{v}</VSCodeOption>)}
             </VSCodeDropdown>
             <VSCodeDropdown className="button" position="below"
                 value={model}
                 onChange={(e) => onModelSelected((e.target as HTMLInputElement).value)}>
-                {getModels(type, vendor).map(name => <VSCodeOption>{name}</VSCodeOption>)}
+                {getModels(type, vendor).map(name => <VSCodeOption key={name}>{name}</VSCodeOption>)}
             </VSCodeDropdown>
         </div>
     );

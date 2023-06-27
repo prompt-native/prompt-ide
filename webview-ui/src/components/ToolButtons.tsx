@@ -2,7 +2,7 @@ import {
     VSCodeButton, VSCodeDropdown,
     VSCodeOption
 } from "@vscode/webview-ui-toolkit/react";
-import { EditorMode } from "./CompletionEditor";
+import { EditorMode } from "./completion/CompletionEditor";
 import { useState } from "react";
 
 function ToolButtons() {

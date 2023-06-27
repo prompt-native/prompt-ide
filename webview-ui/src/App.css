@@ -11,34 +11,38 @@ html, body, #root {
 
 main {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   padding: 10px;
   flex: 1;
 }
 
-.toolbar {
+.sidebar {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    width: 200px;
+    margin-left: 10px;
+}
+
+.sidebar .button {
+    margin-bottom: 10px;
+}
+
+.title-with-actions {
+    display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-.button-group .button {
-    margin-right: 10px;
-}
-
-.col {
+.structured-row {
     display: flex;
+    margin-bottom: 5px;
+}
+.structured-row .field-name {
+    width: 100px;
+    margin-right: 8px;
+}
+
+.structured-row .field-value {
     flex: 1;
-}
-
-span.label {
-    font-size: 13px;
-    font-weight: bold;
-    display: inline-block;
-}
-
-.content {
-    flex-direction: column;
 }
