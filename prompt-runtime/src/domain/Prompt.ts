@@ -56,78 +56,123 @@ export class Completion extends Prompt {
         this.examples = examples;
     }
 
-    toChat(): Chat {
-        const chat = new Chat(this.model, undefined, this.parameters, this.prompt);
+    static toChat(completion: Completion): Chat {
+        const chat = new Chat(completion.model, undefined, completion.parameters, completion.prompt);
         return chat;
     }
 
-    toStructured() {
-        if (!this.examples) {
-            this.examples = [
+    static toStructured(completion: Completion): Completion {
+        return {
+            ...completion, examples: completion.examples || [
                 new ExampleColumn("input", []),
-                new ExampleColumn("output", [])];
-        }
+                new ExampleColumn("output", [])]
+        } as Completion;
     }
 
-    getExampleCount(): number {
-        if (this.examples) {
-            return this.examples[0].values.length;
+    static getExampleCount(completion: Completion): number {
+        if (completion.examples && completion.examples.length > 0) {
+            return completion.examples[0].values.length;
         }
         return 0;
     }
 
-    addColumn(name: string) {
-        const output = this.examples.pop();
-        this.examples.push(new ExampleColumn(name, []));
-        this.examples.push(output);
+    private static ensureIsStructured(completion: Completion) {
+        if (!completion.examples) {
+            throw new Error("Completion is not structured!");
+        }
     }
 
-    removeColumn(index: number) {
-        this.examples.splice(index, 1);
+    static addColumn(completion: Completion, name: string): Completion {
+        this.ensureIsStructured(completion);
+        const copy = { ...completion } as Completion;
+        const output = copy.examples.pop();
+        copy.examples.push(new ExampleColumn(name, []));
+        copy.examples.push(output);
+        return copy;
     }
 
-    setExamples(index: number, values: string[]) {
-        if (values.length !== this.examples.length) {
+    static removeColumn(completion: Completion, index: number): Completion {
+        this.ensureIsStructured(completion);
+        const copy = { ...completion } as Completion;
+        copy.examples.splice(index, 1);
+        return copy;
+    }
+
+    static setExamples(completion: Completion, index: number, values: string[]) {
+        this.ensureIsStructured(completion);
+        const copy = { ...completion } as Completion;
+
+        if (values.length !== copy.examples.length) {
             throw new Error("Columns not match");
         }
-        for (let i = 0; i < this.examples.length; i++) {
-            this.examples[i].values[index] = values[i];
+        for (let i = 0; i < copy.examples.length; i++) {
+            copy.examples[i].values[index] = values[i];
         }
+        return copy;
     }
 
-    addExamples(values: string[]) {
-        if (values.length !== this.examples.length) {
+    static addExample(completion: Completion): Completion {
+        this.ensureIsStructured(completion);
+        const copy = { ...completion } as Completion;
+
+        const count = this.getExampleCount(copy);
+
+        for (let i = 0; i < copy.examples.length; i++) {
+            copy.examples[i].values[count] = "";
+        }
+        return copy;
+    }
+
+    static setTest(completion: Completion, values: string[]) {
+        this.ensureIsStructured(completion);
+        const copy = { ...completion } as Completion;
+
+        if (values.length !== copy.examples.length - 1) {
             throw new Error("Columns not match");
         }
-        const count = this.getExampleCount();
-
-        for (let i = 0; i < this.examples.length; i++) {
-            this.examples[i].values[count] = values[i];
+        for (let i = 0; i < copy.examples.length - 1; i++) {
+            copy.examples[i].test = values[i];
         }
+
+        return copy;
     }
 
-    setTest(values: string[]) {
-        if (values.length !== this.examples.length - 1) {
+    static removeExample(completion: Completion, index: number) {
+        this.ensureIsStructured(completion);
+        const copy = { ...completion } as Completion;
+
+        for (let i = 0; i < copy.examples.length; i++) {
+            copy.examples[i].values.slice(index, 1);
+        }
+
+        return copy;
+    }
+
+    static updateExample(completion: Completion, index: number, values: string[]) {
+        this.ensureIsStructured(completion);
+        const copy = { ...completion } as Completion;
+
+        if (values.length !== copy.examples.length) {
             throw new Error("Columns not match");
         }
-        for (let i = 0; i < this.examples.length - 1; i++) {
-            this.examples[i].test = values[i];
+        for (let i = 0; i < copy.examples.length; i++) {
+            copy.examples[i].values[index] = values[i];
         }
+
+        return copy;
     }
 
-    removeExample(index: number) {
-        for (let i = 0; i < this.examples.length; i++) {
-            this.examples[i].values.slice(index, 1);
+    static normalize(completion: Completion): Completion {
+        const copy = { ...completion } as Completion;
+        if (copy.examples) {
+            const examplesCount = this.getExampleCount(copy);
+            for (let i = 0; i < examplesCount; i++) {
+                copy.examples.forEach(column => {
+                    column.values[i] = column.values[i] || "";
+                });
+            }
         }
-    }
-
-    updateExample(index: number, values: string[]) {
-        if (values.length !== this.examples.length) {
-            throw new Error("Columns not match");
-        }
-        for (let i = 0; i < this.examples.length; i++) {
-            this.examples[i].values[index] = values[i];
-        }
+        return copy;
     }
 }
 
@@ -143,12 +188,12 @@ export class Chat extends Prompt {
         this.examples = examples;
     }
 
-    toCompletion(): Completion {
-        let prompt = this.context || '';
-        if (this.messages && this.messages.length > 0) {
-            prompt += '\n' + this.messages[0].input;
+    static toCompletion(chat: Chat): Completion {
+        let prompt = chat.context || '';
+        if (chat.messages && chat.messages.length > 0) {
+            prompt += '\n' + chat.messages[0].input;
         }
-        const completion = new Completion(this.model, prompt, this.parameters);
+        const completion = new Completion(chat.model, prompt, chat.parameters);
         return completion;
     }
 }
