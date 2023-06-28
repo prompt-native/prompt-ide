@@ -57,3 +57,40 @@ main {
 .structured-row .field-value {
     flex: 1;
 }
+
+.horizontal-flex {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.vertical-flex {
+    display: flex;
+    flex-direction: column;
+}
+
+.fill {
+    flex: 1;
+}
+
+.danger {
+    color: red;
+}
+
+.title {
+    align-items: center;
+    display: flex;
+    border-bottom: 1px solid #eeeeee6e;
+    margin-bottom: 5px;
+}
+
+.title .label{
+    margin-left: 10px;
+}
+
+.card {
+    border: 1px solid #eeeeee6e;
+    margin-bottom: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+}

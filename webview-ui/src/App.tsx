@@ -5,7 +5,7 @@ import { Vendor } from "./config/models";
 import { vscode } from "./utilities/vscode";
 import { Chat, Completion, Model, Type, PromptToYaml } from 'prompt-runtime';
 import { ExampleColumn } from "prompt-runtime/lib/domain/Prompt";
-import ChatEditor from "./components/ChatEditor";
+import ChatEditor from "./components/chat/ChatEditor";
 import { VSCodeButton, VSCodeDivider, VSCodeDropdown, VSCodeOption, VSCodeRadio, VSCodeRadioGroup, VSCodeTextField } from "@vscode/webview-ui-toolkit/react";
 import FreeEditor from "./components/completion/FreeEditor";
 import StructuredEditor from "./components/completion/StructuredEditor";
@@ -13,6 +13,11 @@ import StructuredEditor from "./components/completion/StructuredEditor";
 export interface CompletionProps {
     data: Completion,
     onPromptChanged: (data: Completion) => any;
+}
+
+export interface ChatProps {
+    data: Chat,
+    onPromptChanged: (data: Chat) => any;
 }
 
 function App() {
@@ -45,7 +50,7 @@ function App() {
         }
     };
 
-    const onCreateTypeChange = (type: Type) => {
+    const changeType = (type: Type) => {
         if (type !== prompt.type) {
             let newPrompt: Completion | Chat;
             if (type == Type.chat) {
@@ -84,7 +89,7 @@ function App() {
     return (
         <main>
             {prompt.type == Type.chat &&
-                <ChatEditor />
+                <ChatEditor data={prompt as Chat} onPromptChanged={onPromptChanged} />
             }
             {isStructuredMode &&
                 <StructuredEditor data={prompt as Completion} onPromptChanged={onPromptChanged} />
@@ -93,17 +98,16 @@ function App() {
                 <FreeEditor data={prompt as Completion} onPromptChanged={onPromptChanged} />
             }
             <div className="sidebar">
-                <VSCodeRadioGroup>
+                <VSCodeRadioGroup
+                    value={prompt.type}
+                    onChange={(e) => changeType((e.target as HTMLInputElement).value as Type)}>
                     <label slot="label">Mode</label>
-                    <VSCodeRadio>Chat</VSCodeRadio>
-                    <VSCodeRadio>Completion</VSCodeRadio>
-                    <VSCodeRadio>Image</VSCodeRadio>
+                    {Object.keys(Type).map(t => <VSCodeRadio value={t} key={t} >{t}</VSCodeRadio>)}
                 </VSCodeRadioGroup>
                 <VSCodeDivider />
                 <label slot="label">Provider</label>
                 <VSCodeDropdown className="button" position="below">
-                    <VSCodeOption>Google</VSCodeOption>
-                    <VSCodeOption>OpenAI</VSCodeOption>
+                    {Object.keys(Vendor).map(key => <VSCodeOption key={key}>{key}</VSCodeOption>)}
                 </VSCodeDropdown>
 
                 <label slot="label">Model</label>
@@ -130,7 +134,7 @@ function App() {
                 </VSCodeTextField>
                 <VSCodeDivider />
                 <VSCodeButton className="button">Submit</VSCodeButton>
-                {!isStructuredMode &&
+                {isFreeMode &&
                     <VSCodeButton className="button"
                         appearance="secondary"
                         onClick={switchToStructured}>Switch to structured</VSCodeButton>

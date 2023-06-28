@@ -27,17 +27,18 @@ function StructuredColumn({ removable, labelEditable, isOutput, label, value, on
             {!labelEditable &&
                 <span className="field-name">{label}</span>
             }
-            {removable &&
-                <VSCodeButton appearance="icon" onClick={onRemove}>
-                    <span className="codicon codicon-close" style={{ color: 'red' }}></span>
-                </VSCodeButton>
-            }
+
             <VSCodeTextField
                 className="field-value"
                 readOnly={isOutput}
                 onChange={(e) => onChange!((e.target as HTMLInputElement).value)}
                 placeholder={isOutput ? "LLM response will be generated here" : undefined}
                 value={value}></VSCodeTextField>
+            {removable &&
+                <VSCodeButton appearance="icon" onClick={onRemove}>
+                    <span className="codicon codicon-close" style={{ color: 'red' }}></span>
+                </VSCodeButton>
+            }
         </div>
     );
 }

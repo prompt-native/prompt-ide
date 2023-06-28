@@ -6,6 +6,7 @@ import {
 import { CompletionProps } from "../../App";
 import StructuredColumn from "./StructuredColumn";
 import { Completion } from "prompt-runtime";
+import Collapse from "../Collapse";
 
 function copyPrompt(data: Completion): Completion {
     const newPrompt = { ...data } as typeof data;
@@ -54,20 +55,23 @@ function StructuredEditor({ data, onPromptChanged }: CompletionProps) {
 
     const renderExample = (i: number) => {
         return (
-            <>
-                {data.examples!.map((field, fieldIndex) => <StructuredColumn
-                    label={field.name}
-                    labelEditable={false}
-                    isOutput={false}
-                    value={field.values[i] || ""} />)}
+            <div className="horizontal-flex">
+                <div className="fill">
+                    {data.examples!.map((field, fieldIndex) => <StructuredColumn
+                        label={field.name}
+                        labelEditable={false}
+                        isOutput={false}
+                        value={field.values[i] || ""} />)}
+                    <VSCodeDivider />
+                </div>
                 <VSCodeButton appearance="icon"
                     aria-label="Confirm"
-                    style={{ color: 'red' }}
+                    className="danger"
                     disabled={data.examples!.length > 3}
                     onClick={() => removeExample(i)}>
-                    <span className="codicon codicon-remove"></span>
+                    <span className="codicon codicon-close"></span>
                 </VSCodeButton>
-            </>
+            </div>
         );
     };
 
@@ -84,34 +88,39 @@ function StructuredEditor({ data, onPromptChanged }: CompletionProps) {
 
     return (
         <div className="main-content">
-            <span className="label">Context</span>
-            <VSCodeTextArea
-                className="input"
-                resize="vertical"
-                rows={3}
-                value={data.prompt}
-                onChange={(e) => updatePrompt((e.target as HTMLInputElement).value)}
-                placeholder="Enter your prompt here">
-            </VSCodeTextArea>
-            <VSCodeDivider />
-            <div className="title-with-actions">
-                <span className="label">Examples</span>
-                <VSCodeButton appearance="icon" aria-label="Confirm" onClick={addExample}>
-                    <span className="codicon codicon-add"></span>
-                </VSCodeButton>
-            </div>
-            {([...Array(totalExamples)]).map((x, i) => renderExample(i))}
-            <VSCodeDivider />
-            <div className="title-with-actions">
-                <span className="label">Test</span>
-                <VSCodeButton appearance="icon"
-                    aria-label="Confirm"
-                    disabled={data.examples!.length > 3}
-                    onClick={addField}>
-                    <span className="codicon codicon-add"></span>
-                </VSCodeButton>
-            </div>
-            {renderTest()}
+            <Collapse title="Context">
+                <VSCodeTextArea
+                    className="input fill"
+                    resize="vertical"
+                    rows={3}
+                    value={data.prompt}
+                    onChange={(e) => updatePrompt((e.target as HTMLInputElement).value)}
+                    placeholder="Enter your prompt here">
+                </VSCodeTextArea>
+            </Collapse>
+
+            <Collapse title="Examples"
+                renderActions={() =>
+                    <VSCodeButton appearance="icon" aria-label="Confirm" onClick={addExample}>
+                        <span className="codicon codicon-add"></span>
+                    </VSCodeButton>}>
+                <div className="fill">
+                    {([...Array(totalExamples)]).map((x, i) => renderExample(i))}
+                </div>
+            </Collapse>
+
+            <Collapse title="Test"
+                renderActions={() =>
+                    <VSCodeButton appearance="icon"
+                        aria-label="Confirm"
+                        disabled={data.examples!.length > 3}
+                        onClick={addField}>
+                        <span className="codicon codicon-add"></span>
+                    </VSCodeButton>}>
+                <div className="fill">
+                    {renderTest()}
+                </div>
+            </Collapse>
         </div>
     );
 }
