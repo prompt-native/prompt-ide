@@ -1,4 +1,4 @@
-import { Type } from "prompt-runtime";
+import { Type } from "../domain/Prompt";
 
 export enum Vendor {
     OpenAI = "openai",

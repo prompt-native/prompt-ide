@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import "./codicon.css";
-import { Vendor } from "./config/models";
+import { Vendor, getModels } from 'prompt-runtime';
 import { vscode } from "./utilities/vscode";
 import { Chat, Completion, Model, Type, PromptToYaml } from 'prompt-runtime';
 import { ExampleColumn } from "prompt-runtime/lib/domain/Prompt";
@@ -21,10 +21,8 @@ export interface ChatProps {
 }
 
 function App() {
-    const [vendor, setVendor] = useState(Vendor.Google);
-    const [model, setModel] = useState("text-bison");
     const [prompt, setPrompt] = useState<Chat | Completion>(
-        new Completion(new Model(model, vendor), "Hello world!", [], [
+        new Completion(new Model(Vendor.Google, "code-bison"), "Hello world!", [], [
             new ExampleColumn("input", ["a"], "x"),
             new ExampleColumn("output", ["b"])
         ]));
@@ -64,6 +62,16 @@ function App() {
         }
     };
 
+    const changeVendor = (vendor: Vendor) => {
+        const models = getModels(prompt.type, vendor);
+        onPromptChanged({
+            ...prompt, model: {
+                vendor,
+                model: models.length > 0 ? models[0] : "",
+            }
+        });
+    };
+
     const switchToStructured = () => {
         onPromptChanged(Completion.toStructured(prompt as Completion));
     };
@@ -82,6 +90,9 @@ function App() {
     const isStructuredMode = prompt.type == Type.completion && prompt.examples;
     const isFreeMode = prompt.type == Type.completion && !prompt.examples;
 
+    const models = getModels(prompt.type, prompt.model.vendor as Vendor);
+    console.log(prompt);
+    console.log(Object.keys(Type));
     return (
         <main>
             {prompt.type == Type.chat &&
@@ -97,20 +108,24 @@ function App() {
                 <VSCodeRadioGroup
                     value={prompt.type}
                     onChange={(e) => changeType((e.target as HTMLInputElement).value as Type)}>
-                    <label slot="label">Mode</label>
+                    <label slot="label">Prompt Type</label>
                     {Object.keys(Type).map(t => <VSCodeRadio value={t} key={t} >{t}</VSCodeRadio>)}
                 </VSCodeRadioGroup>
                 <VSCodeDivider />
                 <label slot="label">Provider</label>
-                <VSCodeDropdown className="button" position="below">
-                    {Object.keys(Vendor).map(key => <VSCodeOption key={key}>{key}</VSCodeOption>)}
+                <VSCodeDropdown className="button" position="below"
+                    value={prompt.model.vendor}
+                    onChange={(e) => changeVendor((e.target as HTMLInputElement).value as Vendor)}
+                >
+                    {Object.values(Vendor).map(t => <VSCodeOption key={t} value={t}>{t}</VSCodeOption>)}
                 </VSCodeDropdown>
 
                 <label slot="label">Model</label>
-                <VSCodeDropdown className="button" position="below">
-                    <VSCodeOption>text-bison</VSCodeOption>
-                    <VSCodeOption>code-bison</VSCodeOption>
+                <VSCodeDropdown className="button" position="below" value={prompt.model.model}>
+                    {getModels(prompt.type, prompt.model.vendor as Vendor).map(model =>
+                        <VSCodeOption key={model}>{model}</VSCodeOption>)}
                 </VSCodeDropdown>
+
                 <VSCodeDivider />
                 <VSCodeTextField>
                     Temperature

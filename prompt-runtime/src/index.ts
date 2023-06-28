@@ -12,3 +12,10 @@ export {
 export {
     PromptToYaml
 } from './io/Serializer';
+
+export {
+    Vendor,
+    ModelDef,
+    getModels,
+    AllModels,
+} from './config/Config';
