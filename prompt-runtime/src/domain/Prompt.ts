@@ -69,6 +69,13 @@ export class Completion extends Prompt {
         } as Completion;
     }
 
+    static toFreeFormat(completion: Completion): Completion {
+        // todo: join examples as prompt
+        return {
+            ...completion, examples: undefined,
+        } as Completion;
+    }
+
     static getExampleCount(completion: Completion): number {
         if (completion.examples && completion.examples.length > 0) {
             return completion.examples[0].values.length;

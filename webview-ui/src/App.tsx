@@ -54,9 +54,9 @@ function App() {
         if (type !== prompt.type) {
             let newPrompt: Completion | Chat;
             if (type == Type.chat) {
-                newPrompt = (prompt as Completion).toChat();
+                newPrompt = Completion.toChat(prompt as Completion);
             } else if (type == Type.completion) {
-                newPrompt = (prompt as Chat).toCompletion();
+                newPrompt = Chat.toCompletion(prompt as Chat);
             } else {
                 throw new Error("Unsupported prompt type");
             }
@@ -65,15 +65,11 @@ function App() {
     };
 
     const switchToStructured = () => {
-        const p = { ...prompt } as Completion;
-        p.examples = [new ExampleColumn("input", ["a", "b"], "x"), new ExampleColumn("output", ["c", "d"])];
-        onPromptChanged(p);
+        onPromptChanged(Completion.toStructured(prompt as Completion));
     };
 
     const switchToFreeFormat = () => {
-        const p = { ...prompt } as Completion;
-        p.examples = undefined;
-        onPromptChanged(p);
+        onPromptChanged(Completion.toFreeFormat(prompt as Completion));
     };
 
     useEffect(() => {
