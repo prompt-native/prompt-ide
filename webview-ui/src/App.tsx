@@ -107,7 +107,7 @@ function App() {
 
     const renderParameter = (parameter: ParameterDef) => {
         const existingParameter = prompt.parameters?.find(p => p.name === parameter.name);
-        const value = existingParameter || parameter.defaultValue;
+        const value = existingParameter?.value || parameter.defaultValue;
 
         return (
             <VSCodeTextField key={`${prompt.model.model}-${parameter.name}`} value={`${value}`}>
