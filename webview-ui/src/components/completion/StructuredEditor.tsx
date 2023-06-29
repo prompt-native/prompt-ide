@@ -22,27 +22,19 @@ function StructuredEditor({ data, onPromptChanged }: CompletionProps) {
 
     const addField = () => {
         const fieldName = `input${data.examples!.length}`;
-        const newPrompt = copyPrompt(data);
-        newPrompt.addColumn(fieldName);
-        onPromptChanged(newPrompt);
+        onPromptChanged(Completion.addColumn(data, fieldName));
     };
 
     const removeInputField = (i: number) => {
-        const newPrompt = copyPrompt(data);
-        newPrompt.removeColumn(i);
-        onPromptChanged(newPrompt);
+        onPromptChanged(Completion.removeColumn(data, i));
     };
 
     const addExample = () => {
-        const newPrompt = copyPrompt(data);
-        newPrompt.addExamples([...Array(data.examples!.length)]);
-        onPromptChanged(newPrompt);
+        onPromptChanged(Completion.addExample(data));
     };
 
     const removeExample = (i: number) => {
-        const newPrompt = copyPrompt(data);
-        newPrompt.removeExample(i);
-        onPromptChanged(newPrompt);
+        onPromptChanged(Completion.removeExample(data, i));
     };
 
     const changeFieldLabel = (field: number, label: string) => {
