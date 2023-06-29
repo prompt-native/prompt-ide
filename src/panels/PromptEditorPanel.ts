@@ -1,4 +1,4 @@
-import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, OutputChannel } from "vscode";
+import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, LogOutputChannel } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
 import * as vscode from 'vscode';
@@ -13,10 +13,14 @@ import * as vscode from 'vscode';
  * - Setting the HTML (and by proxy CSS/JavaScript) content of the webview panel
  * - Setting message listeners so data can be passed between the webview and extension
  */
+const config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration('terminal.integrated');
+const supportsColor = config.get<boolean>('supportANSIColors', false);
+
 export class PromptEditorPanel {
     public static panels: Map<vscode.TextDocument, PromptEditorPanel> = new Map();
     private readonly _panel: WebviewPanel;
-    private static outputChannel: OutputChannel = window.createOutputChannel("Prompt Editor");
+
+    private static outputChannel: LogOutputChannel = window.createOutputChannel("Prompt Editor", { log: true }) as LogOutputChannel;
     private _disposables: Disposable[] = [];
     private document: vscode.TextDocument;
 
@@ -113,18 +117,32 @@ export class PromptEditorPanel {
         this._disposables.push(disposable);
     }
 
+    private _showLog(log: any) {
+        const level = log.level || "info";
+        switch (level) {
+            case "debug":
+                PromptEditorPanel.outputChannel.debug(log.data);
+                return;
+            case "info":
+                PromptEditorPanel.outputChannel.info(log.data);
+                return;
+            case "error":
+                PromptEditorPanel.outputChannel.error(log.data);
+                return;
+        }
+    }
+
     private _setWebviewMessageListener(webview: Webview) {
         webview.onDidReceiveMessage(
             (message: any) => {
                 const command = message.command;
                 const text = message.text;
-                PromptEditorPanel.outputChannel.appendLine(`Incoming message:${command} -> ${text}`);
+                // PromptEditorPanel.outputChannel.appendLine(`Incoming message:${command} -> ${JSON.stringify(text)}`);
                 switch (command) {
                     case "initialize":
                         window.showInformationMessage("loading data!");
                         return;
                     case "text_edited":
-
                         const fullRange = new vscode.Range(
                             this.document.positionAt(0),
                             this.document.positionAt(this.document.getText().length)
@@ -134,9 +152,11 @@ export class PromptEditorPanel {
                         edit.set(this.document.uri, [replaceEdit]);
                         vscode.workspace.applyEdit(edit);
                         return;
-                    case "hello":
-                        // Code that should run in response to the hello message command
-                        window.showInformationMessage(text);
+                    case "log_event":
+                        this._showLog(text);
+                        return;
+                    case "error":
+                        window.showErrorMessage(text);
                         return;
                     // Add more switch case statements here as more webview message commands
                     // are created within the webview context (i.e. inside media/main.js)

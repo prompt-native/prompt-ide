@@ -13,7 +13,10 @@ import { execute } from "./service/PromptExecutor";
 
 export class VscodeLogger implements LogEventListener {
     onLogEvent(event: LogEvent) {
-        console.log(event);
+        vscode.postMessage({
+            command: "log_event",
+            text: event,
+        });
     }
 
 }

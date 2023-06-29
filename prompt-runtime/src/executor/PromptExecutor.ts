@@ -75,8 +75,9 @@ export class VertexCompletionRequest {
 
 export class LogEvent {
     constructor(
-        public type: string,
-        public data?: any,
+        public time: Date,
+        public level: string,
+        public data: string,
     ) { }
 }
 
@@ -102,7 +103,7 @@ export class GoogleExecutor implements PromptExecutor {
 
         const body = VertexCompletionRequest.create(Completion.getFinalPrompt(prompt as Completion),
             parameters);
-        this.logger.onLogEvent(new LogEvent("Sending request", JSON.stringify(body, null, 4)));
+        this.logger.onLogEvent(new LogEvent(new Date(), "info", `Sending request, ${JSON.stringify(body, null, 4)}`));
         try {
             const { data, status } = await axios.post<VertexCompletionResponse>(
                 'https://us-central1-aiplatform.googleapis.com/v1/projects/soleelinux/locations/us-central1/publishers/google/models/text-bison@001:predict',
@@ -114,12 +115,12 @@ export class GoogleExecutor implements PromptExecutor {
                     },
                 },
             );
-            this.logger.onLogEvent(new LogEvent("Request complete, status=", status));
-            this.logger.onLogEvent(new LogEvent("Request complete, data=", JSON.stringify(data, null, 4)));
+            this.logger.onLogEvent(new LogEvent(new Date(), "info", `Request complete, status=${status}`));
+            this.logger.onLogEvent(new LogEvent(new Date(), "info", `Request complete, data=${JSON.stringify(data, null, 4)}`));
 
             return new Response(true, data.predictions[0].content);
         } catch (error) {
-            this.logger.onLogEvent(new LogEvent("Request error", error));
+            this.logger.onLogEvent(new LogEvent(new Date(), "error", `Request error: ${error.message}`));
             return new Response(false, error.message);
         }
     }
