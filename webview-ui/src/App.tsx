@@ -9,6 +9,7 @@ import ChatEditor from "./components/chat/ChatEditor";
 import { VSCodeButton, VSCodeDivider, VSCodeDropdown, VSCodeOption, VSCodeRadio, VSCodeRadioGroup, VSCodeTextField } from "@vscode/webview-ui-toolkit/react";
 import FreeEditor from "./components/completion/FreeEditor";
 import StructuredEditor from "./components/completion/StructuredEditor";
+import { PATAMETERS, ParameterDef } from "prompt-runtime/lib/config/Config";
 
 export interface CompletionProps {
     data: Completion,
@@ -72,6 +73,15 @@ function App() {
         });
     };
 
+    const changeModel = (model: string) => {
+        onPromptChanged({
+            ...prompt, model: {
+                vendor: prompt.model.vendor,
+                model,
+            }
+        });
+    };
+
     const switchToStructured = () => {
         onPromptChanged(Completion.toStructured(prompt as Completion));
     };
@@ -91,8 +101,22 @@ function App() {
     const isFreeMode = prompt.type == Type.completion && !prompt.examples;
 
     const models = getModels(prompt.type, prompt.model.vendor as Vendor);
-    console.log(prompt);
-    console.log(Object.keys(Type));
+    const parameters = PATAMETERS[prompt.model.model];
+
+    console.log(parameters);
+
+    const renderParameter = (parameter: ParameterDef) => {
+        const existingParameter = prompt.parameters?.find(p => p.name === parameter.name);
+        const value = existingParameter || parameter.defaultValue;
+
+        return (
+            <VSCodeTextField key={`${prompt.model.model}-${parameter.name}`} value={`${value}`}>
+                {parameter.displayName}
+                <span slot="end" className="codicon codicon-text-size"></span>
+            </VSCodeTextField>
+        );
+    };
+
     return (
         <main>
             {prompt.type == Type.chat &&
@@ -121,28 +145,19 @@ function App() {
                 </VSCodeDropdown>
 
                 <label slot="label">Model</label>
-                <VSCodeDropdown className="button" position="below" value={prompt.model.model}>
-                    {getModels(prompt.type, prompt.model.vendor as Vendor).map(model =>
-                        <VSCodeOption key={model}>{model}</VSCodeOption>)}
-                </VSCodeDropdown>
+                {models.length > 0 &&
+                    <VSCodeDropdown className="button" position="below"
+                        value={prompt.model.model}
+                        onChange={(e) => changeModel((e.target as HTMLInputElement).value as Vendor)}>
+                        {models.map(model =>
+                            <VSCodeOption key={model}>{model}</VSCodeOption>)}
+                    </VSCodeDropdown>
+                }
+                {models.length == 0 && <span className="danger">No model available!</span>}
 
                 <VSCodeDivider />
-                <VSCodeTextField>
-                    Temperature
-                    <span slot="end" className="codicon codicon-text-size"></span>
-                </VSCodeTextField>
-                <VSCodeTextField>
-                    Maximum Length
-                    <span slot="end" className="codicon codicon-text-size"></span>
-                </VSCodeTextField>
-                <VSCodeTextField>
-                    Frequency penalty
-                    <span slot="end" className="codicon codicon-text-size"></span>
-                </VSCodeTextField>
-                <VSCodeTextField>
-                    Frequency penalty
-                    <span slot="end" className="codicon codicon-text-size"></span>
-                </VSCodeTextField>
+                {parameters.map(p => renderParameter(p))}
+
                 <VSCodeDivider />
                 <VSCodeButton className="button">Submit</VSCodeButton>
                 {isFreeMode &&

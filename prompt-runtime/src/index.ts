@@ -16,6 +16,8 @@ export {
 export {
     Vendor,
     ModelDef,
+    ParameterDef,
     getModels,
-    AllModels,
+    ALL_MODELS,
+    PATAMETERS,
 } from './config/Config';
