@@ -1,32 +1,45 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import "./codicon.css";
-import { Vendor, getModels } from 'prompt-runtime';
+import { LogEvent, LogEventListener, Parameter, Vendor, getModels } from 'prompt-runtime';
 import { vscode } from "./utilities/vscode";
 import { Chat, Completion, Model, Type, PromptToYaml } from 'prompt-runtime';
-import { ExampleColumn } from "prompt-runtime/lib/domain/Prompt";
 import ChatEditor from "./components/chat/ChatEditor";
-import { VSCodeButton, VSCodeDivider, VSCodeDropdown, VSCodeOption, VSCodeRadio, VSCodeRadioGroup, VSCodeTextField } from "@vscode/webview-ui-toolkit/react";
+import { VSCodeButton, VSCodeDivider, VSCodeDropdown, VSCodeOption, VSCodeProgressRing, VSCodeRadio, VSCodeRadioGroup, VSCodeTextField } from "@vscode/webview-ui-toolkit/react";
 import FreeEditor from "./components/completion/FreeEditor";
 import StructuredEditor from "./components/completion/StructuredEditor";
 import { PATAMETERS, ParameterDef } from "prompt-runtime/lib/config/Config";
+import { execute } from "./service/PromptExecutor";
+
+export class VscodeLogger implements LogEventListener {
+    onLogEvent(event: LogEvent) {
+        console.log(event);
+    }
+
+}
 
 export interface CompletionProps {
     data: Completion,
     onPromptChanged: (data: Completion) => any;
+    output?: string;
 }
 
 export interface ChatProps {
     data: Chat,
     onPromptChanged: (data: Chat) => any;
+    output?: string;
 }
 
 function App() {
     const [prompt, setPrompt] = useState<Chat | Completion>(
-        new Completion(new Model(Vendor.Google, "code-bison"), "Hello world!", [], [
-            new ExampleColumn("input", ["a"], "x"),
-            new ExampleColumn("output", ["b"])
+        new Completion(new Model(Vendor.Google, "text-bison"), "What's your name?", [
+            new Parameter("temperature", 0.2),
+            new Parameter("maxOutputTokens", 256),
+            new Parameter("topP", 0.8),
+            new Parameter("topK", 40)
         ]));
+    const [submitting, setSubmitting] = useState(false);
+    const [response, setResponse] = useState("");
 
     const serializer = new PromptToYaml();
     const onPromptChanged = (new_prompt: Completion | Chat) => {
@@ -82,6 +95,17 @@ function App() {
         });
     };
 
+    const executePrompt = async () => {
+        try {
+            setSubmitting(true);
+            const result = await execute(prompt);
+            setResponse(result);
+            console.log("~~~", result);
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
     const switchToStructured = () => {
         onPromptChanged(Completion.toStructured(prompt as Completion));
     };
@@ -103,8 +127,6 @@ function App() {
     const models = getModels(prompt.type, prompt.model.vendor as Vendor);
     const parameters = PATAMETERS[prompt.model.model];
 
-    console.log(parameters);
-
     const renderParameter = (parameter: ParameterDef) => {
         const existingParameter = prompt.parameters?.find(p => p.name === parameter.name);
         const value = existingParameter?.value || parameter.defaultValue;
@@ -120,13 +142,13 @@ function App() {
     return (
         <main>
             {prompt.type == Type.chat &&
-                <ChatEditor data={prompt as Chat} onPromptChanged={onPromptChanged} />
+                <ChatEditor data={prompt as Chat} onPromptChanged={onPromptChanged} output={response} />
             }
             {isStructuredMode &&
-                <StructuredEditor data={prompt as Completion} onPromptChanged={onPromptChanged} />
+                <StructuredEditor data={prompt as Completion} onPromptChanged={onPromptChanged} output={response} />
             }
             {isFreeMode &&
-                <FreeEditor data={prompt as Completion} onPromptChanged={onPromptChanged} />
+                <FreeEditor data={prompt as Completion} onPromptChanged={onPromptChanged} output={response} />
             }
             <div className="sidebar">
                 <VSCodeRadioGroup
@@ -159,16 +181,21 @@ function App() {
                 {parameters.map(p => renderParameter(p))}
 
                 <VSCodeDivider />
-                <VSCodeButton className="button">Submit</VSCodeButton>
+                {isStructuredMode &&
+                    <VSCodeButton className="button"
+                        appearance="secondary"
+                        onClick={switchToFreeFormat}>Switch to free format</VSCodeButton>
+                }
                 {isFreeMode &&
                     <VSCodeButton className="button"
                         appearance="secondary"
                         onClick={switchToStructured}>Switch to structured</VSCodeButton>
                 }
-                {isStructuredMode &&
-                    <VSCodeButton className="button"
-                        appearance="secondary"
-                        onClick={switchToFreeFormat}>Switch to free format</VSCodeButton>
+                <VSCodeButton className="button" onClick={executePrompt} disabled={submitting}>Submit</VSCodeButton>
+                {submitting &&
+                    <div style={{ justifyContent: "center", display: "flex" }}>
+                        <VSCodeProgressRing></VSCodeProgressRing>
+                    </div>
                 }
             </div>
         </main>

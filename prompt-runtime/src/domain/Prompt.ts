@@ -2,6 +2,7 @@
 export enum Type {
     completion = "completion",
     chat = "chat",
+    Chat = "Chat"
 }
 
 export class Parameter {
@@ -180,6 +181,20 @@ export class Completion extends Prompt {
             }
         }
         return copy;
+    }
+
+    static getFinalPrompt(completion: Completion): string {
+        let prompt = completion.prompt;
+        if (completion.examples) {
+            prompt += "\n\n";
+            for (let i = 0; i < this.getExampleCount(completion); i++) {
+                completion.examples.forEach(column => {
+                    prompt += `${column.name}: ${column.values[i] || ''}\n`;
+                });
+                prompt += '\n';
+            }
+        }
+        return prompt;
     }
 }
 

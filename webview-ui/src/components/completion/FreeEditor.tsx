@@ -3,7 +3,7 @@ import { VSCodeTextArea } from "@vscode/webview-ui-toolkit/react";
 import { CompletionProps } from "../../App";
 import Collapse from "../Collapse";
 
-function FreeEditor({ data, onPromptChanged }: CompletionProps) {
+function FreeEditor({ data, output, onPromptChanged }: CompletionProps) {
     const updatePrompt = (text: string) => {
         onPromptChanged({ ...data, prompt: text } as typeof data);
     };
@@ -23,7 +23,10 @@ function FreeEditor({ data, onPromptChanged }: CompletionProps) {
             <Collapse title="Output">
                 <VSCodeTextArea
                     className="output fill"
+                    rows={10}
+                    resize="vertical"
                     readOnly
+                    value={output || ''}
                     placeholder="Output from LLM">
                 </VSCodeTextArea>
             </Collapse>
