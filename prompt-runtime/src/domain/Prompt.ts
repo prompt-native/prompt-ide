@@ -2,7 +2,7 @@
 export enum Type {
     completion = "completion",
     chat = "chat",
-    Chat = "Chat"
+    image = "image"
 }
 
 export class Parameter {
@@ -36,6 +36,21 @@ export class Prompt {
         this.type = type;
         this.model = model;
         this.parameters = parameters;
+    }
+
+    static changeParameter(prompt: Chat | Completion, name: string, value: string | number): Chat | Completion {
+        const params = prompt.parameters?.filter((p) => p.name !== name) || [];
+        params.push(new Parameter(name, value));
+        return {
+            ...prompt, parameters: params
+        } as typeof prompt;
+    }
+
+    static removeParameter(prompt: Chat | Completion, name: string): Chat | Completion {
+        const params = prompt.parameters?.filter((p) => p.name !== name);
+        return {
+            ...prompt, parameters: params.length === 0 ? undefined : params
+        } as typeof prompt;
     }
 }
 

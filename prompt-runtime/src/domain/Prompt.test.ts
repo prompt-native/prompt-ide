@@ -1,4 +1,26 @@
-import { Completion, ExampleColumn, Model } from "./Prompt";
+import { Completion, ExampleColumn, Model, Parameter, Prompt } from "./Prompt";
+
+describe('modify params', () => {
+    test('add param', () => {
+        let result = new Completion(new Model("google", "bard"), "who are you?");
+        result = Prompt.changeParameter(result, "top_p", 0.1) as typeof result;
+        expect(result.parameters).toStrictEqual([new Parameter("top_p", 0.1)]);
+    });
+
+    test('update param', () => {
+        let result = new Completion(new Model("google", "bard"), "who are you?");
+        result = Prompt.changeParameter(result, "top_p", 0.1) as typeof result;
+        result = Prompt.changeParameter(result, "top_p", 0.2) as typeof result;
+        expect(result.parameters).toStrictEqual([new Parameter("top_p", 0.2)]);
+    });
+
+    test('delete param', () => {
+        let result = new Completion(new Model("google", "bard"), "who are you?");
+        result = Prompt.changeParameter(result, "top_p", 0.1) as typeof result;
+        result = Prompt.removeParameter(result, "top_p") as typeof result;
+        expect(result.parameters).toBe(undefined);
+    });
+});
 
 describe('build structued examples', () => {
     test('init example', () => {
