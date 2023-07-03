@@ -165,7 +165,7 @@ export class Completion extends Prompt {
         const copy = { ...completion } as Completion;
 
         for (let i = 0; i < copy.examples.length; i++) {
-            copy.examples[i].values.slice(index, 1);
+            copy.examples[i].values.splice(index, 1);
         }
 
         return copy;

@@ -94,10 +94,15 @@ describe('build structued examples', () => {
     });
 
     test('remove exampple', () => {
-        let result = new Completion(new Model("google", "bard"), "who are you?", [], [new ExampleColumn("input1", []), new ExampleColumn("output", [])]);
+        let result = new Completion(new Model("google", "bard"), "who are you?", [],
+            [new ExampleColumn("input1", ["a", "b", "c"], "d"),
+            new ExampleColumn("output", ["x", "y", "z"])]);
+        expect(Completion.getExampleCount(result)).toBe(3);
         result = Completion.removeExample(result, 0);
         expect(result.examples).toBeDefined();
-        expect(Completion.getExampleCount(result)).toBe(0);
+        expect(Completion.getExampleCount(result)).toBe(2);
+        expect(result.examples).toStrictEqual([new ExampleColumn("input1", ["b", "c"], "d"),
+        new ExampleColumn("output", ["y", "z"])]);
     });
 
     test('remove column', () => {
