@@ -15,7 +15,7 @@ function copyPrompt(data: Completion): Completion {
     return newPrompt;
 
 }
-function StructuredEditor({ data, onPromptChanged }: CompletionProps) {
+function StructuredEditor({ data, output, onPromptChanged }: CompletionProps) {
     const updatePrompt = (text: string) => {
         onPromptChanged({ ...data, prompt: text } as typeof data);
     };
@@ -75,7 +75,7 @@ function StructuredEditor({ data, onPromptChanged }: CompletionProps) {
             onRemove={() => removeInputField(i)}
             isOutput={i === data.examples!.length - 1}
             onLabelChange={(label) => changeFieldLabel(i, label)}
-            value={field.test || ""} />);
+            value={i === data.examples!.length - 1 ? (output || '') : (field.test || "")} />);
     };
 
     return (

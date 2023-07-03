@@ -3,8 +3,9 @@ import { VscodeLogger } from "../App";
 
 
 export async function execute(prompt: Chat | Completion): Promise<string> {
-    const executor = new GoogleExecutor("ya29.a0AbVbY6MiXfA1qmc23JKWcc-lIKZqqZG7vqHVP5MAW2Gtw3Z51GUQ7bxiAVIVCZGmK9su6CbIdWwbBs3__tTGgo3CCXiQwGfeaKyd_aq77MrsV5ac7s6kwdLnad14o6_9WidkpbmuUjue9DCN8maJvVjVwVz4ECOOShRd-xniVnLYeVSCHr3hql-2CM6IhBX5w8PJELb0Oih5A95az_RWzSZEvvGsaSDzPfIfdkVMCn4UeFxCgjPZnO4vmWXkVF_OEg9E_wfD-0-dXRETbjLwUIXmxjijmgMGtS_sE-LBqqixCbiyxImpyiwOTZkxQvuPobjWk2gbibJZZu0DKmj54Y_o2y0SFjtqJBMG5nFvPFPN8UVWVR8K53kHjlkPGWnucB4C6MfsqSvPhfD6H8RbRhZo7rYaCgYKAU8SARISFQFWKvPl8IPXYunl_svyEppSrewL4w0418", new VscodeLogger());
+    const executor = new GoogleExecutor("ya29.a0AbVbY6PyVwN7zq0jbje9kORkyX_D2edFDHYUjUgA22LMKWz2RRMrZZoI_poT7oM0scjR4WF9IuI-wWmMT16HTNBd7Z5CJK496FytofzPNxFSXvnPovk5EI5791pzZW510LMSKmJL4OJKG5AfKF927VXgtz4qadBj_UfnDVopzadnM4eDy9nyGti4gkSS1iDsc7pDErzmUQLMbaNnWrAcQutTdoBF9CECbMKBpXAwyKAn4eeFrrxSlrZ-0vW45N2uaZXNtUMfhIBdEZ9VwrIhZ4JVkSg-SNZz3fRXCX6yoR9FWz66PZwKMEVn452fM7sp1NZ3mEPJmnCruhZWPhNYKu7RIiGIrKKz0wGhFST8itL-Vo9e51EuwDpsuRS9L7raaMYLE1FhXmzgo6cY80UJFlFQUwaCgYKAewSARISFQFWKvPltcO_2WWelds3TMzN4kyxJw0417", new VscodeLogger());
     const result = await executor.execute(prompt);
+    console.log(result);
     if (!result.success) {
         return "";
     }

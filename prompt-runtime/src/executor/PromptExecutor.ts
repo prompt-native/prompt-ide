@@ -120,6 +120,7 @@ export class GoogleExecutor implements PromptExecutor {
 
             return new Response(true, data.predictions[0].content);
         } catch (error) {
+            console.log(error);
             this.logger.onLogEvent(new LogEvent(new Date(), "error", `Request error: ${error.message}`));
             return new Response(false, error.message);
         }

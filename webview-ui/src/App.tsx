@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import "./codicon.css";
-import { LogEvent, LogEventListener, Parameter, Vendor, getModels } from 'prompt-runtime';
+import { LogEvent, LogEventListener, Parameter, Prompt, Vendor, getModels } from 'prompt-runtime';
 import { vscode } from "./utilities/vscode";
 import { Chat, Completion, Model, Type, PromptToYaml } from 'prompt-runtime';
 import ChatEditor from "./components/chat/ChatEditor";
@@ -98,6 +98,11 @@ function App() {
         });
     };
 
+    const changeParameter = (def: ParameterDef, valueStr: string) => {
+        const value = def.type === 'number' ? Number(valueStr) : valueStr;
+        onPromptChanged(Prompt.changeParameter(prompt, def.name, value));
+    };
+
     const executePrompt = async () => {
         try {
             setSubmitting(true);
@@ -135,7 +140,9 @@ function App() {
         const value = existingParameter?.value || parameter.defaultValue;
 
         return (
-            <VSCodeTextField key={`${prompt.model.model}-${parameter.name}`} value={`${value}`}>
+            <VSCodeTextField key={`${prompt.model.model}-${parameter.name}`}
+                value={`${value}`}
+                onChange={(e) => changeParameter(parameter, (e.target as HTMLInputElement).value)}>
                 {parameter.displayName}
                 <span slot="end" className="codicon codicon-text-size"></span>
             </VSCodeTextField>
