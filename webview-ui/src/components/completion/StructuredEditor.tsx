@@ -34,7 +34,13 @@ function StructuredEditor({ data, output, onPromptChanged }: CompletionProps) {
     };
 
     const removeExample = (i: number) => {
-        onPromptChanged(Completion.removeExample(data, i));
+        const p = Completion.removeExample(data, i);
+        console.log(p);
+        onPromptChanged(p);
+    };
+
+    const changeExample = (i: number, column: number, value: string) => {
+        onPromptChanged(Completion.updateExampleColumn(data, i, column, value));
     };
 
     const changeFieldLabel = (field: number, label: string) => {
@@ -47,12 +53,13 @@ function StructuredEditor({ data, output, onPromptChanged }: CompletionProps) {
 
     const renderExample = (i: number) => {
         return (
-            <div className="horizontal-flex">
+            <div className="horizontal-flex" key={`example-${i}`}>
                 <div className="fill">
                     {data.examples!.map((field, fieldIndex) => <StructuredColumn
                         label={field.name}
                         labelEditable={false}
                         isOutput={false}
+                        onChange={(text) => changeExample(i, fieldIndex, text)}
                         value={field.values[i] || ""} />)}
                     <VSCodeDivider />
                 </div>

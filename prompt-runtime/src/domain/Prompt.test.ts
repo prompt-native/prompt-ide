@@ -85,6 +85,12 @@ describe('build structued examples', () => {
         expect(result.examples).toStrictEqual([new ExampleColumn("input1", ["c"]), new ExampleColumn("output", ["d"])]);
     });
 
+    test('update example', () => {
+        let result = new Completion(new Model("google", "bard"), "who are you?", [], [new ExampleColumn("input1", ["a"]), new ExampleColumn("output", ["b"])]);
+        result = Completion.updateExampleColumn(result, 0, 1, "abc");
+        expect(result.examples).toStrictEqual([new ExampleColumn("input1", ["a"]), new ExampleColumn("output", ["abc"])]);
+    });
+
     test('add exampple', () => {
         let result = new Completion(new Model("google", "bard"), "who are you?", [], [new ExampleColumn("input1", ["a"]), new ExampleColumn("output", ["b"])]);
         result = Completion.addExample(result);
@@ -93,7 +99,7 @@ describe('build structued examples', () => {
         expect(result.examples).toStrictEqual([new ExampleColumn("input1", ["a", ""]), new ExampleColumn("output", ["b", ""])]);
     });
 
-    test('remove exampple', () => {
+    test('remove example', () => {
         let result = new Completion(new Model("google", "bard"), "who are you?", [],
             [new ExampleColumn("input1", ["a", "b", "c"], "d"),
             new ExampleColumn("output", ["x", "y", "z"])]);

@@ -185,6 +185,14 @@ export class Completion extends Prompt {
         return copy;
     }
 
+    static updateExampleColumn(completion: Completion, index: number, column: number, value: string) {
+        this.ensureIsStructured(completion);
+        const copy = { ...completion } as Completion;
+
+        copy.examples[column].values[index] = value;
+        return copy;
+    }
+
     static normalize(completion: Completion): Completion {
         const copy = { ...completion } as Completion;
         if (copy.examples) {

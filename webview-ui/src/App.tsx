@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import "./codicon.css";
-import { LogEvent, LogEventListener, Parameter, Prompt, Vendor, getModels } from 'prompt-runtime';
+import { ExampleColumn, LogEvent, LogEventListener, Parameter, Prompt, Vendor, getModels } from 'prompt-runtime';
 import { vscode } from "./utilities/vscode";
 import { Chat, Completion, Model, Type, PromptToYaml } from 'prompt-runtime';
 import ChatEditor from "./components/chat/ChatEditor";
@@ -35,12 +35,18 @@ export interface ChatProps {
 
 function App() {
     const [prompt, setPrompt] = useState<Chat | Completion>(
-        new Completion(new Model(Vendor.Google, "text-bison"), "What's your name?", [
-            new Parameter("temperature", 0.2),
-            new Parameter("maxOutputTokens", 256),
-            new Parameter("topP", 0.8),
-            new Parameter("topK", 40)
-        ]));
+        new Completion(new Model(Vendor.Google, "text-bison"),
+            "Please translate in the following format:",
+            [
+                new Parameter("temperature", 0.2),
+                new Parameter("maxOutputTokens", 256),
+                new Parameter("topP", 0.8),
+                new Parameter("topK", 40)
+            ],
+            [
+                new ExampleColumn("input", ["English"], "Chinese"),
+                new ExampleColumn("output", ["English - 英国"])
+            ]));
     const [submitting, setSubmitting] = useState(false);
     const [response, setResponse] = useState("");
 
