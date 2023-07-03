@@ -88,7 +88,7 @@ export class Completion extends Prompt {
     static toFreeFormat(completion: Completion): Completion {
         // todo: join examples as prompt
         return {
-            ...completion, examples: undefined,
+            ...completion, examples: undefined, prompt: this.getFinalPrompt(completion)
         } as Completion;
     }
 
