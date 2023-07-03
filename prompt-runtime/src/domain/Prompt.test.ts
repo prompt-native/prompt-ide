@@ -1,4 +1,31 @@
 import { Completion, ExampleColumn, Model, Parameter, Prompt } from "./Prompt";
+import { Vendor } from "../config/Config";
+
+describe('get prompts', () => {
+    test('add param', () => {
+        let c = new Completion(new Model(Vendor.Google, "text-bison"),
+            "Please translate in the following format:",
+            [
+                new Parameter("temperature", 0.2),
+                new Parameter("maxOutputTokens", 256),
+                new Parameter("topP", 0.8),
+                new Parameter("topK", 40)
+            ],
+            [
+                new ExampleColumn("input", ["English"], "Chinese"),
+                new ExampleColumn("output", ["English - 英国"])
+            ]);
+        const result = Completion.getFinalPrompt(c);
+        expect(result).toStrictEqual(`Please translate in the following format:
+
+input: English
+output: English - 英国
+
+input: Chinese
+output: 
+`);
+    });
+});
 
 describe('modify params', () => {
     test('add param', () => {

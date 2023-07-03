@@ -209,6 +209,11 @@ export class Completion extends Prompt {
                 prompt += '\n';
             }
         }
+        for (let i = 0; i < this.getExampleCount(completion); i++) {
+            completion.examples.forEach(column => {
+                prompt += `${column.name}: ${column.test || ''}\n`;
+            });
+        }
         return prompt;
     }
 }
