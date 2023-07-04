@@ -246,4 +246,47 @@ export class Chat extends Prompt {
         const completion = new Completion(chat.model, prompt, chat.parameters);
         return completion;
     }
+
+    static setContext(prompt: Chat, context: string): Chat {
+        return { ...prompt, context };
+    }
+
+    static addExample(prompt: Chat): Chat {
+        const examples = prompt.examples || [];
+        examples.push(new Conversation("", ""));
+        return { ...prompt, examples };
+    }
+
+    static setExample(prompt: Chat, index: number, input: string, output: string): Chat {
+        const examples = prompt.examples || [];
+        examples[index].input = input;
+        examples[index].output = output;
+        return { ...prompt, examples };
+    }
+
+    static removeExample(prompt: Chat, index: number): Chat {
+        const examples = prompt.examples?.splice(index, 1);
+        return { ...prompt, examples };
+    }
+
+    static addMessage(prompt: Chat): Chat {
+        const messages = prompt.messages || [];
+        messages.push(new Conversation(""));
+        return { ...prompt, messages };
+    }
+
+    static setMessage(prompt: Chat, index: number, input: string, output?: string): Chat {
+        const messages = prompt.messages || [];
+        messages[index].input = input;
+        messages[index].output = output;
+        return { ...prompt, messages };
+    }
+
+    static removeMessage(prompt: Chat, index: number): Chat {
+        if (prompt.messages.length <= 1) {
+            throw new Error("At least one message should be present");
+        }
+        const messages = prompt.messages?.splice(index, 1);
+        return { ...prompt, messages };
+    }
 }
