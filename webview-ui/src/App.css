@@ -1,98 +1,99 @@
 html,
 body,
 #root {
-  height: 100%;
-  padding: 0;
-  margin: 0;
+    height: 100%;
+    padding: 0;
+    margin: 0;
 }
 
 #root {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 main {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  padding: 10px;
-  flex: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 10px;
+    flex: 1;
 }
 
 .main-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-right: 5px;
 }
 
 .label {
-  display: inline-block;
-  margin-bottom: 5px;
+    display: inline-block;
+    margin-bottom: 5px;
 }
 
 .sidebar {
-  display: flex;
-  flex-direction: column;
-  width: 200px;
-  margin-left: 10px;
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    margin-left: 10px;
 }
 
 .sidebar .button {
-  margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 .title-with-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .structured-row {
-  display: flex;
-  margin-bottom: 5px;
+    display: flex;
+    margin-bottom: 5px;
 }
 .structured-row .field-name {
-  width: 100px;
-  margin-right: 8px;
+    width: 100px;
+    margin-right: 8px;
 }
 
 .structured-row .field-value {
-  flex: 1;
+    flex: 1;
 }
 
 .horizontal-flex {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 .vertical-flex {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .fill {
-  flex: 1;
+    flex: 1;
 }
 
 .danger {
-  color: red;
+    color: red;
 }
 
 .title {
-  align-items: center;
-  display: flex;
-  border-bottom: 1px solid #eeeeee6e;
-  margin-bottom: 5px;
+    align-items: center;
+    display: flex;
+    border-bottom: 1px solid #eeeeee6e;
+    margin-bottom: 5px;
 }
 
 .title .label {
-  margin-left: 10px;
+    margin-left: 10px;
 }
 
 .card {
-  border: 1px solid #eeeeee6e;
-  margin-bottom: 10px;
-  padding-left: 5px;
-  padding-right: 5px;
+    border: 1px solid #eeeeee6e;
+    margin-bottom: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
 }
