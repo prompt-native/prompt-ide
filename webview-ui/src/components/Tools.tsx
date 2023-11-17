@@ -6,7 +6,6 @@ import {
     VSCodeTextArea,
 } from "@vscode/webview-ui-toolkit/react";
 import { ReactElement, ReactNode, useState } from "react";
-import Collapse from "./Collapse";
 
 function Tools() {
     return (

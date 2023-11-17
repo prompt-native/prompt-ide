@@ -6,17 +6,18 @@ import {
     VSCodeTextArea,
 } from "@vscode/webview-ui-toolkit/react";
 import { ReactElement, ReactNode, useState } from "react";
-import Collapse from "./Collapse";
 import Tools from "./Tools";
 
 function CompletionEditor() {
     return (
         <div className="main-content">
-            <VSCodeTextArea
-                className="input"
-                resize="vertical"
-                rows={10}
-                placeholder="Enter your prompt here"></VSCodeTextArea>
+            <div className="flex flex-column editor">
+                <VSCodeTextArea
+                    className="input"
+                    resize="vertical"
+                    rows={10}
+                    placeholder="Enter your prompt here"></VSCodeTextArea>
+            </div>
             <Tools />
         </div>
     );
