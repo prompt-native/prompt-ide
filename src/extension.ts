@@ -1,12 +1,12 @@
 import { commands, ExtensionContext } from "vscode";
-import { HelloWorldPanel } from "./panels/HelloWorldPanel";
+import { PromptEditor } from "./PromptEditor";
 
 export function activate(context: ExtensionContext) {
-  // Create the show hello world command
-  const showHelloWorldCommand = commands.registerCommand("hello-world.showHelloWorld", () => {
-    HelloWorldPanel.render(context.extensionUri);
-  });
+    // Create the show hello world command
+    const showHelloWorldCommand = commands.registerCommand("prompt-ide.preview", () => {
+        PromptEditor.render(context.extensionUri);
+    });
 
-  // Add command to the extension context
-  context.subscriptions.push(showHelloWorldCommand);
+    // Add command to the extension context
+    context.subscriptions.push(showHelloWorldCommand);
 }

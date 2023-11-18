@@ -1,13 +1,10 @@
 import {
-    VSCodeButton,
     VSCodeCheckbox,
     VSCodePanelTab,
     VSCodePanelView,
     VSCodePanels,
     VSCodeTextArea,
 } from "@vscode/webview-ui-toolkit/react";
-import { ReactElement, ReactNode, useState } from "react";
-import Tools from "./Tools";
 import Message from "./Message";
 
 function ChatEditor() {
@@ -38,9 +35,8 @@ function ChatEditor() {
                     <div className="flex flex-column fill">
                         <VSCodeCheckbox>Capture histories automatically</VSCodeCheckbox>
                         <div className="flex flex-column fill">
-                            <Message />
-                            <Message />
-                            <Message />
+                            <Message content="你是谁" />
+                            <Message content="我是MM智能助理，是由MiniMax自研的一款大型语言模型，没有调用其他产品的接口.你可以向我提问任何你想了解的问题，我会尽我所能为你解答。" />
                         </div>
                     </div>
                 </VSCodePanelView>
