@@ -22,26 +22,25 @@
         ],
         "commands": [
             {
-                "command": "prompt-ide.preview",
-                "title": "Preview",
+                "command": "promptIde.createPrompt",
+                "title": "Create Prompt",
                 "icon": "$(open-preview)"
             }
         ],
         "menus": {
-            "editor/title": [
-                {
-                    "when": "resourceLangId == json",
-                    "command": "prompt-ide.preview",
-                    "alt": "prompt-ide.preview",
-                    "group": "navigation"
-                }
-            ]
+            "editor/title": []
         },
+        "viewsWelcome": [
+            {
+                "view": "promptExplorer",
+                "contents": "No prompt found .\n[Create Prompt](command:promptIde.createPrompt)"
+            }
+        ],
         "viewsContainers": {
             "activitybar": [
                 {
                     "id": "prompt-views",
-                    "title": "Prompt Studio",
+                    "title": "Prompt IDE",
                     "icon": "assets/dep.svg"
                 }
             ],
@@ -56,7 +55,7 @@
         "views": {
             "prompt-views": [
                 {
-                    "id": "nodeDependencies",
+                    "id": "promptExplorer",
                     "name": "Prompts",
                     "icon": "assets/dep.svg",
                     "contextualTitle": "Prompts"
