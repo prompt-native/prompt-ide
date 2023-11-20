@@ -1,5 +1,6 @@
 import {
     VSCodeButton,
+    VSCodeCheckbox,
     VSCodeDataGrid,
     VSCodeDataGridCell,
     VSCodeDataGridRow,
@@ -39,7 +40,8 @@ function ChatEditor() {
                         placeholder="Set the persona, background, etc of the dialogue"></VSCodeTextArea>
                 </VSCodePanelView>
                 <VSCodePanelView id="view-samples">Output content.</VSCodePanelView>
-                <VSCodePanelView id="view-history">
+                <VSCodePanelView id="view-history" className="flex-column">
+                    <VSCodeCheckbox>Capture history automatically</VSCodeCheckbox>
                     <VSCodeDataGrid gridTemplateColumns="100px 1fr 100px">
                         <VSCodeDataGridRow row-type="header">
                             <VSCodeDataGridCell cell-type="columnheader" grid-column="1">
@@ -55,7 +57,14 @@ function ChatEditor() {
                         <VSCodeDataGridRow>
                             <VSCodeDataGridCell grid-column="1">User</VSCodeDataGridCell>
                             <VSCodeDataGridCell grid-column="2">你是谁</VSCodeDataGridCell>
-                            <VSCodeDataGridCell grid-column="3">x</VSCodeDataGridCell>
+                            <VSCodeDataGridCell grid-column="3">
+                                <VSCodeButton
+                                    appearance="icon"
+                                    aria-label="Confirm"
+                                    className="danger">
+                                    <span className="codicon codicon-close"></span>
+                                </VSCodeButton>
+                            </VSCodeDataGridCell>
                         </VSCodeDataGridRow>
                         <VSCodeDataGridRow>
                             <VSCodeDataGridCell grid-column="1">Assistant</VSCodeDataGridCell>
