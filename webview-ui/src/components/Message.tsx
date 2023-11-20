@@ -7,10 +7,10 @@ const MIN_TEXTAREA_HEIGHT = 14;
 
 function Message({ content }: MessageProps) {
     return (
-        <div className="flex flex-row align-center">
-            <label>USER</label>
+        <div className="flex flex-row">
+            <label className="mr-10">USER</label>
             <div className="flex flex-row fill">
-                <p>{content}</p>
+                {content}
                 {/* <VSCodeTextArea
                     // @ts-ignore
                     itemRef={textareaRef}
