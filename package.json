@@ -14,7 +14,7 @@
                 "displayName": "Prompt Editor",
                 "selector": [
                     {
-                        "filenamePattern": "*.prompt"
+                        "filenamePattern": "*.prompt.json"
                     }
                 ],
                 "priority": "default"
@@ -37,6 +37,11 @@
                 "icon": "$(edit)"
             },
             {
+                "command": "promptIde.deletePrompt",
+                "title": "Delete",
+                "icon": "$(delete)"
+            },
+            {
                 "command": "promptIde.openText",
                 "title": "Open Text",
                 "icon": "$(code)"
@@ -50,7 +55,7 @@
         "menus": {
             "editor/title": [
                 {
-                    "when": "resourceExtname == .prompt",
+                    "when": "resourceFilename =~ /\\.prompt\\.json$/",
                     "command": "promptIde.openText",
                     "group": "navigation"
                 }

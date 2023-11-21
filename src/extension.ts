@@ -16,7 +16,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     const createPromptCommand = vscode.commands.registerCommand("promptIde.createPrompt", () => {
         // see: https://github.com/microsoft/vscode/issues/93441
-        const fileName = "untitled-1.prompt";
+        const fileName = "untitled-1.prompt.json";
         const newUri = Uri.file(fileName).with({ scheme: "untitled", path: fileName });
         vscode.commands.executeCommand("vscode.openWith", newUri, PromptEditor.viewType);
     });
@@ -28,6 +28,8 @@ export function activate(context: vscode.ExtensionContext) {
         }
     );
     const openTextCommand = vscode.commands.registerCommand("promptIde.openText", () => {
+        // it's not able to get active document
+        // see: https://stackoverflow.com/questions/65105323/how-to-retrieve-active-customtexteditor-in-vscode
         vscode.commands.executeCommand("workbench.action.reopenTextEditor");
     });
 
