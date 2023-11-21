@@ -69,3 +69,7 @@ main {
 .mb-10 {
     margin-bottom: 10px;
 }
+
+.fixed-100 {
+    width: 100px;
+}

@@ -9,6 +9,7 @@ import {
     VSCodePanels,
     VSCodeTextArea,
 } from "@vscode/webview-ui-toolkit/react";
+import Variables from "./Variables";
 
 function ChatEditor() {
     return (
@@ -31,7 +32,7 @@ function ChatEditor() {
                     <p>No result yet, click submit to execute the prompt.</p>
                 </VSCodePanelView>
                 <VSCodePanelView id="view-variables">
-                    <p>No variables yet.</p>
+                    <Variables></Variables>
                 </VSCodePanelView>
                 <VSCodePanelView id="view-context">
                     <VSCodeTextArea

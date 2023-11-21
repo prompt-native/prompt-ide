@@ -93,8 +93,6 @@ function App() {
             {parameters.map((p) => (
                 <Parameter key={p.name} type={p} isActive />
             ))}
-            <VSCodeDivider />
-            <label slot="label">Available parameters</label>
         </div>
     );
 

@@ -26,7 +26,7 @@ const DEFAULT_MAX_TOKENS: ParameterType = {
 
 const DEFAULT_SKIP_INFO_MASK: ParameterType = {
     name: "skip_info_mask",
-    displayName: "Stop sequences",
+    displayName: "Skip info mask",
     type: "boolean",
     defaultValue: false,
 };
@@ -35,8 +35,8 @@ const getParamaters = (maxTokens: number): ParameterType[] => {
     return [
         DEFAULT_TEMPERATURE,
         DEFAULT_TOP_P,
-        DEFAULT_SKIP_INFO_MASK,
         { ...DEFAULT_MAX_TOKENS, maxValue: maxTokens },
+        DEFAULT_SKIP_INFO_MASK,
     ];
 };
 
