@@ -27,8 +27,12 @@ export function activate(context: vscode.ExtensionContext) {
             promptProvider.refresh();
         }
     );
+    const openTextCommand = vscode.commands.registerCommand("promptIde.openText", () => {
+        vscode.commands.executeCommand("workbench.action.reopenTextEditor");
+    });
 
     context.subscriptions.push(PromptEditor.register(context));
     context.subscriptions.push(createPromptCommand);
     context.subscriptions.push(refreshPromptsCommand);
+    context.subscriptions.push(openTextCommand);
 }

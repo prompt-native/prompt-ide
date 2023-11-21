@@ -37,13 +37,24 @@
                 "icon": "$(edit)"
             },
             {
-                "command": "promptIde.deletePrompt",
-                "title": "Delete",
-                "icon": "$(remove)"
+                "command": "promptIde.openText",
+                "title": "Open Text",
+                "icon": "$(code)"
+            },
+            {
+                "command": "promptIde.createPrompt",
+                "title": "Create Prompt",
+                "icon": "$(plus)"
             }
         ],
         "menus": {
-            "editor/title": [],
+            "editor/title": [
+                {
+                    "when": "resourceExtname == .prompt",
+                    "command": "promptIde.openText",
+                    "group": "navigation"
+                }
+            ],
             "view/title": [
                 {
                     "command": "promptIde.refreshPrompts",
