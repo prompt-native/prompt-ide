@@ -24,17 +24,12 @@
             {
                 "command": "promptIde.createPrompt",
                 "title": "Create Prompt",
-                "icon": "$(open-preview)"
+                "icon": "$(plus)"
             },
             {
                 "command": "promptIde.refreshPrompts",
                 "title": "Refresh",
                 "icon": "$(refresh)"
-            },
-            {
-                "command": "promptIde.createPrompt",
-                "title": "Add",
-                "icon": "$(add)"
             },
             {
                 "command": "promptIde.editPrompt",

@@ -31,6 +31,21 @@ function App() {
     const [models, setModels] = useState<ModelType[]>([]);
     const [model, setModel] = useState<ModelType | null>(null);
 
+    const messageListener = (event: MessageEvent<any>) => {
+        const message = event.data;
+
+        console.log("Received event:", event);
+        if (message.command === "initialize" || message.command === "text_updated") {
+            const text = message.text;
+        }
+    };
+    useEffect(() => {
+        window.addEventListener("message", messageListener);
+        return () => {
+            window.removeEventListener("message", messageListener);
+        };
+    }, []);
+
     useEffect(() => {
         const allModels = MODEL_GROUPS[group] || [];
         const interfaceType = mode == EditorMode.chat ? InterfaceType.CHAT : InterfaceType.COMPLETE;

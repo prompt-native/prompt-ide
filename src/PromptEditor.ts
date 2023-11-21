@@ -4,7 +4,7 @@ import { getNonce } from "./utilities/getNonce";
 import { getUri } from "./utilities/getUri";
 
 export class PromptEditor implements vscode.CustomTextEditorProvider {
-    private static readonly viewType = "promptIde.editor";
+    public static readonly viewType = "promptIde.editor";
 
     constructor(private readonly context: vscode.ExtensionContext) {}
 

@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 
+import { Uri } from "vscode";
 import { PromptEditor } from "./PromptEditor";
 import { PromptExplorer } from "./prompt/promptExplorer";
 
@@ -14,8 +15,12 @@ export function activate(context: vscode.ExtensionContext) {
     );
 
     const createPromptCommand = vscode.commands.registerCommand("promptIde.createPrompt", () => {
-        //
+        // see: https://github.com/microsoft/vscode/issues/93441
+        const fileName = "untitled-1.prompt";
+        const newUri = Uri.file(fileName).with({ scheme: "untitled", path: fileName });
+        vscode.commands.executeCommand("vscode.openWith", newUri, PromptEditor.viewType);
     });
+
     const refreshPromptsCommand = vscode.commands.registerCommand(
         "promptIde.refreshPrompts",
         () => {
