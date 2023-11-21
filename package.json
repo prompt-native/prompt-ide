@@ -10,7 +10,7 @@
     "contributes": {
         "customEditors": [
             {
-                "viewType": "promptIDE.editor",
+                "viewType": "promptIde.editor",
                 "displayName": "Prompt Editor",
                 "selector": [
                     {
@@ -25,14 +25,56 @@
                 "command": "promptIde.createPrompt",
                 "title": "Create Prompt",
                 "icon": "$(open-preview)"
+            },
+            {
+                "command": "promptIde.refreshPrompts",
+                "title": "Refresh",
+                "icon": "$(refresh)"
+            },
+            {
+                "command": "promptIde.createPrompt",
+                "title": "Add",
+                "icon": "$(add)"
+            },
+            {
+                "command": "promptIde.editPrompt",
+                "title": "Edit",
+                "icon": "$(edit)"
+            },
+            {
+                "command": "promptIde.deletePrompt",
+                "title": "Delete",
+                "icon": "$(remove)"
             }
         ],
         "menus": {
-            "editor/title": []
+            "editor/title": [],
+            "view/title": [
+                {
+                    "command": "promptIde.refreshPrompts",
+                    "when": "view == promptIde.explorer",
+                    "group": "navigation"
+                },
+                {
+                    "command": "promptIde.createPrompt",
+                    "when": "view == promptIde.explorer"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "promptIde.editPrompt",
+                    "when": "view == promptIde.explorer && viewItem == prompt",
+                    "group": "inline"
+                },
+                {
+                    "command": "promptIde.deletePrompt",
+                    "when": "view == promptIde.explorer && viewItem == prompt"
+                }
+            ]
         },
         "viewsWelcome": [
             {
-                "view": "promptExplorer",
+                "view": "promptIde.explorer",
                 "contents": "No prompt found .\n[Create Prompt](command:promptIde.createPrompt)"
             }
         ],
@@ -55,7 +97,7 @@
         "views": {
             "prompt-views": [
                 {
-                    "id": "promptExplorer",
+                    "id": "promptIde.explorer",
                     "name": "Prompts",
                     "icon": "assets/dep.svg",
                     "contextualTitle": "Prompts"

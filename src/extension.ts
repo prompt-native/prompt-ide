@@ -10,11 +10,20 @@ export function activate(context: vscode.ExtensionContext) {
             : undefined;
     const promptProvider = new PromptExplorer(rootPath);
     context.subscriptions.push(
-        vscode.window.registerTreeDataProvider("promptExplorer", promptProvider)
+        vscode.window.registerTreeDataProvider("promptIde.explorer", promptProvider)
     );
-    const createPromptCommand = vscode.commands.registerCommand("promptIde.createPrompt", () => {
-        PromptEditor.render(context.extensionUri);
-    });
 
+    const createPromptCommand = vscode.commands.registerCommand("promptIde.createPrompt", () => {
+        //
+    });
+    const refreshPromptsCommand = vscode.commands.registerCommand(
+        "promptIde.refreshPrompts",
+        () => {
+            promptProvider.refresh();
+        }
+    );
+
+    context.subscriptions.push(PromptEditor.register(context));
     context.subscriptions.push(createPromptCommand);
+    context.subscriptions.push(refreshPromptsCommand);
 }

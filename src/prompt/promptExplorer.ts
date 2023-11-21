@@ -26,8 +26,9 @@ export class PromptExplorer implements vscode.TreeDataProvider<PromptNode> {
     }
 
     async _findPrompts(): Promise<PromptNode[]> {
-        const xmls = await vscode.workspace.findFiles("**/*.xml");
+        const promptFiles = await vscode.workspace.findFiles("**/*.prompt");
 
+        console.log(promptFiles);
         return Promise.resolve([]);
     }
 }
