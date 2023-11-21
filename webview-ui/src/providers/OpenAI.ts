@@ -6,6 +6,7 @@ const DEFAULT_TEMPERATURE: ParameterType = {
     type: "number",
     minValue: 0,
     maxValue: 2,
+    defaultValue: 1,
 };
 
 const DEFAULT_TOP_P: ParameterType = {
@@ -14,6 +15,7 @@ const DEFAULT_TOP_P: ParameterType = {
     type: "number",
     minValue: 0,
     maxValue: 1,
+    defaultValue: 1,
 };
 
 const DEFAULT_MAX_TOKENS: ParameterType = {
@@ -36,6 +38,7 @@ const DEFAULT_FREQUENCY_PENALTY: ParameterType = {
     type: "number",
     minValue: 0,
     maxValue: 2,
+    defaultValue: 0,
 };
 
 const DEFAULT_PRESENCE_PENALTY: ParameterType = {
@@ -44,6 +47,7 @@ const DEFAULT_PRESENCE_PENALTY: ParameterType = {
     type: "number",
     minValue: 0,
     maxValue: 2,
+    defaultValue: 0,
 };
 
 const OPENAI_PARAMETERS = [

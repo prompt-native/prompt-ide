@@ -19,6 +19,7 @@ function ChatEditor() {
                     resize="vertical"
                     rows={10}
                     placeholder="Enter your prompt here"></VSCodeTextArea>
+                <VSCodeButton className="button">Submit</VSCodeButton>
             </div>
             <VSCodePanels activeid="tab-4" aria-label="With Active Tab">
                 <VSCodePanelTab id="tab-result">RESULT</VSCodePanelTab>
@@ -36,7 +37,7 @@ function ChatEditor() {
                     <VSCodeTextArea
                         className="input fill"
                         resize="vertical"
-                        rows={2}
+                        rows={4}
                         placeholder="Set the persona, background, etc of the dialogue"></VSCodeTextArea>
                 </VSCodePanelView>
                 <VSCodePanelView id="view-samples">Output content.</VSCodePanelView>

@@ -1,4 +1,5 @@
 import {
+    VSCodeButton,
     VSCodePanelTab,
     VSCodePanelView,
     VSCodePanels,
@@ -14,6 +15,7 @@ function CompletionEditor() {
                     resize="vertical"
                     rows={10}
                     placeholder="Enter your prompt here"></VSCodeTextArea>
+                <VSCodeButton className="button">Submit</VSCodeButton>
             </div>
             <VSCodePanels activeid="tab-4" aria-label="With Active Tab">
                 <VSCodePanelTab id="tab-result">RESULT</VSCodePanelTab>
