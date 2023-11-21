@@ -91,7 +91,7 @@ function App() {
             </VSCodeDropdown>
             <VSCodeDivider />
             {parameters.map((p) => (
-                <Parameter type={p} isActive />
+                <Parameter key={p.name} type={p} isActive />
             ))}
             <VSCodeDivider />
             <label slot="label">Available parameters</label>
