@@ -2,6 +2,7 @@ import {
     VSCodeDivider,
     VSCodeDropdown,
     VSCodeOption,
+    VSCodeProgressRing,
     VSCodeRadio,
     VSCodeRadioGroup,
 } from "@vscode/webview-ui-toolkit/react";
@@ -14,10 +15,18 @@ import Parameter from "./components/Parameter";
 import { InterfaceType, ModelType, ParameterType } from "./providers/Common";
 import { MINIMAX_MODELS } from "./providers/Minimax";
 import { GPT3_5_MODELS } from "./providers/OpenAI";
+import { validateChatSchema } from "./utilities/Schema";
 
 enum EditorMode {
     chat = "chat",
     completion = "completion",
+}
+
+enum DocumentState {
+    PENDING,
+    EMPTY,
+    UPDATED,
+    ERROR,
 }
 
 const MODEL_GROUPS: { [key: string]: ModelType[] } = {
@@ -30,13 +39,32 @@ function App() {
     const [group, setGroup] = useState("GPT3.5");
     const [models, setModels] = useState<ModelType[]>([]);
     const [model, setModel] = useState<ModelType | null>(null);
+    const [documentState, setDocumentState] = useState<DocumentState>(DocumentState.PENDING);
+    const [errors, setErrors] = useState<string[]>([]);
+    const [document, setDocument] = useState<string>("");
 
     const messageListener = (event: MessageEvent<any>) => {
         const message = event.data;
 
-        console.log("Received event:", event);
-        if (message.command === "initialize" || message.command === "text_updated") {
+        console.log("Received event:", message);
+        if (message.type == "update") {
             const text = message.text;
+            setDocument(text);
+            if (text == "") {
+                setDocumentState(DocumentState.EMPTY);
+            } else {
+                try {
+                    const parsedJson = JSON.parse(text);
+                    const errors = validateChatSchema(parsedJson);
+                    if (errors) {
+                        setErrors(errors);
+                        setDocumentState(DocumentState.ERROR);
+                    } else setDocumentState(DocumentState.UPDATED);
+                } catch (error) {
+                    setErrors([`Error: ${error} while parsing: ${text}`]);
+                    setDocumentState(DocumentState.ERROR);
+                }
+            }
         }
     };
     useEffect(() => {
@@ -66,6 +94,7 @@ function App() {
             parameters = model.parameters;
         }
     }
+
     const renderSidebar = () => (
         <div className="sidebar">
             <label slot="label">Type</label>
@@ -111,6 +140,26 @@ function App() {
         </div>
     );
 
+    if (documentState == DocumentState.PENDING) {
+        return (
+            <main className="flex flex-column align-center">
+                <p>Loading document...</p>
+                <VSCodeProgressRing />
+            </main>
+        );
+    } else if (documentState == DocumentState.ERROR) {
+        return (
+            <main className="flex flex-column align-center">
+                <p>
+                    Failed to validate the schema, please fix the json content manually and try
+                    again.
+                </p>
+                {errors.map((error) => (
+                    <p style={{ color: "red" }}>{error}</p>
+                ))}
+            </main>
+        );
+    }
     return (
         <main>
             <div className="main-content">
