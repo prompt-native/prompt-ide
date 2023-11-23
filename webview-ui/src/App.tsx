@@ -41,7 +41,6 @@ function App() {
     const [model, setModel] = useState<ModelType | null>(null);
     const [documentState, setDocumentState] = useState<DocumentState>(DocumentState.PENDING);
     const [errors, setErrors] = useState<string[]>([]);
-    const [document, setDocument] = useState<string>("");
 
     const messageListener = (event: MessageEvent<any>) => {
         const message = event.data;
@@ -49,7 +48,6 @@ function App() {
         console.log("Received event:", message);
         if (message.type == "update") {
             const text = message.text;
-            setDocument(text);
             if (text == "") {
                 setDocumentState(DocumentState.EMPTY);
             } else {
@@ -149,7 +147,7 @@ function App() {
         );
     } else if (documentState == DocumentState.ERROR) {
         return (
-            <main className="flex flex-column align-center">
+            <main className="flex flex-column">
                 <p>
                     Failed to validate the schema, please fix the json content manually and try
                     again.

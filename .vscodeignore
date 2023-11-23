@@ -21,6 +21,12 @@ webview-ui/package.json
 webview-ui/package-lock.json
 webview-ui/node_modules/**
 
+prompt-schema/src/**
+prompt-schema/README.md
+prompt-schema/package.json
+prompt-schema/package-lock.json
+prompt-schema/node_modules/**
+
 # Ignore Misc
 .yarnrc
 vsc-extension-quickstart.md

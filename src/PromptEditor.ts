@@ -46,10 +46,10 @@ export class PromptEditor implements vscode.CustomTextEditorProvider {
 
         webviewPanel.webview.onDidReceiveMessage((e) => {
             switch (e.type) {
-                case "add":
-                case "delete":
-                    // fixme:
-                    return;
+                case "sync":
+                    this.updateTextDocument(document, e.text);
+                default:
+                    break;
             }
         });
 
@@ -100,5 +100,14 @@ export class PromptEditor implements vscode.CustomTextEditorProvider {
         </body>
       </html>
     `;
+    }
+    private updateTextDocument(document: vscode.TextDocument, text: string) {
+        const edit = new vscode.WorkspaceEdit();
+
+        // Just replace the entire document every time for this example extension.
+        // A more complete extension should compute minimal edits instead.
+        edit.replace(document.uri, new vscode.Range(0, 0, document.lineCount, 0), text);
+
+        return vscode.workspace.applyEdit(edit);
     }
 }
