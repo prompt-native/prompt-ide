@@ -12,7 +12,8 @@
         "ajv": "^8.12.0",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
-        "yaml": "^2.3.4"
+        "yaml": "^2.3.4",
+        "prompt-schema": "file:../prompt-schema"
     },
     "devDependencies": {
         "@types/jest": "^29.5.2",

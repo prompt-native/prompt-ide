@@ -6,6 +6,7 @@ import {
     VSCodeRadio,
     VSCodeRadioGroup,
 } from "@vscode/webview-ui-toolkit/react";
+import { parsePrompt } from "prompt-schema";
 import { useEffect, useState } from "react";
 import "./App.css";
 import "./codicon.css";
@@ -15,7 +16,6 @@ import Parameter from "./components/Parameter";
 import { InterfaceType, ModelType, ParameterType } from "./providers/Common";
 import { MINIMAX_MODELS } from "./providers/Minimax";
 import { GPT3_5_MODELS } from "./providers/OpenAI";
-import { validateChatSchema } from "./utilities/Schema";
 
 enum EditorMode {
     chat = "chat",
@@ -52,12 +52,8 @@ function App() {
                 setDocumentState(DocumentState.EMPTY);
             } else {
                 try {
-                    const parsedJson = JSON.parse(text);
-                    const errors = validateChatSchema(parsedJson);
-                    if (errors) {
-                        setErrors(errors);
-                        setDocumentState(DocumentState.ERROR);
-                    } else setDocumentState(DocumentState.UPDATED);
+                    const prompt = parsePrompt(text);
+                    setDocumentState(DocumentState.UPDATED);
                 } catch (error) {
                     setErrors([`Error: ${error} while parsing: ${text}`]);
                     setDocumentState(DocumentState.ERROR);
