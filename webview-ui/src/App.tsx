@@ -6,7 +6,7 @@ import {
     VSCodeRadio,
     VSCodeRadioGroup,
 } from "@vscode/webview-ui-toolkit/react";
-import { parsePrompt } from "prompt-schema";
+import { ChatPrompt, CompletionPrompt, parsePrompt } from "prompt-schema";
 import { useEffect, useState } from "react";
 import "./App.css";
 import "./codicon.css";
@@ -40,6 +40,7 @@ function App() {
     const [models, setModels] = useState<ModelType[]>([]);
     const [model, setModel] = useState<ModelType | null>(null);
     const [documentState, setDocumentState] = useState<DocumentState>(DocumentState.PENDING);
+    const [prompt, setPrompt] = useState<ChatPrompt | CompletionPrompt | null>(null);
     const [errors, setErrors] = useState<string[]>([]);
 
     const messageListener = (event: MessageEvent<any>) => {
@@ -61,6 +62,7 @@ function App() {
             }
         }
     };
+
     useEffect(() => {
         window.addEventListener("message", messageListener);
         return () => {
@@ -143,7 +145,8 @@ function App() {
         );
     } else if (documentState == DocumentState.ERROR) {
         return (
-            <main className="flex flex-column">
+            <main className="flex flex-column justify-start">
+                <div className="codicon codicon-error danger"></div>
                 <p>
                     Failed to validate the schema, please fix the json content manually and try
                     again.
@@ -157,8 +160,10 @@ function App() {
     return (
         <main>
             <div className="main-content">
-                {mode == EditorMode.chat && <ChatEditor />}
-                {mode == EditorMode.completion && <CompletionEditor />}
+                {mode == EditorMode.chat && <ChatEditor prompt={prompt as ChatPrompt} />}
+                {mode == EditorMode.completion && (
+                    <CompletionEditor prompt={prompt as CompletionPrompt} />
+                )}
             </div>
             {renderSidebar()}
         </main>

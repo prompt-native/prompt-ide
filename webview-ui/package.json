@@ -8,21 +8,21 @@
         "preview": "vite preview"
     },
     "dependencies": {
-        "@vscode/webview-ui-toolkit": "^1.2.2",
+        "@vscode/webview-ui-toolkit": "^1.4.0",
         "ajv": "^8.12.0",
-        "react": "^17.0.2",
-        "react-dom": "^17.0.2",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
         "yaml": "^2.3.4",
         "prompt-schema": "file:../prompt-schema"
     },
     "devDependencies": {
-        "@types/jest": "^29.5.2",
-        "@types/react": "^17.0.33",
-        "@types/react-dom": "^17.0.10",
-        "@types/vscode-webview": "^1.57.0",
-        "@vitejs/plugin-react": "^1.0.7",
-        "ts-jest": "^29.1.0",
-        "typescript": "^4.4.4",
-        "vite": "^2.9.13"
+        "@types/jest": "^29.5.11",
+        "@types/react": "^18.2.45",
+        "@types/react-dom": "^18.2.17",
+        "@types/vscode-webview": "^1.57.4",
+        "@vitejs/plugin-react": "^4.2.1",
+        "ts-jest": "^29.1.1",
+        "typescript": "^5.3.3",
+        "vite": "^5.0.9"
     }
 }

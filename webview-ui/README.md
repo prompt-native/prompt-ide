@@ -1,10 +1,10 @@
-# `webview-ui` Directory
+Tip:
 
-This directory contains all of the code that will be executed within the webview context. It can be thought of as the place where all the "frontend" code of a webview is contained.
+To run the web pages without VS code, try this:
 
-Types of content that can be contained here:
+```bash
+npm run start
 
-- Frontend framework code (i.e. React, Svelte, Vue, etc.)
-- JavaScript files
-- CSS files
-- Assets / resources (i.e. images, illustrations, etc.)
+# post message in Web Console
+window.postMessage({type:"update", text:""})
+```

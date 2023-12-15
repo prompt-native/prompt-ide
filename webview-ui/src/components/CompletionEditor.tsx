@@ -5,8 +5,13 @@ import {
     VSCodePanels,
     VSCodeTextArea,
 } from "@vscode/webview-ui-toolkit/react";
+import { CompletionPrompt } from "prompt-schema";
 
-function CompletionEditor() {
+interface CompletionEditorProps {
+    prompt: CompletionPrompt;
+}
+
+function CompletionEditor({ prompt }: CompletionEditorProps) {
     return (
         <div className="main-content">
             <div className="flex flex-column editor">

@@ -49,6 +49,9 @@ main {
     align-items: center;
 }
 
+.justify-start {
+    justify-content: flex-start;
+}
 .editor {
     padding-left: 5px;
     padding-right: 5px;

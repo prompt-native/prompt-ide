@@ -9,9 +9,14 @@ import {
     VSCodePanels,
     VSCodeTextArea,
 } from "@vscode/webview-ui-toolkit/react";
+import { ChatPrompt } from "prompt-schema";
 import Variables from "./Variables";
 
-function ChatEditor() {
+interface ChatEditorProps {
+    prompt: ChatPrompt;
+}
+
+function ChatEditor({ prompt }: ChatEditorProps) {
     return (
         <div className="main-content">
             <div className="flex flex-column editor">
