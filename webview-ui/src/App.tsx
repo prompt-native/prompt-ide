@@ -1,5 +1,4 @@
 import {
-    VSCodeDivider,
     VSCodeDropdown,
     VSCodeOption,
     VSCodeProgressRing,
@@ -11,6 +10,7 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import "./codicon.css";
 import ChatEditor from "./components/ChatEditor";
+import Collapse from "./components/Collapse";
 import CompletionEditor from "./components/CompletionEditor";
 import Parameter from "./components/Parameter";
 import { InterfaceType, ModelType, ParameterType } from "./providers/Common";
@@ -92,8 +92,8 @@ function App() {
     }
 
     const renderSidebar = () => (
-        <div className="sidebar">
-            <label slot="label">Type</label>
+        <div className="ml-10 pr-10 flex-shrink-0 y-scroll-auto full-height width-200 flex flex-column">
+            <label>Type</label>
             <VSCodeRadioGroup
                 value={mode}
                 className="mb-10"
@@ -104,7 +104,7 @@ function App() {
                     </VSCodeRadio>
                 ))}
             </VSCodeRadioGroup>
-            <label slot="label">Group</label>
+            <label>Group</label>
             <VSCodeDropdown
                 className="button mb-10"
                 position="below"
@@ -116,7 +116,7 @@ function App() {
                     </VSCodeOption>
                 ))}
             </VSCodeDropdown>
-            <label slot="label">Model</label>
+            <label>Model</label>
             <VSCodeDropdown className="button mb-10" position="below" value={model?.name || ""}>
                 {models.map((t) => (
                     <VSCodeOption value={t.name} key={t.name}>
@@ -129,10 +129,25 @@ function App() {
                     </VSCodeOption>
                 )}
             </VSCodeDropdown>
-            <VSCodeDivider />
             {parameters.map((p) => (
-                <Parameter key={p.name} type={p} isActive />
+                <Parameter
+                    key={p.name}
+                    type={p}
+                    isActive
+                    multiLine={(p.maxLength && p.maxLength > 100) || false}
+                />
             ))}
+            <Collapse
+                title="Other parameters"
+                children={parameters.map((p) => (
+                    <Parameter
+                        key={p.name}
+                        type={p}
+                        isActive
+                        disabled
+                        multiLine={(p.maxLength && p.maxLength > 100) || false}
+                    />
+                ))}></Collapse>
         </div>
     );
 
@@ -157,14 +172,13 @@ function App() {
             </main>
         );
     }
+
     return (
-        <main>
-            <div className="main-content">
-                {mode == EditorMode.chat && <ChatEditor prompt={prompt as ChatPrompt} />}
-                {mode == EditorMode.completion && (
-                    <CompletionEditor prompt={prompt as CompletionPrompt} />
-                )}
-            </div>
+        <main className="flex flex-row justify-space-between">
+            {mode == EditorMode.chat && <ChatEditor prompt={prompt as ChatPrompt} />}
+            {mode == EditorMode.completion && (
+                <CompletionEditor prompt={prompt as CompletionPrompt} />
+            )}
             {renderSidebar()}
         </main>
     );

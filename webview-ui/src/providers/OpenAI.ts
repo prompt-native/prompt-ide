@@ -1,8 +1,19 @@
 import { InterfaceType, ModelType, ParameterType } from "./Common";
 
+const DEFAULT_SYSTEM: ParameterType = {
+    name: "system",
+    displayName: "System",
+    description: "",
+    type: "string",
+    maxLength: 2048,
+    defaultValue: "You'r a helpful assistant.",
+};
+
 const DEFAULT_TEMPERATURE: ParameterType = {
     name: "temperature",
     displayName: "Temperature",
+    description:
+        "The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. If set to 0, the model will use log probability to automatically increase the temperature until certain thresholds are hit.",
     type: "number",
     minValue: 0,
     maxValue: 2,
@@ -50,17 +61,9 @@ const DEFAULT_PRESENCE_PENALTY: ParameterType = {
     defaultValue: 0,
 };
 
-const OPENAI_PARAMETERS = [
-    DEFAULT_TEMPERATURE,
-    DEFAULT_TOP_P,
-    DEFAULT_MAX_TOKENS,
-    DEFAULT_FREQUENCY_PENALTY,
-    DEFAULT_PRESENCE_PENALTY,
-    DEFAULT_STOP_SEQUENCES,
-];
-
 const getParamaters = (maxTokens: number): ParameterType[] => {
     return [
+        DEFAULT_SYSTEM,
         DEFAULT_TEMPERATURE,
         DEFAULT_TOP_P,
         DEFAULT_FREQUENCY_PENALTY,

@@ -18,7 +18,7 @@ interface ChatEditorProps {
 
 function ChatEditor({ prompt }: ChatEditorProps) {
     return (
-        <div className="main-content">
+        <div className="flex-grow flex-column">
             <div className="flex flex-column editor">
                 <VSCodeTextArea
                     className="input"
