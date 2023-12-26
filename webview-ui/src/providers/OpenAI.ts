@@ -76,14 +76,14 @@ const getParamaters = (maxTokens: number): ParameterType[] => {
 export const GPT3_5_MODELS: ModelType[] = [
     {
         name: "text-davinci-003",
-        interfaceType: InterfaceType.COMPLETE,
+        interfaceType: InterfaceType.COMPLETION,
         parameters: () => getParamaters(4000),
         description:
             "Can do language tasks with better quality and consistency than the curie, babbage, or ada models. Will be deprecated on Jan 4th 2024.",
     },
     {
         name: "gpt-3.5-turbo-instruct",
-        interfaceType: InterfaceType.COMPLETE,
+        interfaceType: InterfaceType.COMPLETION,
         parameters: () => getParamaters(4096),
         description:
             "Similar capabilities as text-davinci-003 but compatible with legacy Completions endpoint and not Chat Completions.",
