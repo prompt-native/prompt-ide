@@ -5,10 +5,8 @@ import {
     VSCodeRadioGroup,
 } from "@vscode/webview-ui-toolkit/react";
 import { ChatPrompt, CompletionPrompt } from "prompt-schema";
-import { useEffect, useState } from "react";
-import { InterfaceType, ModelType, ParameterType } from "../providers/Common";
-import { MINIMAX_MODELS } from "../providers/Minimax";
-import { GPT3_5_MODELS } from "../providers/OpenAI";
+import { ParameterType } from "../providers/Common";
+import { MODEL_GROUPS, findModel, getAvailableModels } from "../utilities/PromptLoader";
 import Collapse from "./Collapse";
 import Parameter from "./Parameter";
 
@@ -17,32 +15,9 @@ interface SidebarProps {
     onPromptChanged: (prompt: ChatPrompt | CompletionPrompt) => void;
 }
 
-const MODEL_GROUPS: { [key: string]: ModelType[] } = {
-    "GPT3.5": GPT3_5_MODELS,
-    "Minimax": MINIMAX_MODELS,
-};
-
 function Sidebar({ prompt, onPromptChanged }: SidebarProps) {
-    const [group, setGroup] = useState("GPT3.5");
-    const [models, setModels] = useState<ModelType[]>([]);
-    const [model, setModel] = useState<ModelType | null>(null);
-
-    useEffect(() => {
-        const allModels = MODEL_GROUPS[group] || [];
-        const interfaceType =
-            prompt instanceof ChatPrompt ? InterfaceType.CHAT : InterfaceType.COMPLETE;
-        const availableModels = allModels.filter((m) => m.interfaceType == interfaceType);
-        setModels(availableModels);
-        const matchedModels = availableModels.filter((m) => m.name == prompt.engine);
-
-        if (matchedModels.length > 0) {
-            setModel(matchedModels[0]);
-        } else {
-            setModel(availableModels[0]);
-            prompt.engine = availableModels[0].name;
-            onPromptChanged(prompt);
-        }
-    }, [prompt, group]);
+    const [group, model] = findModel(prompt.engine);
+    const availableModels = getAvailableModels(group, model.interfaceType);
 
     let parameters: ParameterType[] = [];
     if (model != null) {
@@ -70,7 +45,8 @@ function Sidebar({ prompt, onPromptChanged }: SidebarProps) {
                 className="button mb-10"
                 position="below"
                 value={group}
-                onChange={(e) => setGroup((e.target as HTMLInputElement).value)}>
+                //onChange={(e) => setGroup((e.target as HTMLInputElement).value)}
+            >
                 {Object.keys(MODEL_GROUPS).map((t) => (
                     <VSCodeOption value={t} key={t}>
                         {t}
@@ -79,12 +55,12 @@ function Sidebar({ prompt, onPromptChanged }: SidebarProps) {
             </VSCodeDropdown>
             <label>Model</label>
             <VSCodeDropdown className="button mb-10" position="below" value={model?.name || ""}>
-                {models.map((t) => (
+                {availableModels.map((t) => (
                     <VSCodeOption value={t.name} key={t.name}>
                         {t.name}
                     </VSCodeOption>
                 ))}
-                {models.length == 0 && (
+                {availableModels.length == 0 && (
                     <VSCodeOption value="" key="">
                         (No available model in this mode)
                     </VSCodeOption>

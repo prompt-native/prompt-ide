@@ -1,4 +1,4 @@
-import { ChatPrompt, CompletionPrompt, parsePrompt } from "prompt-schema";
+import { ChatPrompt, CompletionPrompt } from "prompt-schema";
 import { useEffect, useState } from "react";
 import "./App.css";
 import "./codicon.css";
@@ -7,9 +7,7 @@ import CompletionEditor from "./components/CompletionEditor";
 import Error from "./components/Error";
 import Loading from "./components/Loading";
 import Sidebar from "./components/Sidebar";
-import { InterfaceType, ModelType, ParameterType } from "./providers/Common";
-import { MODEL_GROUPS, findModel } from "./providers/Constants";
-import { GPT3_5_MODELS } from "./providers/OpenAI";
+import { loadPrompt } from "./utilities/PromptLoader";
 import { vscode } from "./utilities/vscode";
 
 const onPromptChanged = (new_prompt: ChatPrompt | CompletionPrompt) => {
@@ -19,23 +17,7 @@ const onPromptChanged = (new_prompt: ChatPrompt | CompletionPrompt) => {
     });
 };
 
-export function loadPrompt(
-    text: string,
-    confirm?: (errors: string[]) => boolean
-): ChatPrompt | CompletionPrompt {
-    if (text == "") {
-        return new ChatPrompt("chat@0.1", GPT3_5_MODELS[0].name, []);
-    } else {
-        const prompt = parsePrompt(text);
-        const [group, model] = findModel(prompt.engine);
-        return prompt;
-    }
-}
-
 function App() {
-    const [group, setGroup] = useState("GPT3.5");
-    const [models, setModels] = useState<ModelType[]>([]);
-    const [model, setModel] = useState<ModelType | null>(null);
     const [prompt, setPrompt] = useState<ChatPrompt | CompletionPrompt | null>(null);
     const [errors, setErrors] = useState<string[]>([]);
 
@@ -62,28 +44,6 @@ function App() {
             window.removeEventListener("message", messageListener);
         };
     }, []);
-
-    useEffect(() => {
-        const allModels = MODEL_GROUPS[group] || [];
-        const interfaceType =
-            prompt instanceof ChatPrompt ? InterfaceType.CHAT : InterfaceType.COMPLETE;
-        const availableModes = allModels.filter((m) => m.interfaceType == interfaceType);
-        setModels(availableModes);
-        if (availableModes.length > 0) {
-            setModel(availableModes[0]);
-        } else {
-            setModel(null);
-        }
-    }, [prompt, group]);
-
-    let parameters: ParameterType[] = [];
-    if (model != null) {
-        if (typeof model.parameters == "function") {
-            parameters = model.parameters();
-        } else {
-            parameters = model.parameters;
-        }
-    }
 
     if (errors.length > 0) {
         return <Error errors={errors} />;
