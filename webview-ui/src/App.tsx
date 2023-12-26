@@ -10,16 +10,17 @@ import Sidebar from "./components/Sidebar";
 import { loadPrompt } from "./utilities/PromptLoader";
 import { vscode } from "./utilities/vscode";
 
-const onPromptChanged = (new_prompt: ChatPrompt | CompletionPrompt) => {
-    vscode.postMessage({
-        command: "prompt-sync",
-        text: new_prompt,
-    });
-};
-
 function App() {
     const [prompt, setPrompt] = useState<ChatPrompt | CompletionPrompt | null>(null);
     const [errors, setErrors] = useState<string[]>([]);
+
+    const onPromptChanged = (newPrompt: ChatPrompt | CompletionPrompt) => {
+        vscode.postMessage({
+            command: "prompt-sync",
+            text: newPrompt,
+        });
+        setPrompt(newPrompt);
+    };
 
     const messageListener = (event: MessageEvent<any>) => {
         const message = event.data;

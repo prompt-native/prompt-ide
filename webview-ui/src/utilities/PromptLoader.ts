@@ -1,12 +1,7 @@
 import { ChatPrompt, CompletionPrompt, parsePrompt } from "prompt-schema";
+import { MODEL_GROUPS } from "../config/Constants";
 import { InterfaceType, ModelType } from "../providers/Common";
-import { MINIMAX_MODELS } from "../providers/Minimax";
 import { GPT3_5_MODELS } from "../providers/OpenAI";
-
-export const MODEL_GROUPS: { [key: string]: ModelType[] } = {
-    "GPT3.5": GPT3_5_MODELS,
-    "Minimax": MINIMAX_MODELS,
-};
 
 export function getAvailableModels(group: string, type: InterfaceType): ModelType[] {
     return MODEL_GROUPS[group].filter((m) => m.interfaceType === type);

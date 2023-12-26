@@ -5,8 +5,10 @@ import {
     VSCodeRadioGroup,
 } from "@vscode/webview-ui-toolkit/react";
 import { ChatPrompt, CompletionPrompt } from "prompt-schema";
-import { ParameterType } from "../providers/Common";
-import { MODEL_GROUPS, findModel, getAvailableModels } from "../utilities/PromptLoader";
+import { MODEL_GROUPS } from "../config/Constants";
+import { InterfaceType, ParameterType } from "../providers/Common";
+import { findModel, getAvailableModels } from "../utilities/PromptLoader";
+import { createDefaultPrompt } from "../utilities/PromptUpdator";
 import Collapse from "./Collapse";
 import Parameter from "./Parameter";
 
@@ -28,6 +30,12 @@ function Sidebar({ prompt, onPromptChanged }: SidebarProps) {
         }
     }
 
+    const changeType = (type: string) => {
+        if (type == "chat") prompt = createDefaultPrompt(InterfaceType.CHAT);
+        else if (type == "completion") prompt = createDefaultPrompt(InterfaceType.COMPLETE);
+        onPromptChanged(prompt);
+    };
+
     const mode = prompt instanceof ChatPrompt ? "chat" : "completion";
     return (
         <div className="ml-10 pr-10 flex-shrink-0 y-scroll-auto full-height width-200 flex flex-column">
@@ -35,8 +43,7 @@ function Sidebar({ prompt, onPromptChanged }: SidebarProps) {
             <VSCodeRadioGroup
                 value={mode}
                 className="mb-10"
-                //onChange={(e) => setMode((e.target as HTMLInputElement).value as EditorMode)}
-            >
+                onChange={(e) => changeType((e.target as HTMLInputElement).value)}>
                 <VSCodeRadio value="chat">Chat</VSCodeRadio>
                 <VSCodeRadio value="completion">Completion</VSCodeRadio>
             </VSCodeRadioGroup>
