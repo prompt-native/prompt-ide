@@ -6,6 +6,11 @@ body,
     margin: 0;
 }
 
+#root {
+    display: flex;
+    flex-direction: column;
+}
+
 .flex-grow {
     flex-grow: 1;
 }
@@ -54,6 +59,10 @@ body,
     justify-content: flex-start;
 }
 
+.justify-center {
+    justify-content: center;
+}
+
 .justify-space-between {
     justify-content: space-between;
 }
@@ -69,6 +78,14 @@ body,
 
 .danger {
     color: red;
+}
+
+.bg-danger {
+    background: lightcoral;
+}
+
+.padding-20 {
+    padding: 20px;
 }
 
 .mr-10 {

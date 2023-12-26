@@ -8,13 +8,29 @@ import Error from "./components/Error";
 import Loading from "./components/Loading";
 import Sidebar from "./components/Sidebar";
 import { InterfaceType, ModelType, ParameterType } from "./providers/Common";
-import { MINIMAX_MODELS } from "./providers/Minimax";
+import { MODEL_GROUPS, findModel } from "./providers/Constants";
 import { GPT3_5_MODELS } from "./providers/OpenAI";
+import { vscode } from "./utilities/vscode";
 
-const MODEL_GROUPS: { [key: string]: ModelType[] } = {
-    "GPT3.5": GPT3_5_MODELS,
-    "Minimax": MINIMAX_MODELS,
+const onPromptChanged = (new_prompt: ChatPrompt | CompletionPrompt) => {
+    vscode.postMessage({
+        command: "prompt-sync",
+        text: new_prompt,
+    });
 };
+
+export function loadPrompt(
+    text: string,
+    confirm?: (errors: string[]) => boolean
+): ChatPrompt | CompletionPrompt {
+    if (text == "") {
+        return new ChatPrompt("chat@0.1", GPT3_5_MODELS[0].name, []);
+    } else {
+        const prompt = parsePrompt(text);
+        const [group, model] = findModel(prompt.engine);
+        return prompt;
+    }
+}
 
 function App() {
     const [group, setGroup] = useState("GPT3.5");
@@ -29,16 +45,13 @@ function App() {
         console.log("Received event:", message);
         if (message.type == "update") {
             const text = message.text;
-            if (text == "") {
-                setPrompt(new ChatPrompt("chat@0.1", GPT3_5_MODELS[0].name, []));
-            } else {
-                try {
-                    const prompt = parsePrompt(text);
-                    setErrors([]);
-                    setPrompt(prompt);
-                } catch (error) {
-                    setErrors([`Error: ${error} while parsing: ${text}`]);
-                }
+            try {
+                const prompt = loadPrompt(text);
+                setErrors([]);
+                setPrompt(prompt);
+            } catch (error) {
+                console.error(error);
+                setErrors([`${error}`]);
             }
         }
     };
@@ -72,10 +85,11 @@ function App() {
         }
     }
 
+    if (errors.length > 0) {
+        return <Error errors={errors} />;
+    }
     if (prompt == null) {
         return <Loading />;
-    } else if (errors.length > 0) {
-        return <Error errors={errors} />;
     }
 
     const mode = prompt instanceof ChatPrompt ? "chat" : "completion";
@@ -83,7 +97,7 @@ function App() {
         <main className="flex flex-row justify-space-between">
             {mode == "chat" && <ChatEditor prompt={prompt as ChatPrompt} />}
             {mode == "completion" && <CompletionEditor prompt={prompt as CompletionPrompt} />}
-            <Sidebar prompt={prompt} onPromptChanged={(v) => {}}></Sidebar>
+            <Sidebar prompt={prompt} onPromptChanged={onPromptChanged}></Sidebar>
         </main>
     );
 }

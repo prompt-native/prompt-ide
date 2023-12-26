@@ -3,13 +3,13 @@ interface ErrorProps {
 }
 function Error({ errors }: ErrorProps) {
     return (
-        <main className="flex flex-column justify-start">
-            <div className="codicon codicon-error danger"></div>
-            <p>
-                Failed to validate the schema, please fix the json content manually and try again.
-            </p>
+        <main className="flex flex-column justify-start padding-20">
+            <h2 className="danger">Error: Loading Failed</h2>
+            <p>Failed to load the prompt, please fix the content manually and try again.</p>
             {errors.map((error) => (
-                <p style={{ color: "red" }}>{error}</p>
+                <pre key={`${error}`} className="bg-danger padding-20">
+                    {error}
+                </pre>
             ))}
         </main>
     );

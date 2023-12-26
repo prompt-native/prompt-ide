@@ -39,6 +39,7 @@ function Sidebar({ prompt, onPromptChanged }: SidebarProps) {
             setModel(matchedModels[0]);
         } else {
             setModel(availableModels[0]);
+            prompt.engine = availableModels[0].name;
             onPromptChanged(prompt);
         }
     }, [prompt, group]);
