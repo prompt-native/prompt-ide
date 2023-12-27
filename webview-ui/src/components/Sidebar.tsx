@@ -70,6 +70,13 @@ function Sidebar({ prompt, onPromptChanged }: SidebarProps) {
         }
     };
 
+    const onModelChanged = (selectedModel: string) => {
+        if (selectedModel != prompt.engine) {
+            const newPrompt = resetModel(prompt, selectedModel);
+            onPromptChanged(newPrompt as typeof prompt);
+        }
+    };
+
     const onParameterRemoved = (name: string) => {
         const newPrompt = removeParameter(prompt, name);
         onPromptChanged(newPrompt as typeof prompt);
@@ -108,7 +115,11 @@ function Sidebar({ prompt, onPromptChanged }: SidebarProps) {
                 ))}
             </VSCodeDropdown>
             <label>Model</label>
-            <VSCodeDropdown className="button mb-10" position="below" value={model?.name || ""}>
+            <VSCodeDropdown
+                className="button mb-10"
+                position="below"
+                value={model?.name || ""}
+                onChange={(e) => onModelChanged((e.target as HTMLInputElement).value)}>
                 {availableModels.map((t) => (
                     <VSCodeOption value={t.name} key={t.name}>
                         {t.name}
