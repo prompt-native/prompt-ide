@@ -35,6 +35,7 @@ const DEFAULT_MAX_TOKENS: ParameterType = {
     type: "number",
     minValue: 1,
     maxValue: 4096,
+    defaultValue: 512,
 };
 
 const DEFAULT_STOP_SEQUENCES: ParameterType = {

@@ -14,7 +14,7 @@ export interface ParameterType {
     name: string;
     displayName: string;
     type: "number" | "string" | "boolean" | "array";
-    defaultValue?: string | number | boolean | string[];
+    defaultValue?: string | number | boolean;
     isRequired?: boolean;
     description?: string;
     minValue?: number;

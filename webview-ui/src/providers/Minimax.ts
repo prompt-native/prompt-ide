@@ -4,6 +4,7 @@ const DEFAULT_TEMPERATURE: ParameterType = {
     name: "temperature",
     displayName: "Temperature",
     type: "number",
+    defaultValue: 0.9,
     minValue: 0,
     maxValue: 2,
 };
@@ -22,6 +23,7 @@ const DEFAULT_MAX_TOKENS: ParameterType = {
     type: "number",
     minValue: 1,
     maxValue: 4096,
+    defaultValue: 512,
 };
 
 const DEFAULT_SKIP_INFO_MASK: ParameterType = {

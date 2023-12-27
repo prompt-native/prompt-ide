@@ -1,24 +1,34 @@
 import { VSCodeLink, VSCodeTextArea, VSCodeTextField } from "@vscode/webview-ui-toolkit/react";
 import { ParameterType } from "../providers/Common";
 
-export interface ParameterProps {
-    isActive: boolean;
+export interface ParameterItemProps {
     type: ParameterType;
-    value?: string;
+    value: string;
     multiLine?: boolean;
     disabled?: boolean;
+    onRemove?: () => void;
+    onEnable?: () => void;
 }
-function Parameter({ isActive, type, multiLine, disabled }: ParameterProps) {
+
+function ParameterItem({
+    onRemove,
+    onEnable,
+    value,
+    type,
+    multiLine,
+    disabled,
+}: ParameterItemProps) {
     if (disabled) {
         return (
             <div className="flex justify-space-between">
                 <label>{type.name}</label>
-                <VSCodeLink href="#">Enable</VSCodeLink>
+                <VSCodeLink href="#" onClick={onEnable}>
+                    Enable
+                </VSCodeLink>
             </div>
         );
     }
 
-    let value = type.defaultValue || type.minValue;
     let icon;
     if (type.type == "array") icon = "symbol-array";
     else if (type.type == "boolean") icon = "activate-breakpoints";
@@ -27,23 +37,22 @@ function Parameter({ isActive, type, multiLine, disabled }: ParameterProps) {
     const title = (
         <div className="flex justify-space-between">
             {type.displayName}
-            <VSCodeLink href="#">Remove</VSCodeLink>
+            <VSCodeLink href="#" onClick={onRemove}>
+                Remove
+            </VSCodeLink>
         </div>
     );
     if (multiLine) {
         return (
             <>
-                <VSCodeTextArea resize="vertical" rows={4} initialValue={value as string}>
+                <VSCodeTextArea resize="vertical" rows={4} initialValue={value}>
                     {title}
                 </VSCodeTextArea>
             </>
         );
     } else {
         return (
-            <VSCodeTextField
-                value={`${value === undefined ? "" : value}`}
-                className="mb-10"
-                placeholder="Disabled">
+            <VSCodeTextField value={value} className="mb-10" placeholder="">
                 {title}
                 <span slot="end" className={`codicon codicon-${icon}`}></span>
             </VSCodeTextField>
@@ -51,4 +60,4 @@ function Parameter({ isActive, type, multiLine, disabled }: ParameterProps) {
     }
 }
 
-export default Parameter;
+export default ParameterItem;
