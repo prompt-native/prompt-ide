@@ -37,7 +37,7 @@ function ChatEditor({ prompt }: ChatEditorProps) {
                     <p>No result yet, click submit to execute the prompt.</p>
                 </VSCodePanelView>
                 <VSCodePanelView id="view-variables">
-                    <Variables></Variables>
+                    <Variables variables={[]} onVariableBinded={(name, value) => {}}></Variables>
                 </VSCodePanelView>
                 <VSCodePanelView id="view-context">
                     <VSCodeTextArea

@@ -13,6 +13,8 @@ import { vscode } from "./utilities/vscode";
 function App() {
     const [prompt, setPrompt] = useState<ChatPrompt | CompletionPrompt | null>(null);
     const [errors, setErrors] = useState<string[]>([]);
+    const [activeTab, setActiveTab] = useState("");
+    const [variableBinding, setVariableBinding] = useState({});
 
     const onPromptChanged = (newPrompt: ChatPrompt | CompletionPrompt) => {
         vscode.postMessage({
@@ -61,6 +63,11 @@ function App() {
                 <CompletionEditor
                     prompt={prompt as CompletionPrompt}
                     onPromptChanged={onPromptChanged}
+                    activeTab={activeTab}
+                    onTabActive={setActiveTab}
+                    onVariableBinded={(name, value) =>
+                        setVariableBinding({ ...variableBinding, [name]: value })
+                    }
                 />
             )}
             <Sidebar prompt={prompt} onPromptChanged={onPromptChanged}></Sidebar>

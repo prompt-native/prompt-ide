@@ -6,13 +6,23 @@ import {
     VSCodeTextArea,
 } from "@vscode/webview-ui-toolkit/react";
 import { CompletionPrompt } from "prompt-schema";
+import { parseVariables } from "../utilities/PromptHelper";
+import Variables, { VariableBinding } from "./Variables";
 
 interface CompletionEditorProps {
     prompt: CompletionPrompt;
     onPromptChanged: (prompt: CompletionPrompt) => void;
+    activeTab?: string;
+    onTabActive: (id: string) => void;
 }
 
-function CompletionEditor({ prompt, onPromptChanged }: CompletionEditorProps) {
+function CompletionEditor({
+    prompt,
+    onPromptChanged,
+    activeTab,
+    onTabActive,
+}: CompletionEditorProps) {
+    const variables = parseVariables(prompt.prompt).map((v) => new VariableBinding(v, ""));
     const onTextChanged = (text: string) => {
         if (text != prompt.prompt) {
             onPromptChanged({ ...prompt, prompt: text });
@@ -31,14 +41,14 @@ function CompletionEditor({ prompt, onPromptChanged }: CompletionEditorProps) {
                     placeholder="Enter your prompt here"></VSCodeTextArea>
                 <VSCodeButton className="button">Submit</VSCodeButton>
             </div>
-            <VSCodePanels activeid="tab-4" aria-label="With Active Tab">
+            <VSCodePanels activeid={activeTab} onChange={(e: any) => onTabActive(e.detail.id)}>
                 <VSCodePanelTab id="tab-result">RESULT</VSCodePanelTab>
                 <VSCodePanelTab id="tab-variables">VARIABLES</VSCodePanelTab>
                 <VSCodePanelView id="view-result">
                     <p>No result yet, click submit to execute the prompt.</p>
                 </VSCodePanelView>
                 <VSCodePanelView id="view-variables">
-                    <p>No variables yet.</p>
+                    <Variables variables={variables}></Variables>
                 </VSCodePanelView>
             </VSCodePanels>
         </div>
