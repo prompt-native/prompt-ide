@@ -7,6 +7,10 @@ export function getAvailableModels(group: string, type: InterfaceType): ModelTyp
     return MODEL_GROUPS[group].filter((m) => m.interfaceType === type);
 }
 
+export function getAvailableGroups(type: InterfaceType): string[] {
+    return Object.keys(MODEL_GROUPS).filter((group) => getAvailableModels(group, type).length > 0);
+}
+
 export function findModel(engine: string): [string, ModelType] {
     for (const group of Object.keys(MODEL_GROUPS)) {
         const candidates = MODEL_GROUPS[group].filter((m) => m.name === engine);

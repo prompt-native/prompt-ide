@@ -4,7 +4,7 @@ import {
     DEFAULT_COMPLETION_ENGINE,
     SCHEMA_VERSION,
 } from "../config/Constants";
-import { InterfaceType, ModelType } from "../providers/Common";
+import { InterfaceType } from "../providers/Common";
 
 export function createDefaultPrompt(type: InterfaceType): ChatPrompt | CompletionPrompt {
     switch (type) {
@@ -19,8 +19,8 @@ export function createDefaultPrompt(type: InterfaceType): ChatPrompt | Completio
     }
 }
 
-export function resetModel(prompt: Prompt, model: ModelType): Prompt {
-    prompt.engine = model.name;
+export function resetModel(prompt: Prompt, engine: string): Prompt {
+    prompt.engine = engine;
     prompt.parameters = undefined;
-    return { ...prompt, engine: model.name, parameters: undefined };
+    return { ...prompt, engine: engine, parameters: undefined };
 }

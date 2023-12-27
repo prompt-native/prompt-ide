@@ -5,9 +5,8 @@ import {
     VSCodeRadioGroup,
 } from "@vscode/webview-ui-toolkit/react";
 import { ChatPrompt, CompletionPrompt } from "prompt-schema";
-import { MODEL_GROUPS } from "../config/Constants";
 import { InterfaceType, ParameterType } from "../providers/Common";
-import { findModel, getAvailableModels } from "../utilities/PromptLoader";
+import { findModel, getAvailableGroups, getAvailableModels } from "../utilities/PromptLoader";
 import { createDefaultPrompt, resetModel } from "../utilities/PromptUpdator";
 import Collapse from "./Collapse";
 import Parameter from "./Parameter";
@@ -24,6 +23,7 @@ function getMode(type: InterfaceType): string {
 }
 function Sidebar({ prompt, onPromptChanged }: SidebarProps) {
     const [group, model] = findModel(prompt.engine);
+    const groups = getAvailableGroups(model.interfaceType);
     const availableModels = getAvailableModels(group, model.interfaceType);
     const type = model.interfaceType;
 
@@ -45,7 +45,7 @@ function Sidebar({ prompt, onPromptChanged }: SidebarProps) {
     const changeGroup = (group: string) => {
         const availableModels = getAvailableModels(group, type);
         const model = availableModels[0];
-        const newPrompt = resetModel(prompt, model);
+        const newPrompt = resetModel(prompt, model.name);
         onPromptChanged(newPrompt as typeof prompt);
     };
 
@@ -65,7 +65,7 @@ function Sidebar({ prompt, onPromptChanged }: SidebarProps) {
                 position="below"
                 value={group}
                 onChange={(e) => changeGroup((e.target as HTMLInputElement).value)}>
-                {Object.keys(MODEL_GROUPS).map((t) => (
+                {groups.map((t) => (
                     <VSCodeOption value={t} key={t}>
                         {t}
                     </VSCodeOption>
