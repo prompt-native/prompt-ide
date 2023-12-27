@@ -1,6 +1,6 @@
 export enum InterfaceType {
-    CHAT,
-    COMPLETION,
+    CHAT = "chat",
+    COMPLETION = "completion",
 }
 
 export interface ModelType {

@@ -45,6 +45,7 @@ export class PromptEditor implements vscode.CustomTextEditorProvider {
         });
 
         webviewPanel.webview.onDidReceiveMessage((e) => {
+            console.log("--->", e);
             switch (e.type) {
                 case "sync":
                     this.updateTextDocument(document, e.text);

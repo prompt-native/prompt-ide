@@ -16,8 +16,8 @@ function App() {
 
     const onPromptChanged = (newPrompt: ChatPrompt | CompletionPrompt) => {
         vscode.postMessage({
-            command: "prompt-sync",
-            text: newPrompt,
+            type: "sync",
+            text: JSON.stringify(newPrompt, null, 2),
         });
         setPrompt(newPrompt);
     };
