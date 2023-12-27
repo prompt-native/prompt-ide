@@ -39,13 +39,17 @@ export function getModelParameters(model: ModelType): ParameterType[] {
     }
 }
 
-export function enableParameter(prompt: Prompt, name: string): Prompt {
-    const [group, model] = findModel(prompt.engine);
-    const parameters = prompt.parameters || [];
+export function findParameterType(engine: string, name: String): ParameterType {
+    const [group, model] = findModel(engine);
     const parameterTypes = getModelParameters(model).filter((p) => p.name == name);
     if (parameterTypes.length != 1)
         throw new Error("Parameter not supported or duplicated:" + name);
-    const parameterType = parameterTypes[0];
+    return parameterTypes[0];
+}
+
+export function enableParameter(prompt: Prompt, name: string): Prompt {
+    const parameters = prompt.parameters || [];
+    const parameterType = findParameterType(prompt.engine, name);
     let initValue: number | string | boolean = "";
     if (parameterType.type == "number")
         initValue = parameterType.defaultValue || parameterType.minValue || 0;
@@ -55,4 +59,21 @@ export function enableParameter(prompt: Prompt, name: string): Prompt {
     else if (parameterType.type == "array") initValue = parameterType.defaultValue || "";
 
     return { ...prompt, parameters: [...parameters, new Parameter(name, initValue)] };
+}
+
+export function changeParameter(prompt: Prompt, name: string, valueStr: string): Prompt {
+    const parameterType = findParameterType(prompt.engine, name);
+    const parameters = prompt.parameters || [];
+    const excluded = parameters.filter((p) => p.name != name);
+
+    let value: number | string | boolean = "";
+    if (parameterType.type == "number") {
+        if (valueStr.includes(".")) value = parseFloat(valueStr);
+        else value = parseInt(valueStr);
+    } else if (parameterType.type == "string") value = valueStr;
+    else if (parameterType.type == "boolean") value = Boolean(valueStr);
+    // fixme: support array type
+    else if (parameterType.type == "array") value = valueStr;
+
+    return { ...prompt, parameters: [...excluded, new Parameter(name, value)] };
 }

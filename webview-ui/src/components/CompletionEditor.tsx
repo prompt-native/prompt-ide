@@ -9,9 +9,16 @@ import { CompletionPrompt } from "prompt-schema";
 
 interface CompletionEditorProps {
     prompt: CompletionPrompt;
+    onPromptChanged: (prompt: CompletionPrompt) => void;
 }
 
-function CompletionEditor({ prompt }: CompletionEditorProps) {
+function CompletionEditor({ prompt, onPromptChanged }: CompletionEditorProps) {
+    const onTextChanged = (text: string) => {
+        if (text != prompt.prompt) {
+            onPromptChanged({ ...prompt, prompt: text });
+        }
+    };
+
     return (
         <div className="flex-grow flex-column">
             <div className="flex flex-column editor">
@@ -19,6 +26,8 @@ function CompletionEditor({ prompt }: CompletionEditorProps) {
                     className="input"
                     resize="vertical"
                     rows={10}
+                    value={prompt.prompt}
+                    onChange={(e) => onTextChanged((e.target as HTMLInputElement).value)}
                     placeholder="Enter your prompt here"></VSCodeTextArea>
                 <VSCodeButton className="button">Submit</VSCodeButton>
             </div>

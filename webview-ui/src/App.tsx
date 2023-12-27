@@ -57,7 +57,12 @@ function App() {
     return (
         <main className="flex flex-row justify-space-between">
             {mode == "chat" && <ChatEditor prompt={prompt as ChatPrompt} />}
-            {mode == "completion" && <CompletionEditor prompt={prompt as CompletionPrompt} />}
+            {mode == "completion" && (
+                <CompletionEditor
+                    prompt={prompt as CompletionPrompt}
+                    onPromptChanged={onPromptChanged}
+                />
+            )}
             <Sidebar prompt={prompt} onPromptChanged={onPromptChanged}></Sidebar>
         </main>
     );

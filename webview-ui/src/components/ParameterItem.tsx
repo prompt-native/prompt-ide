@@ -8,11 +8,13 @@ export interface ParameterItemProps {
     disabled?: boolean;
     onRemove?: () => void;
     onEnable?: () => void;
+    onChange?: (value: string) => void;
 }
 
 function ParameterItem({
     onRemove,
     onEnable,
+    onChange,
     value,
     type,
     multiLine,
@@ -45,14 +47,22 @@ function ParameterItem({
     if (multiLine) {
         return (
             <>
-                <VSCodeTextArea resize="vertical" rows={4} initialValue={value}>
+                <VSCodeTextArea
+                    resize="vertical"
+                    rows={4}
+                    value={value}
+                    onChange={(e) => onChange && onChange((e.target as HTMLInputElement).value)}>
                     {title}
                 </VSCodeTextArea>
             </>
         );
     } else {
         return (
-            <VSCodeTextField value={value} className="mb-10" placeholder="">
+            <VSCodeTextField
+                value={value}
+                className="mb-10"
+                placeholder=""
+                onChange={(e) => onChange && onChange((e.target as HTMLInputElement).value)}>
                 {title}
                 <span slot="end" className={`codicon codicon-${icon}`}></span>
             </VSCodeTextField>

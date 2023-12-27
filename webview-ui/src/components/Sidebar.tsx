@@ -8,6 +8,7 @@ import { ChatPrompt, CompletionPrompt, Parameter } from "prompt-schema";
 import { InterfaceType, ModelType, ParameterType } from "../providers/Common";
 import { findModel, getAvailableGroups, getAvailableModels } from "../utilities/PromptLoader";
 import {
+    changeParameter,
     createDefaultPrompt,
     enableParameter,
     getModelParameters,
@@ -79,6 +80,11 @@ function Sidebar({ prompt, onPromptChanged }: SidebarProps) {
         onPromptChanged(newPrompt as typeof prompt);
     };
 
+    const onParameterChanged = (name: string, value: string) => {
+        const newPrompt = changeParameter(prompt, name, value);
+        onPromptChanged(newPrompt as typeof prompt);
+    };
+
     return (
         <div className="ml-10 pr-10 flex-shrink-0 y-scroll-auto full-height width-200 flex flex-column">
             <label>Type</label>
@@ -121,6 +127,7 @@ function Sidebar({ prompt, onPromptChanged }: SidebarProps) {
                         key={p.type.name}
                         type={p.type}
                         value={`${p.value?.value}`}
+                        onChange={(value: string) => onParameterChanged(p.type.name, value)}
                         onRemove={() => onParameterRemoved(p.type.name)}
                         multiLine={(p.type.maxLength && p.type.maxLength > 100) || false}
                     />
