@@ -21,9 +21,15 @@ export function createDefaultPrompt(type: InterfaceType): ChatPrompt | Completio
 }
 
 export function resetModel(prompt: Prompt, engine: string): Prompt {
-    prompt.engine = engine;
-    prompt.parameters = undefined;
-    return { ...prompt, engine: engine, parameters: undefined };
+    const [group, model] = findModel(engine);
+    // reserve compatible parameters
+
+    const parameterTypes = getModelParameters(model);
+    const parameters = prompt.parameters?.filter(
+        (p) => parameterTypes.filter((t) => t.name == p.name).length > 0
+    );
+
+    return { ...prompt, engine: engine, parameters: parameters };
 }
 
 export function removeParameter(prompt: Prompt, name: string): Prompt {
