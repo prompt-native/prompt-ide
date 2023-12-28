@@ -67,11 +67,6 @@ body,
     justify-content: space-between;
 }
 
-.editor {
-    padding-left: 5px;
-    padding-right: 5px;
-}
-
 .fill {
     flex: 1;
 }

@@ -4,6 +4,7 @@ import {
     VSCodeDataGrid,
     VSCodeDataGridCell,
     VSCodeDataGridRow,
+    VSCodeDivider,
     VSCodePanelTab,
     VSCodePanelView,
     VSCodePanels,
@@ -18,13 +19,26 @@ interface ChatEditorProps {
 
 function ChatEditor({ prompt }: ChatEditorProps) {
     return (
-        <div className="flex-grow flex-column">
-            <div className="flex flex-column editor">
-                <VSCodeTextArea
-                    className="input"
-                    resize="vertical"
-                    rows={10}
-                    placeholder="Enter your prompt here"></VSCodeTextArea>
+        <div className="flex-grow flex-column pl-10 pr-10">
+            <div className="flex flex-column">
+                <div className="flex flex-column mb-10">
+                    <label>USER</label>
+                    <VSCodeTextArea
+                        className="input fill"
+                        resize="vertical"
+                        rows={1}
+                        placeholder="Enter your prompt here"></VSCodeTextArea>
+                    <VSCodeDivider />
+                </div>
+                <div className="flex flex-column mb-10">
+                    <label>ASSISTANT</label>
+                    <VSCodeTextArea
+                        className="input fill"
+                        resize="vertical"
+                        rows={1}
+                        placeholder="Enter your prompt here"></VSCodeTextArea>
+                    <VSCodeDivider />
+                </div>
                 <VSCodeButton className="button">Submit</VSCodeButton>
             </div>
             <VSCodePanels activeid="tab-4" aria-label="With Active Tab">

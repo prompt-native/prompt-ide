@@ -14,6 +14,7 @@ interface CompletionEditorProps {
     onPromptChanged: (prompt: CompletionPrompt) => void;
     activeTab?: string;
     onTabActive: (id: string) => void;
+    onVariableBinded: (name: string, value: string) => void;
 }
 
 function CompletionEditor({
@@ -21,6 +22,7 @@ function CompletionEditor({
     onPromptChanged,
     activeTab,
     onTabActive,
+    onVariableBinded,
 }: CompletionEditorProps) {
     const variables = parseVariables(prompt.prompt).map((v) => new VariableBinding(v, ""));
     const onTextChanged = (text: string) => {
@@ -30,8 +32,8 @@ function CompletionEditor({
     };
 
     return (
-        <div className="flex-grow flex-column">
-            <div className="flex flex-column editor">
+        <div className="flex-grow flex-column pl-10 pr-10">
+            <div className="flex flex-column">
                 <VSCodeTextArea
                     className="input"
                     resize="vertical"
@@ -48,7 +50,9 @@ function CompletionEditor({
                     <p>No result yet, click submit to execute the prompt.</p>
                 </VSCodePanelView>
                 <VSCodePanelView id="view-variables">
-                    <Variables variables={variables}></Variables>
+                    <Variables
+                        variables={variables}
+                        onVariableBinded={onVariableBinded}></Variables>
                 </VSCodePanelView>
             </VSCodePanels>
         </div>

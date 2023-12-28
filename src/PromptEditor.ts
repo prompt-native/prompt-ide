@@ -12,7 +12,12 @@ export class PromptEditor implements vscode.CustomTextEditorProvider {
         const provider = new PromptEditor(context);
         const providerRegistration = vscode.window.registerCustomEditorProvider(
             PromptEditor.viewType,
-            provider
+            provider,
+            {
+                webviewOptions: {
+                    retainContextWhenHidden: true,
+                },
+            }
         );
         return providerRegistration;
     }
@@ -28,6 +33,7 @@ export class PromptEditor implements vscode.CustomTextEditorProvider {
         webviewPanel.webview.html = this._getWebviewContent(webviewPanel.webview);
 
         function updateWebview() {
+            console.log("updating webview");
             webviewPanel.webview.postMessage({
                 type: "update",
                 text: document.getText(),
@@ -35,6 +41,7 @@ export class PromptEditor implements vscode.CustomTextEditorProvider {
         }
 
         const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument((e) => {
+            console.log("document changed", e.document.uri.toString(), document.uri.toString());
             if (e.document.uri.toString() === document.uri.toString()) {
                 updateWebview();
             }
