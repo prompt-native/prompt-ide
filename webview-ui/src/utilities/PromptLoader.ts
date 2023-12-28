@@ -31,8 +31,9 @@ export function loadPrompt(text: string): ChatPrompt | CompletionPrompt {
     } else {
         const prompt = parsePrompt(text);
         const [g, m] = findModel(prompt.engine);
-        const interfaceType =
-            prompt instanceof ChatPrompt ? InterfaceType.CHAT : InterfaceType.COMPLETION;
+        const interfaceType = prompt.version.startsWith("chat@")
+            ? InterfaceType.CHAT
+            : InterfaceType.COMPLETION;
         if (m.interfaceType != interfaceType)
             throw new Error(`Model ${m.name} does not support mode ${interfaceType}`);
         return prompt;

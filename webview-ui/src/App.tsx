@@ -55,7 +55,7 @@ function App() {
         return <Loading />;
     }
 
-    const mode = prompt instanceof ChatPrompt ? "chat" : "completion";
+    const mode = prompt.version.split("@")[0];
     return (
         <main className="flex flex-row justify-space-between">
             {mode == "chat" && <ChatEditor prompt={prompt as ChatPrompt} />}
