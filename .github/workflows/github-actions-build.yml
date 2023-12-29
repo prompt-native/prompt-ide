@@ -2,20 +2,20 @@ name: Build project
 run-name: ${{ github.actor }} building 🚀
 on: [push]
 jobs:
-  Explore-GitHub-Actions:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18.x'
-      - name: Build dependency
-        run: npm run install:runtime && npm run build:runtime
-      - name: Install dependencies
-        run: npm run install:all
-      - name: Build Webview
-        run: npm run build:webview
-      - name: Build Extension
-        run: npm run compile
+    Explore-GitHub-Actions:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+            - name: Use Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "18.x"
+            - name: Build dependency
+              run: npm run install:schema && npm run build:schema
+            - name: Install dependencies
+              run: npm run install:all
+            - name: Build Webview
+              run: npm run build:webview
+            - name: Build Extension
+              run: npm run compile

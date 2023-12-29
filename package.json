@@ -130,8 +130,10 @@
     },
     "scripts": {
         "install:all": "npm install && cd webview-ui && npm install",
+        "install:schema": "cd prompt-schema && npm install",
         "start:webview": "cd webview-ui && npm run start",
         "build:webview": "cd webview-ui && npm run build",
+        "build:schema": "cd prompt-schema && npm run build",
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
