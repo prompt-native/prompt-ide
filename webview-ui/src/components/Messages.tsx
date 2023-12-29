@@ -20,6 +20,7 @@ function Messages({ items, onMessageChanged, onMessageDeleted, onMessageInserted
                         onMessageChanged={onMessageChanged}
                         onMessageDeleted={items.length > 1 ? onMessageDeleted : undefined}
                         onMessageInserted={onMessageInserted}
+                        rows={items.length == 1 && items[0].role == "user" ? 10 : undefined}
                     />
                 );
             })}

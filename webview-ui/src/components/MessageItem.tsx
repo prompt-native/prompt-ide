@@ -7,6 +7,7 @@ interface MessageProps {
     onMessageChanged: (index: number, role: string, content: string) => void;
     onMessageDeleted?: (index: number) => void;
     onMessageInserted?: (index: number) => void;
+    rows?: number;
 }
 
 function getIcon(role: string): string {
@@ -24,6 +25,7 @@ function MessageItem({
     onMessageChanged,
     onMessageDeleted,
     onMessageInserted,
+    rows,
 }: MessageProps) {
     const icon = getIcon(message.role);
 
@@ -58,7 +60,7 @@ function MessageItem({
             <VSCodeTextArea
                 className="input fill"
                 resize="vertical"
-                rows={1}
+                rows={rows || 1}
                 value={message.content}
                 onChange={(e) => onContentChanged((e.target as HTMLInputElement).value)}
                 placeholder="Enter your prompt here"></VSCodeTextArea>

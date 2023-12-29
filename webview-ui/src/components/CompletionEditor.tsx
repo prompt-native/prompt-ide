@@ -34,8 +34,11 @@ function CompletionEditor({
     return (
         <div className="flex-grow flex-column pl-10 pr-10">
             <div className="flex flex-column">
+                <div className="title flex flex-row align-center">
+                    <span className="label fill">Prompt</span>
+                </div>
                 <VSCodeTextArea
-                    className="input"
+                    className="input mb-10"
                     resize="vertical"
                     rows={10}
                     value={prompt.prompt}
