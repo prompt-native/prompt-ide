@@ -24,6 +24,13 @@ interface VariablesProps {
 }
 
 function Variables({ variables, onVariableBinded }: VariablesProps) {
+    if (variables.length == 0) {
+        return (
+            <p>
+                No variables found. Use <strong>$(variable)</strong> to create a variable.
+            </p>
+        );
+    }
     return (
         <div className="flex flex-column fill">
             {variables.map((v) => (

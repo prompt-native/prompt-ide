@@ -31,6 +31,9 @@ function CompletionEditor({
         }
     };
 
+    const onTabChange = (e: any) => {
+        if (e.detail && e.detail.id) onTabActive(e.detail.id);
+    };
     return (
         <div className="flex-grow flex-column pl-10 pr-10">
             <div className="flex flex-column">
@@ -46,7 +49,7 @@ function CompletionEditor({
                     placeholder="Enter your prompt here"></VSCodeTextArea>
                 <VSCodeButton className="button">Submit</VSCodeButton>
             </div>
-            <VSCodePanels activeid={activeTab} onChange={(e: any) => onTabActive(e.detail.id)}>
+            <VSCodePanels activeid={activeTab} onChange={onTabChange}>
                 <VSCodePanelTab id="tab-result">RESULT</VSCodePanelTab>
                 <VSCodePanelTab id="tab-variables">VARIABLES</VSCodePanelTab>
                 <VSCodePanelView id="view-result">

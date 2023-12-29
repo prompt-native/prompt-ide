@@ -1,9 +1,5 @@
 import {
     VSCodeButton,
-    VSCodeCheckbox,
-    VSCodeDataGrid,
-    VSCodeDataGridCell,
-    VSCodeDataGridRow,
     VSCodePanelTab,
     VSCodePanelView,
     VSCodePanels,
@@ -74,6 +70,10 @@ function ChatEditor({
         onPromptChanged(newPrompt as typeof prompt);
     };
 
+    const onTabChange = (e: any) => {
+        if (e.detail && e.detail.id) onTabActive(e.detail.id);
+    };
+
     const variables = parseChatVariables(prompt.messages).map((v) => new VariableBinding(v, ""));
 
     return (
@@ -87,12 +87,11 @@ function ChatEditor({
                 />
                 <VSCodeButton className="button">Submit</VSCodeButton>
             </div>
-            <VSCodePanels activeid={activeTab} onChange={(e: any) => onTabActive(e.detail.id)}>
+            <VSCodePanels activeid={activeTab} onChange={onTabChange}>
                 <VSCodePanelTab id="tab-result">RESULT</VSCodePanelTab>
                 <VSCodePanelTab id="tab-variables">VARIABLES</VSCodePanelTab>
                 <VSCodePanelTab id="tab-context">CONTEXT</VSCodePanelTab>
                 <VSCodePanelTab id="tab-samples">SAMPLES</VSCodePanelTab>
-                <VSCodePanelTab id="tab-history">HISTORY</VSCodePanelTab>
                 <VSCodePanelView id="view-result">
                     <p>No result yet, click submit to execute the prompt.</p>
                 </VSCodePanelView>
@@ -110,55 +109,13 @@ function ChatEditor({
                         onChange={(e) => onContextChanged((e.target as HTMLInputElement).value)}
                         placeholder="Set the persona, background, etc of the dialogue"></VSCodeTextArea>
                 </VSCodePanelView>
-                <VSCodePanelView id="view-samples" className="flex flex-column">
+                <VSCodePanelView id="view-samples" className="flex-column">
                     <Examples
                         items={prompt.examples || []}
                         onMessageChanged={onExampleChanged}
                         onMessageDeleted={onExampleDeleted}
                         onMessageInserted={onExampleInserted}
                     />
-                </VSCodePanelView>
-                <VSCodePanelView id="view-history" className="flex-column">
-                    <VSCodeCheckbox>Capture history automatically</VSCodeCheckbox>
-                    <VSCodeDataGrid gridTemplateColumns="100px 1fr 100px">
-                        <VSCodeDataGridRow row-type="header">
-                            <VSCodeDataGridCell cell-type="columnheader" grid-column="1">
-                                Role
-                            </VSCodeDataGridCell>
-                            <VSCodeDataGridCell cell-type="columnheader" grid-column="2">
-                                Content
-                            </VSCodeDataGridCell>
-                            <VSCodeDataGridCell cell-type="columnheader" grid-column="3">
-                                Operation
-                            </VSCodeDataGridCell>
-                        </VSCodeDataGridRow>
-                        <VSCodeDataGridRow>
-                            <VSCodeDataGridCell grid-column="1">User</VSCodeDataGridCell>
-                            <VSCodeDataGridCell grid-column="2">你是谁</VSCodeDataGridCell>
-                            <VSCodeDataGridCell grid-column="3">
-                                <VSCodeButton
-                                    appearance="icon"
-                                    aria-label="Confirm"
-                                    className="danger">
-                                    <span className="codicon codicon-close"></span>
-                                </VSCodeButton>
-                            </VSCodeDataGridCell>
-                        </VSCodeDataGridRow>
-                        <VSCodeDataGridRow>
-                            <VSCodeDataGridCell grid-column="1">Assistant</VSCodeDataGridCell>
-                            <VSCodeDataGridCell grid-column="2">
-                                我是MM智能助理，是由MiniMax自研的一款大型语言模型，没有调用其他产品的接口.你可以向我提问任何你想了解的问题，我会尽我所能为你解答。
-                            </VSCodeDataGridCell>
-                            <VSCodeDataGridCell grid-column="3">
-                                <VSCodeButton
-                                    appearance="icon"
-                                    aria-label="Confirm"
-                                    className="danger">
-                                    <span className="codicon codicon-close"></span>
-                                </VSCodeButton>
-                            </VSCodeDataGridCell>
-                        </VSCodeDataGridRow>
-                    </VSCodeDataGrid>
                 </VSCodePanelView>
             </VSCodePanels>
         </div>
