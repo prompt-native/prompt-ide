@@ -10,16 +10,35 @@ import {
     VSCodeTextArea,
 } from "@vscode/webview-ui-toolkit/react";
 import { ChatPrompt, Message } from "prompt-schema";
-import { changeMessage, insertMessage, removeMessage } from "../utilities/PromptUpdator";
-import MessageItem from "./MessageItem";
-import Variables from "./Variables";
+import { parseChatVariables } from "../utilities/PromptHelper";
+import {
+    changeExample,
+    changeMessage,
+    insertExample,
+    insertMessage,
+    removeExample,
+    removeMessage,
+    setContext,
+} from "../utilities/PromptUpdator";
+import Examples from "./Examples";
+import Messages from "./Messages";
+import Variables, { VariableBinding } from "./Variables";
 
 interface ChatEditorProps {
     prompt: ChatPrompt;
     onPromptChanged: (prompt: ChatPrompt) => void;
+    activeTab?: string;
+    onTabActive: (id: string) => void;
+    onVariableBinded: (name: string, value: string) => void;
 }
 
-function ChatEditor({ prompt, onPromptChanged }: ChatEditorProps) {
+function ChatEditor({
+    prompt,
+    onPromptChanged,
+    activeTab,
+    onTabActive,
+    onVariableBinded,
+}: ChatEditorProps) {
     const onMessageChanged = (index: number, role: string, content: string) => {
         const newPrompt = changeMessage(prompt, index, new Message(role, undefined, content));
         onPromptChanged(newPrompt as typeof prompt);
@@ -35,24 +54,40 @@ function ChatEditor({ prompt, onPromptChanged }: ChatEditorProps) {
         onPromptChanged(newPrompt as typeof prompt);
     };
 
+    const onContextChanged = (text: string) => {
+        const newPrompt = setContext(prompt, text == "" ? undefined : text);
+        onPromptChanged(newPrompt as typeof prompt);
+    };
+
+    const onExampleDeleted = (index: number) => {
+        const newPrompt = removeExample(prompt, index);
+        onPromptChanged(newPrompt as typeof prompt);
+    };
+
+    const onExampleInserted = (index: number) => {
+        const newPrompt = insertExample(prompt, index);
+        onPromptChanged(newPrompt as typeof prompt);
+    };
+
+    const onExampleChanged = (index: number, role: string, content: string) => {
+        const newPrompt = changeExample(prompt, index, new Message(role, undefined, content));
+        onPromptChanged(newPrompt as typeof prompt);
+    };
+
+    const variables = parseChatVariables(prompt.messages).map((v) => new VariableBinding(v, ""));
+
     return (
         <div className="flex-grow flex-column pl-10 pr-10">
             <div className="flex flex-column">
-                {prompt.messages.map((message, index) => {
-                    return (
-                        <MessageItem
-                            key={index}
-                            index={index}
-                            message={message}
-                            onMessageChanged={onMessageChanged}
-                            onMessageDeleted={onMessageDeleted}
-                            onMessageInserted={onMessageInserted}
-                        />
-                    );
-                })}
+                <Messages
+                    items={prompt.messages || []}
+                    onMessageChanged={onMessageChanged}
+                    onMessageDeleted={onMessageDeleted}
+                    onMessageInserted={onMessageInserted}
+                />
                 <VSCodeButton className="button">Submit</VSCodeButton>
             </div>
-            <VSCodePanels activeid="tab-4" aria-label="With Active Tab">
+            <VSCodePanels activeid={activeTab} onChange={(e: any) => onTabActive(e.detail.id)}>
                 <VSCodePanelTab id="tab-result">RESULT</VSCodePanelTab>
                 <VSCodePanelTab id="tab-variables">VARIABLES</VSCodePanelTab>
                 <VSCodePanelTab id="tab-context">CONTEXT</VSCodePanelTab>
@@ -62,16 +97,27 @@ function ChatEditor({ prompt, onPromptChanged }: ChatEditorProps) {
                     <p>No result yet, click submit to execute the prompt.</p>
                 </VSCodePanelView>
                 <VSCodePanelView id="view-variables">
-                    <Variables variables={[]} onVariableBinded={(name, value) => {}}></Variables>
+                    <Variables
+                        variables={variables}
+                        onVariableBinded={onVariableBinded}></Variables>
                 </VSCodePanelView>
                 <VSCodePanelView id="view-context">
                     <VSCodeTextArea
                         className="input fill"
                         resize="vertical"
                         rows={4}
+                        value={prompt.context || ""}
+                        onChange={(e) => onContextChanged((e.target as HTMLInputElement).value)}
                         placeholder="Set the persona, background, etc of the dialogue"></VSCodeTextArea>
                 </VSCodePanelView>
-                <VSCodePanelView id="view-samples">Output content.</VSCodePanelView>
+                <VSCodePanelView id="view-samples" className="flex flex-column">
+                    <Examples
+                        items={prompt.examples || []}
+                        onMessageChanged={onExampleChanged}
+                        onMessageDeleted={onExampleDeleted}
+                        onMessageInserted={onExampleInserted}
+                    />
+                </VSCodePanelView>
                 <VSCodePanelView id="view-history" className="flex-column">
                     <VSCodeCheckbox>Capture history automatically</VSCodeCheckbox>
                     <VSCodeDataGrid gridTemplateColumns="100px 1fr 100px">

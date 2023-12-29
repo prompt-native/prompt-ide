@@ -10,7 +10,9 @@ import { findModel } from "./PromptLoader";
 export function createDefaultPrompt(type: InterfaceType): ChatPrompt | CompletionPrompt {
     switch (type) {
         case InterfaceType.CHAT:
-            return new ChatPrompt(`chat@${SCHEMA_VERSION}`, DEFAULT_CHAT_ENGINE, []);
+            return new ChatPrompt(`chat@${SCHEMA_VERSION}`, DEFAULT_CHAT_ENGINE, [
+                new Message("user", undefined, ""),
+            ]);
         case InterfaceType.COMPLETION:
             return new CompletionPrompt(
                 `completion@${SCHEMA_VERSION}`,
@@ -99,4 +101,29 @@ export function insertMessage(prompt: ChatPrompt, index: number): ChatPrompt {
     const message = new Message(role, undefined, "");
     prompt.messages.splice(index + 1, 0, message);
     return { ...prompt, messages: prompt.messages };
+}
+
+export function setContext(prompt: ChatPrompt, context?: string): ChatPrompt {
+    return { ...prompt, context: context };
+}
+
+export function changeExample(prompt: ChatPrompt, index: number, message: Message): ChatPrompt {
+    // fixme: range check
+    prompt.examples![index] = message;
+    return { ...prompt };
+}
+
+export function removeExample(prompt: ChatPrompt, index: number): ChatPrompt {
+    const examples = prompt.examples || [];
+    examples.splice(index, 1);
+    return { ...prompt, examples: examples.length == 0 ? undefined : examples };
+}
+
+export function insertExample(prompt: ChatPrompt, index: number): ChatPrompt {
+    let role = "user";
+    if (prompt.examples) role = prompt.examples![index].role == "user" ? "assistant" : "user";
+    const message = new Message(role, undefined, "");
+    const examples = prompt.examples || [];
+    examples.splice(index + 1, 0, message);
+    return { ...prompt, examples: examples };
 }

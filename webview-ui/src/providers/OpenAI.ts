@@ -64,7 +64,6 @@ const DEFAULT_PRESENCE_PENALTY: ParameterType = {
 
 const getParamaters = (maxTokens: number): ParameterType[] => {
     return [
-        DEFAULT_SYSTEM,
         DEFAULT_TEMPERATURE,
         DEFAULT_TOP_P,
         DEFAULT_FREQUENCY_PENALTY,

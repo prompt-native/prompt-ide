@@ -59,7 +59,15 @@ function App() {
     return (
         <main className="flex flex-row justify-space-between">
             {mode == "chat" && (
-                <ChatEditor prompt={prompt as ChatPrompt} onPromptChanged={onPromptChanged} />
+                <ChatEditor
+                    prompt={prompt as ChatPrompt}
+                    onPromptChanged={onPromptChanged}
+                    activeTab={activeTab}
+                    onTabActive={setActiveTab}
+                    onVariableBinded={(name, value) =>
+                        setVariableBinding({ ...variableBinding, [name]: value })
+                    }
+                />
             )}
             {mode == "completion" && (
                 <CompletionEditor
