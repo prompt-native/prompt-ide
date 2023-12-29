@@ -14,6 +14,11 @@ export class PromptEditor implements vscode.CustomTextEditorProvider {
             PromptEditor.viewType,
             provider,
             {
+                /**
+                 * see:
+                 * https://code.visualstudio.com/api/extension-guides/webview
+                 * https://github.com/microsoft/vscode/issues/109205
+                 */
                 webviewOptions: {
                     retainContextWhenHidden: true,
                 },

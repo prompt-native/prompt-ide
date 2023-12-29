@@ -58,7 +58,9 @@ function App() {
     const mode = prompt.version.split("@")[0];
     return (
         <main className="flex flex-row justify-space-between">
-            {mode == "chat" && <ChatEditor prompt={prompt as ChatPrompt} />}
+            {mode == "chat" && (
+                <ChatEditor prompt={prompt as ChatPrompt} onPromptChanged={onPromptChanged} />
+            )}
             {mode == "completion" && (
                 <CompletionEditor
                     prompt={prompt as CompletionPrompt}

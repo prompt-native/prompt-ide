@@ -4,41 +4,52 @@ import {
     VSCodeDataGrid,
     VSCodeDataGridCell,
     VSCodeDataGridRow,
-    VSCodeDivider,
     VSCodePanelTab,
     VSCodePanelView,
     VSCodePanels,
     VSCodeTextArea,
 } from "@vscode/webview-ui-toolkit/react";
-import { ChatPrompt } from "prompt-schema";
+import { ChatPrompt, Message } from "prompt-schema";
+import { changeMessage, insertMessage, removeMessage } from "../utilities/PromptUpdator";
+import MessageItem from "./MessageItem";
 import Variables from "./Variables";
 
 interface ChatEditorProps {
     prompt: ChatPrompt;
+    onPromptChanged: (prompt: ChatPrompt) => void;
 }
 
-function ChatEditor({ prompt }: ChatEditorProps) {
+function ChatEditor({ prompt, onPromptChanged }: ChatEditorProps) {
+    const onMessageChanged = (index: number, role: string, content: string) => {
+        const newPrompt = changeMessage(prompt, index, new Message(role, undefined, content));
+        onPromptChanged(newPrompt as typeof prompt);
+    };
+
+    const onMessageDeleted = (index: number) => {
+        const newPrompt = removeMessage(prompt, index);
+        onPromptChanged(newPrompt as typeof prompt);
+    };
+
+    const onMessageInserted = (index: number) => {
+        const newPrompt = insertMessage(prompt, index);
+        onPromptChanged(newPrompt as typeof prompt);
+    };
+
     return (
         <div className="flex-grow flex-column pl-10 pr-10">
             <div className="flex flex-column">
-                <div className="flex flex-column mb-10">
-                    <label>USER</label>
-                    <VSCodeTextArea
-                        className="input fill"
-                        resize="vertical"
-                        rows={1}
-                        placeholder="Enter your prompt here"></VSCodeTextArea>
-                    <VSCodeDivider />
-                </div>
-                <div className="flex flex-column mb-10">
-                    <label>ASSISTANT</label>
-                    <VSCodeTextArea
-                        className="input fill"
-                        resize="vertical"
-                        rows={1}
-                        placeholder="Enter your prompt here"></VSCodeTextArea>
-                    <VSCodeDivider />
-                </div>
+                {prompt.messages.map((message, index) => {
+                    return (
+                        <MessageItem
+                            key={index}
+                            index={index}
+                            message={message}
+                            onMessageChanged={onMessageChanged}
+                            onMessageDeleted={onMessageDeleted}
+                            onMessageInserted={onMessageInserted}
+                        />
+                    );
+                })}
                 <VSCodeButton className="button">Submit</VSCodeButton>
             </div>
             <VSCodePanels activeid="tab-4" aria-label="With Active Tab">

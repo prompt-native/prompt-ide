@@ -1,4 +1,4 @@
-import { ChatPrompt, CompletionPrompt, Parameter, Prompt } from "prompt-schema";
+import { ChatPrompt, CompletionPrompt, Message, Parameter, Prompt } from "prompt-schema";
 import {
     DEFAULT_CHAT_ENGINE,
     DEFAULT_COMPLETION_ENGINE,
@@ -82,4 +82,21 @@ export function changeParameter(prompt: Prompt, name: string, valueStr: string):
     else if (parameterType.type == "array") value = valueStr;
 
     return { ...prompt, parameters: [...excluded, new Parameter(name, value)] };
+}
+
+export function changeMessage(prompt: ChatPrompt, index: number, message: Message): ChatPrompt {
+    prompt.messages[index] = message;
+    return { ...prompt };
+}
+
+export function removeMessage(prompt: ChatPrompt, index: number): ChatPrompt {
+    prompt.messages.splice(index, 1);
+    return { ...prompt, messages: prompt.messages };
+}
+
+export function insertMessage(prompt: ChatPrompt, index: number): ChatPrompt {
+    const role = prompt.messages[index].role == "user" ? "assistant" : "user";
+    const message = new Message(role, undefined, "");
+    prompt.messages.splice(index + 1, 0, message);
+    return { ...prompt, messages: prompt.messages };
 }
