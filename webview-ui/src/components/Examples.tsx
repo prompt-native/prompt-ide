@@ -15,7 +15,7 @@ function Examples({ items, onMessageChanged, onMessageDeleted, onMessageInserted
             <div>
                 <p>You can add examples for few-shot prompting.</p>
                 <VSCodeLink href="#" onClick={() => onMessageInserted(0)}>
-                    Create example
+                    Add example
                 </VSCodeLink>
             </div>
         );

@@ -11,12 +11,14 @@ import {
     changeExample,
     changeMessage,
     insertExample,
+    insertFunction,
     insertMessage,
     removeExample,
     removeMessage,
     setContext,
 } from "../utilities/PromptUpdator";
 import Examples from "./Examples";
+import Functions from "./Functions";
 import Messages from "./Messages";
 import Variables, { VariableBinding } from "./Variables";
 
@@ -70,6 +72,11 @@ function ChatEditor({
         onPromptChanged(newPrompt as typeof prompt);
     };
 
+    const onFunctionInserted = (index: number) => {
+        const newPrompt = insertFunction(prompt, index);
+        onPromptChanged(newPrompt as typeof prompt);
+    };
+
     const onTabChange = (e: any) => {
         if (e.detail && e.detail.id) onTabActive(e.detail.id);
     };
@@ -92,6 +99,7 @@ function ChatEditor({
                 <VSCodePanelTab id="tab-variables">VARIABLES</VSCodePanelTab>
                 <VSCodePanelTab id="tab-context">CONTEXT</VSCodePanelTab>
                 <VSCodePanelTab id="tab-samples">SAMPLES</VSCodePanelTab>
+                <VSCodePanelTab id="tab-functions">FUNCTIONS</VSCodePanelTab>
                 <VSCodePanelView id="view-result">
                     <p>No result yet, click submit to execute the prompt.</p>
                 </VSCodePanelView>
@@ -115,6 +123,14 @@ function ChatEditor({
                         onMessageChanged={onExampleChanged}
                         onMessageDeleted={onExampleDeleted}
                         onMessageInserted={onExampleInserted}
+                    />
+                </VSCodePanelView>
+                <VSCodePanelView id="view-functions" className="flex-column">
+                    <Functions
+                        items={prompt.functions || []}
+                        onMessageChanged={onExampleChanged}
+                        onMessageDeleted={onExampleDeleted}
+                        onFunctionInserted={onFunctionInserted}
                     />
                 </VSCodePanelView>
             </VSCodePanels>

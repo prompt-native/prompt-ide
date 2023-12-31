@@ -1,4 +1,12 @@
-import { ChatPrompt, CompletionPrompt, Message, Parameter, Prompt } from "prompt-schema";
+import {
+    ChatPrompt,
+    CompletionPrompt,
+    Function,
+    FunctionParameter,
+    Message,
+    Parameter,
+    Prompt,
+} from "prompt-schema";
 import {
     DEFAULT_CHAT_ENGINE,
     DEFAULT_COMPLETION_ENGINE,
@@ -126,4 +134,25 @@ export function insertExample(prompt: ChatPrompt, index: number): ChatPrompt {
     const examples = prompt.examples || [];
     examples.splice(index + 1, 0, message);
     return { ...prompt, examples: examples };
+}
+
+export function insertFunction(prompt: ChatPrompt, index: number): ChatPrompt {
+    const f = new Function("get_current_weather", "Get the current weather", [
+        new FunctionParameter(
+            "location",
+            "string",
+            true,
+            "The city and state, e.g. San Francisco, CA"
+        ),
+        new FunctionParameter(
+            "format",
+            "string",
+            true,
+            "The temperature unit to use. Infer this from the users location.",
+            ["celsius", "fahrenheit"]
+        ),
+    ]);
+    const functions = prompt.functions || [];
+    functions.splice(index + 1, 0, f);
+    return { ...prompt, functions: functions };
 }
