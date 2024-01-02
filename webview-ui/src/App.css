@@ -75,6 +75,14 @@ body,
     color: red;
 }
 
+.default {
+    color: skyblue;
+}
+
+.info {
+    color: orange;
+}
+
 .bg-danger {
     background: lightcoral;
 }
