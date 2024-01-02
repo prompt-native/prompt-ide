@@ -1,10 +1,10 @@
 import { VSCodeLink } from "@vscode/webview-ui-toolkit/react";
-import { Function } from "prompt-schema";
+import { Function, Message } from "prompt-schema";
 import FunctionItem from "./FunctionItem";
 
 interface FunctionsProps {
     items: Function[];
-    onMessageChanged: (index: number, role: string, content: string) => void;
+    onMessageChanged: (index: number, message: Message) => void;
     onMessageDeleted: (index: number) => void;
     onFunctionInserted: (index: number) => void;
 }

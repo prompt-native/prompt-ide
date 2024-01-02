@@ -37,8 +37,8 @@ function ChatEditor({
     onTabActive,
     onVariableBinded,
 }: ChatEditorProps) {
-    const onMessageChanged = (index: number, role: string, content: string) => {
-        const newPrompt = changeMessage(prompt, index, new Message(role, undefined, content));
+    const onMessageChanged = (index: number, message: Message) => {
+        const newPrompt = changeMessage(prompt, index, message);
         onPromptChanged(newPrompt as typeof prompt);
     };
 
@@ -67,8 +67,8 @@ function ChatEditor({
         onPromptChanged(newPrompt as typeof prompt);
     };
 
-    const onExampleChanged = (index: number, role: string, content: string) => {
-        const newPrompt = changeExample(prompt, index, new Message(role, undefined, content));
+    const onExampleChanged = (index: number, message: Message) => {
+        const newPrompt = changeExample(prompt, index, message);
         onPromptChanged(newPrompt as typeof prompt);
     };
 

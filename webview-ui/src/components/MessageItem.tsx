@@ -1,11 +1,11 @@
 import { VSCodeButton, VSCodeTextArea, VSCodeTextField } from "@vscode/webview-ui-toolkit/react";
-import { Message } from "prompt-schema";
+import { FunctionCall, Message } from "prompt-schema";
 import MessageBase from "./MessageBase";
 
 interface MessageProps {
     index: number;
     message: Message;
-    onMessageChanged: (index: number, role: string, content: string) => void;
+    onMessageChanged: (index: number, message: Message) => void;
     onMessageDeleted?: (index: number) => void;
     onMessageInserted?: (index: number) => void;
     rows?: number;
@@ -37,27 +37,6 @@ function textArea(onChange: (t: string) => void, name?: string, content?: string
     );
 }
 
-function reanderActions(
-    index: number,
-    onMessageDeleted?: (index: number) => void,
-    onMessageInserted?: (index: number) => void
-) {
-    return (
-        <>
-            {onMessageInserted && (
-                <VSCodeButton appearance="icon" onClick={() => onMessageInserted(index)}>
-                    <span className={`codicon codicon-insert`}></span>
-                </VSCodeButton>
-            )}
-            {onMessageDeleted && (
-                <VSCodeButton appearance="icon" onClick={() => onMessageDeleted(index)}>
-                    <span className={`codicon codicon-close danger`}></span>
-                </VSCodeButton>
-            )}
-        </>
-    );
-}
-
 function MessageItem({
     index,
     message,
@@ -70,33 +49,84 @@ function MessageItem({
 
     const onTypeChanged = () => {
         const nextType = message.role == "user" ? "assistant" : "user";
-        onMessageChanged(index, nextType, message.content || "");
+
+        onMessageChanged(index, new Message(nextType, undefined, message.content));
+    };
+
+    const onSwitchToFunction = () => {
+        onMessageChanged(index, new Message("function", "hello_function", "{}"));
     };
 
     const onContentChanged = (text: string) => {
-        onMessageChanged(index, message.role, text);
+        onMessageChanged(index, { ...message, content: text });
     };
 
-    if (message.role == "user") {
+    const onNameChanged = (name: string | undefined) => {
+        onMessageChanged(index, { ...message, name: name });
+    };
+
+    const onSwitchToFunctionCall = () => {
+        onMessageChanged(index, {
+            ...message,
+            content: undefined,
+            functionCall: new FunctionCall("hello_function", { name: "world" }),
+        });
+    };
+
+    const onSwitchToContent = () => {
+        onMessageChanged(index, { ...message, content: "", functionCall: undefined });
+    };
+
+    const reanderActions = () => {
         return (
-            <MessageBase
-                icon={"feedback"}
-                title={"user"}
-                onNextType={onTypeChanged}
-                renderActions={() => reanderActions(index, onMessageDeleted, onMessageInserted)}>
-                {textArea(onContentChanged, message.name, message.content, rows)}
-            </MessageBase>
+            <>
+                {message.role == "user" && (
+                    <VSCodeButton appearance="icon" onClick={() => onNameChanged("user")}>
+                        <span className={`codicon codicon-tag`}></span>
+                    </VSCodeButton>
+                )}
+                {message.role == "user" && (
+                    <VSCodeButton appearance="icon" onClick={() => onNameChanged(undefined)}>
+                        <span className={`codicon codicon-clear-all`}></span>
+                    </VSCodeButton>
+                )}
+                {message.role == "assistant" && (
+                    <VSCodeButton appearance="icon" onClick={() => onSwitchToFunctionCall()}>
+                        <span className={`codicon codicon-bracket-dot`}></span>
+                    </VSCodeButton>
+                )}
+                {message.role == "assistant" && (
+                    <VSCodeButton appearance="icon" onClick={() => onSwitchToFunctionCall()}>
+                        <span className={`codicon codicon-call-outgoing`}></span>
+                    </VSCodeButton>
+                )}
+                {message.role == "assistant" && (
+                    <VSCodeButton appearance="icon" onClick={() => onSwitchToContent()}>
+                        <span className={`codicon codicon-clear-all`}></span>
+                    </VSCodeButton>
+                )}
+                {onMessageInserted && (
+                    <VSCodeButton appearance="icon" onClick={() => onMessageInserted(index)}>
+                        <span className={`codicon codicon-insert`}></span>
+                    </VSCodeButton>
+                )}
+                {onMessageDeleted && (
+                    <VSCodeButton appearance="icon" onClick={() => onMessageDeleted(index)}>
+                        <span className={`codicon codicon-close danger`}></span>
+                    </VSCodeButton>
+                )}
+            </>
         );
-    } else if (message.role == "assistant") {
+    };
+
+    if (message.role == "assistant") {
         if (message.functionCall) {
             return (
                 <MessageBase
                     icon={"call-outgoing danger"}
                     title={"assistant"}
                     onNextType={onTypeChanged}
-                    renderActions={() =>
-                        reanderActions(index, onMessageDeleted, onMessageInserted)
-                    }>
+                    renderActions={() => reanderActions()}>
                     <>
                         <VSCodeTextField className="mb-10" value={message.functionCall.name}>
                             {"function name"}
@@ -118,27 +148,28 @@ function MessageItem({
                 icon={"robot info"}
                 title={"assistant"}
                 onNextType={onTypeChanged}
-                renderActions={() => reanderActions(index, onMessageDeleted, onMessageInserted)}>
+                renderActions={() => reanderActions()}>
                 {textArea(onContentChanged, message.name, message.content, rows)}
             </MessageBase>
         );
-    } else if (message.role == "function") {
-        return (
-            <MessageBase
-                icon={"call-incoming default"}
-                title={"function"}
-                onNextType={onTypeChanged}
-                renderActions={() => reanderActions(index, onMessageDeleted, onMessageInserted)}>
-                <>
-                    <VSCodeTextField className="mb-10" value={message.name}>
-                        {"function name"}
-                    </VSCodeTextField>
-                    {textArea(onContentChanged, "function result", message.content, rows)}
-                </>
-            </MessageBase>
-        );
     }
-    throw new Error("Unknown role:" + message.role);
+    const contentTitle = message.role == "function" ? "function result" : "content";
+    return (
+        <MessageBase
+            icon={"call-incoming default"}
+            title={message.role}
+            onNextType={onTypeChanged}
+            renderActions={() => reanderActions()}>
+            <>
+                {message.name && (
+                    <VSCodeTextField className="mb-10" value={message.name}>
+                        {`${message.role} name`}
+                    </VSCodeTextField>
+                )}
+                {textArea(onContentChanged, contentTitle, message.content, rows)}
+            </>
+        </MessageBase>
+    );
 }
 
 export default MessageItem;

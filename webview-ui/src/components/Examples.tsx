@@ -4,7 +4,7 @@ import MessageItem from "./MessageItem";
 
 interface ExamplesProps {
     items: Message[];
-    onMessageChanged: (index: number, role: string, content: string) => void;
+    onMessageChanged: (index: number, message: Message) => void;
     onMessageDeleted: (index: number) => void;
     onMessageInserted: (index: number) => void;
 }

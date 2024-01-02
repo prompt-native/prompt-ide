@@ -1,10 +1,10 @@
-import { Function } from "prompt-schema";
+import { Function, Message } from "prompt-schema";
 import Collapse from "./Collapse";
 
 interface FunctionItemProps {
     index: number;
     functionDefination: Function;
-    onMessageChanged: (index: number, role: string, content: string) => void;
+    onMessageChanged: (index: number, message: Message) => void;
     onMessageDeleted?: (index: number) => void;
     onMessageInserted?: (index: number) => void;
     rows?: number;
