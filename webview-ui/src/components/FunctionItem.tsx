@@ -33,16 +33,14 @@ function FunctionItem({
         <Collapse
             children={
                 <div className="flex flex-column mb-10">
-                    {functionDefination.description && (
-                        <small>{functionDefination.description}</small>
-                    )}
+                    {functionDefination.description && <p>{functionDefination.description}</p>}
 
                     {functionDefination.parameters && (
-                        <ul className="flex flex-column">
+                        <div className="flex flex-column">
                             {functionDefination.parameters?.map((param) => (
-                                <li>
-                                    <strong>{param.name}</strong>
+                                <div key={JSON.stringify(param)}>
                                     {param.required && <span className="danger">*</span>}
+                                    <strong>{param.name}</strong>
                                     {param.enums && <span>[{param.enums.join(", ")}]</span>}
                                     {param.description && (
                                         <>
@@ -50,9 +48,9 @@ function FunctionItem({
                                             <span className="ml-10">{param.description}</span>
                                         </>
                                     )}
-                                </li>
+                                </div>
                             ))}
-                        </ul>
+                        </div>
                     )}
                 </div>
             }
