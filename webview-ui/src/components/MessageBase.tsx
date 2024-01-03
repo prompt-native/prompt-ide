@@ -1,4 +1,4 @@
-import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
+import { VSCodeButton, VSCodeDivider } from "@vscode/webview-ui-toolkit/react";
 import { ReactNode } from "react";
 
 interface MessageBaseProps {
@@ -20,6 +20,7 @@ function MessageBase({ icon, title, renderActions, children, onNextType }: Messa
                 {renderActions()}
             </div>
             {children}
+            <VSCodeDivider />
         </div>
     );
 }

@@ -7,9 +7,9 @@ function Error({ errors }: ErrorProps) {
             <h2 className="danger">Error: Loading Failed</h2>
             <p>Failed to load the prompt, please fix the content manually and try again.</p>
             {errors.map((error) => (
-                <pre key={`${error}`} className="bg-danger padding-20">
+                <p key={`${error}`} className="bg-danger padding-20 system-font ">
                     {error}
-                </pre>
+                </p>
             ))}
         </main>
     );
