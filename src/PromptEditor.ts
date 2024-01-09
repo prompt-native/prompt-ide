@@ -94,6 +94,8 @@ export class PromptEditor implements vscode.CustomTextEditorProvider {
             "assets",
             "Lato-Regular.ttf",
         ]);
+        const getAsset = (name: string) =>
+            getUri(webview, this.context.extensionUri, ["webview-ui", "build", "assets", name]);
         const nonce = getNonce();
 
         return /*html*/ `
@@ -102,18 +104,47 @@ export class PromptEditor implements vscode.CustomTextEditorProvider {
         <head>
           <meta charset="UTF-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <meta http-equiv="Content-Security-Policy" content="default-src 'none';img-src ${webview.cspSource} https:; connect-src https://us-central1-aiplatform.googleapis.com; style-src ${webview.cspSource} 'nonce-${nonce}' ; font-src ${webview.cspSource}; script-src 'unsafe-eval' 'nonce-${nonce}';">
+          <meta http-equiv="Content-Security-Policy" content="default-src 'none';img-src ${
+              webview.cspSource
+          } blob:; connect-src https://us-central1-aiplatform.googleapis.com; style-src ${
+            webview.cspSource
+        } 'nonce-${nonce}' ; font-src ${
+            webview.cspSource
+        }; script-src 'unsafe-eval' 'nonce-${nonce}';">
           <link rel="stylesheet" type="text/css" href="${stylesUri}">
           <title>Prompt Editor</title>
           <style nonce="${nonce}">
               @font-face {
-              font-family: "codicon";
-              font-display: block;
-              src: url("${codiconFontUri}") format("truetype");
+                font-family: "codicon";
+                font-display: block;
+                src: url("${getAsset("codicon.ttf")}") format("truetype");
               }
               @font-face {
-              font-family: "lato";
-              src: url("${latoFontUri}") format("truetype");
+                  font-family: "lato";
+                  src: url("${getAsset("Lato-Regular.ttf")}") format("truetype");
+                  font-weight: normal;
+                  font-style: normal;
+              }
+              @font-face {
+                  font-family: "lato";
+                  src: url("${getAsset("Lato-Bold.ttf")}") format("truetype");
+                  font-weight: bold;
+                  font-style: normal;
+              }
+              @font-face {
+                  font-family: "lato";
+                  src: url("${getAsset("Lato-Italic.ttf")}") format("truetype");
+                  font-weight: normal;
+                  font-style: italic;
+              }
+              .user-avatar {
+                background-image: url("${getAsset("user.png")}");
+              }
+              .assistant-avatar {
+                background-image: url("${getAsset("assistant.png")}");
+              }
+              .function-avatar {
+                background-image: url("${getAsset("function.png")}");
               }
           </style>
         </head>

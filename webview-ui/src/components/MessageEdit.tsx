@@ -1,7 +1,6 @@
 import { VSCodeTextArea } from "@vscode/webview-ui-toolkit/react";
 import { Message } from "prompt-schema";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import userImg from "../user.png";
 
 interface MessageProps {
     index: number;
@@ -58,10 +57,10 @@ function MessageEdit({ index, message }: MessageProps) {
     return (
         <div className="flex justify-space-between ph-10 lato">
             <div className="mr-10">
-                <img src={userImg} className="fixed-48 rounded" />
+                <div className={`${message.role}-avatar avatar fixed-48 rounded`} />
             </div>
             <div className="fill flex flex-column align-start justify-start">
-                <div className="bold">Jack </div>
+                <div className="bold vs-forground mb-10">{message.role} </div>
                 <div>{message.content}</div>
             </div>
         </div>
