@@ -133,6 +133,10 @@ body,
     margin-bottom: 10px;
 }
 
+.mt-10 {
+    margin-top: 10px;
+}
+
 .pl-20 {
     padding-left: 20px;
 }
@@ -214,4 +218,9 @@ body,
 
 .vs-forground {
     color: var(--foreground);
+}
+
+pre {
+    /* fix for highlight.js pre block */
+    margin: 0;
 }

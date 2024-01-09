@@ -1,6 +1,12 @@
 import { VSCodeTextArea } from "@vscode/webview-ui-toolkit/react";
+import hljs from "highlight.js";
+import json from "highlight.js/lib/languages/json";
+import "highlight.js/styles/default.css";
 import { Message } from "prompt-schema";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import Highlight from "react-highlight";
+
+hljs.registerLanguage("json", json);
 
 interface MessageProps {
     index: number;
@@ -38,6 +44,12 @@ function MessageEdit({ index, message }: MessageProps) {
 
     useLayoutEffect(adjustHeight, []);
 
+    /**
+        vscode-light - Light themes.
+        vscode-dark - Dark themes.
+        vscode-high-contrast - High contrast themes.
+     */
+    console.log(document.body.className);
     if (editing)
         return (
             <div className="flex">
@@ -54,6 +66,10 @@ function MessageEdit({ index, message }: MessageProps) {
                 />
             </div>
         );
+    const contentBuilder = (content: string, isJson: boolean) => {
+        if (!isJson) return <div>{content}</div>;
+        return <Highlight className="json no-margin">{content}</Highlight>;
+    };
     return (
         <div className="flex justify-space-between ph-10 lato">
             <div className="mr-10">
@@ -61,7 +77,9 @@ function MessageEdit({ index, message }: MessageProps) {
             </div>
             <div className="fill flex flex-column align-start justify-start">
                 <div className="bold vs-forground mb-10">{message.role} </div>
-                <div>{message.content}</div>
+                {message.content && contentBuilder(message.content, message.role == "function")}
+                {message.function_calls &&
+                    contentBuilder(message.function_calls![0].arguments, true)}
             </div>
         </div>
     );

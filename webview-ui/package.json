@@ -8,12 +8,16 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@types/highlightjs": "^9.12.6",
+        "@types/react-highlight": "^0.12.8",
         "@vscode/webview-ui-toolkit": "^1.4.0",
         "ajv": "^8.12.0",
+        "highlight.js": "^11.9.0",
+        "prompt-schema": "file:../prompt-schema",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
-        "yaml": "^2.3.4",
-        "prompt-schema": "file:../prompt-schema"
+        "react-highlight": "^0.15.0",
+        "yaml": "^2.3.4"
     },
     "devDependencies": {
         "@types/jest": "^29.5.11",
