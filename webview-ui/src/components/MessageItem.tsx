@@ -1,6 +1,7 @@
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
 import { FunctionCall, Message } from "prompt-schema";
-import Highlight from "react-highlight";
+import { useState } from "react";
+import ContentEdit from "./ContentEdit";
 
 interface MessageProps {
     index: number;
@@ -18,7 +19,7 @@ function capitalizeFirstChar(str: string): string {
 }
 
 function MessageItem({
-    index,
+    index: messageIndex,
     message,
     onMessageChanged,
     onMessageDeleted,
@@ -27,29 +28,37 @@ function MessageItem({
     selected,
     setSelected,
 }: MessageProps) {
+    const [editing, setEditing] = useState(false);
     const onNextRole = () => {
         if (message.role == "user")
-            onMessageChanged(index, new Message("assistant", undefined, message.content));
+            onMessageChanged(messageIndex, new Message("assistant", undefined, message.content));
         else if (message.role == "assistant")
-            onMessageChanged(index, new Message("user", undefined, message.content));
+            onMessageChanged(messageIndex, new Message("user", undefined, message.content));
         else if (message.role == "function")
-            onMessageChanged(index, new Message("user", undefined, ""));
+            onMessageChanged(messageIndex, new Message("user", undefined, ""));
     };
 
     const onSwitchToFunction = () => {
-        onMessageChanged(index, new Message("function", "hello_function", "{}"));
+        onMessageChanged(messageIndex, new Message("function", "hello_function", "{}"));
     };
 
     const onContentChanged = (text: string) => {
-        onMessageChanged(index, { ...message, content: text });
+        onMessageChanged(messageIndex, { ...message, content: text });
+    };
+
+    const onFunctionCallChanged = (functionCallIndex: number, name: string, args: string) => {
+        const updated = { ...message };
+        updated.function_calls![functionCallIndex].name = name;
+        updated.function_calls![functionCallIndex].arguments = args;
+        onMessageChanged(messageIndex, updated);
     };
 
     const onNameChanged = (name: string | undefined) => {
-        onMessageChanged(index, { ...message, name: name });
+        onMessageChanged(messageIndex, { ...message, name: name });
     };
 
     const onSwitchToFunctionCall = () => {
-        onMessageChanged(index, {
+        onMessageChanged(messageIndex, {
             ...message,
             content: undefined,
             function_calls: [new FunctionCall("hello_function", "{}")],
@@ -57,12 +66,12 @@ function MessageItem({
     };
 
     const onSwitchToContent = () => {
-        onMessageChanged(index, { ...message, content: "", function_calls: undefined });
+        onMessageChanged(messageIndex, { ...message, content: "", function_calls: undefined });
     };
 
     const reanderActions = () => {
         return (
-            <div>
+            <div className="flex align-start">
                 {message.role == "user" && (
                     <VSCodeButton appearance="icon" onClick={() => onNameChanged("user")}>
                         <span className={`codicon codicon-tag`}></span>
@@ -89,22 +98,17 @@ function MessageItem({
                     </VSCodeButton>
                 )}
                 {onMessageInserted && (
-                    <VSCodeButton appearance="icon" onClick={() => onMessageInserted(index)}>
+                    <VSCodeButton appearance="icon" onClick={() => onMessageInserted(messageIndex)}>
                         <span className={`codicon codicon-insert`}></span>
                     </VSCodeButton>
                 )}
                 {onMessageDeleted && (
-                    <VSCodeButton appearance="icon" onClick={() => onMessageDeleted(index)}>
+                    <VSCodeButton appearance="icon" onClick={() => onMessageDeleted(messageIndex)}>
                         <span className={`codicon codicon-close danger`}></span>
                     </VSCodeButton>
                 )}
             </div>
         );
-    };
-
-    const contentBuilder = (content: string, isJson: boolean) => {
-        if (!isJson) return <div>{content}</div>;
-        return <Highlight className="json no-margin">{content}</Highlight>;
     };
 
     return (
@@ -115,19 +119,31 @@ function MessageItem({
                 <div className={`${message.role}-avatar avatar fixed-48 rounded`} />
             </div>
             <div className="fill flex flex-column align-start justify-start">
-                <div className="bold vs-forground mb-10 flex flex-row justify-space-between">
+                <div className="bold vs-forground fixed-height-32 flex flex-row justify-space-between">
                     <div>{capitalizeFirstChar(message.name || message.role)}</div>
                     {selected && reanderActions()}
                 </div>
-                {message.content && contentBuilder(message.content, message.role == "function")}
+                {message.content && (
+                    <ContentEdit
+                        content={message.content}
+                        onContentChanged={onContentChanged}
+                        isJson={message.role == "function"}
+                    />
+                )}
                 {message.function_calls &&
-                    message.function_calls.map((f) => (
+                    message.function_calls.map((f, index) => (
                         <>
                             <div className="mb-10 flex align-center italic">
                                 <span className={`codicon codicon-live-share mr-10 default`}></span>
                                 {f.name}
                             </div>
-                            {contentBuilder(f.arguments, true)}
+                            <ContentEdit
+                                content={f.arguments}
+                                onContentChanged={(args) =>
+                                    onFunctionCallChanged(index, f.name, args)
+                                }
+                                isJson
+                            />
                         </>
                     ))}
             </div>
