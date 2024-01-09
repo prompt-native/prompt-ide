@@ -1,5 +1,6 @@
 import { VSCodeLink, VSCodeTextArea, VSCodeTextField } from "@vscode/webview-ui-toolkit/react";
 import { ParameterType } from "../providers/Common";
+import { TextFieldType } from "@vscode/webview-ui-toolkit";
 
 export interface ParameterItemProps {
     type: ParameterType;

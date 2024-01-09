@@ -88,6 +88,12 @@ export class PromptEditor implements vscode.CustomTextEditorProvider {
             "assets",
             "codicon.ttf",
         ]);
+        const latoFontUri = getUri(webview, this.context.extensionUri, [
+            "webview-ui",
+            "build",
+            "assets",
+            "Lato-Regular.ttf",
+        ]);
         const nonce = getNonce();
 
         return /*html*/ `
@@ -96,7 +102,7 @@ export class PromptEditor implements vscode.CustomTextEditorProvider {
         <head>
           <meta charset="UTF-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src https://us-central1-aiplatform.googleapis.com; style-src ${webview.cspSource} 'nonce-${nonce}' ; font-src ${webview.cspSource}; script-src 'unsafe-eval' 'nonce-${nonce}';">
+          <meta http-equiv="Content-Security-Policy" content="default-src 'none';img-src ${webview.cspSource} https:; connect-src https://us-central1-aiplatform.googleapis.com; style-src ${webview.cspSource} 'nonce-${nonce}' ; font-src ${webview.cspSource}; script-src 'unsafe-eval' 'nonce-${nonce}';">
           <link rel="stylesheet" type="text/css" href="${stylesUri}">
           <title>Prompt Editor</title>
           <style nonce="${nonce}">
@@ -104,6 +110,10 @@ export class PromptEditor implements vscode.CustomTextEditorProvider {
               font-family: "codicon";
               font-display: block;
               src: url("${codiconFontUri}") format("truetype");
+              }
+              @font-face {
+              font-family: "lato";
+              src: url("${latoFontUri}") format("truetype");
               }
           </style>
         </head>

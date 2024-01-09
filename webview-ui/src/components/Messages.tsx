@@ -1,5 +1,5 @@
 import { Message } from "prompt-schema";
-import MessageItem from "./MessageItem";
+import MessageEdit from "./MessageEdit";
 
 interface MessagesProps {
     items: Message[];
@@ -13,7 +13,7 @@ function Messages({ items, onMessageChanged, onMessageDeleted, onMessageInserted
         <>
             {items.map((message, index) => {
                 return (
-                    <MessageItem
+                    <MessageEdit
                         key={index}
                         index={index}
                         message={message}

@@ -52,10 +52,10 @@ function CompletionEditor({
             <VSCodePanels activeid={activeTab} onChange={onTabChange}>
                 <VSCodePanelTab id="tab-result">RESULT</VSCodePanelTab>
                 <VSCodePanelTab id="tab-variables">VARIABLES</VSCodePanelTab>
-                <VSCodePanelView id="view-result">
+                <VSCodePanelView id="view-result" className="no-padding">
                     <p>No result yet, click submit to execute the prompt.</p>
                 </VSCodePanelView>
-                <VSCodePanelView id="view-variables">
+                <VSCodePanelView id="view-variables" className="no-padding">
                     <Variables
                         variables={variables}
                         onVariableBinded={onVariableBinded}></Variables>

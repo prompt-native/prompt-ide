@@ -100,15 +100,15 @@ function ChatEditor({
                 <VSCodePanelTab id="tab-context">CONTEXT</VSCodePanelTab>
                 <VSCodePanelTab id="tab-samples">SAMPLES</VSCodePanelTab>
                 <VSCodePanelTab id="tab-functions">FUNCTIONS</VSCodePanelTab>
-                <VSCodePanelView id="view-result">
+                <VSCodePanelView id="view-result" className="no-padding">
                     <p>No result yet, click submit to execute the prompt.</p>
                 </VSCodePanelView>
-                <VSCodePanelView id="view-variables">
+                <VSCodePanelView id="view-variables" className="no-padding">
                     <Variables
                         variables={variables}
                         onVariableBinded={onVariableBinded}></Variables>
                 </VSCodePanelView>
-                <VSCodePanelView id="view-context">
+                <VSCodePanelView id="view-context" className="no-padding">
                     <VSCodeTextArea
                         className="input fill"
                         resize="vertical"
@@ -117,7 +117,7 @@ function ChatEditor({
                         onChange={(e) => onContextChanged((e.target as HTMLInputElement).value)}
                         placeholder="Set the persona, background, etc of the dialogue"></VSCodeTextArea>
                 </VSCodePanelView>
-                <VSCodePanelView id="view-samples" className="flex-column">
+                <VSCodePanelView id="view-samples" className="flex-column no-padding">
                     <Examples
                         items={prompt.examples || []}
                         onMessageChanged={onExampleChanged}
@@ -125,7 +125,7 @@ function ChatEditor({
                         onMessageInserted={onExampleInserted}
                     />
                 </VSCodePanelView>
-                <VSCodePanelView id="view-functions" className="flex-column">
+                <VSCodePanelView id="view-functions" className="flex-column no-padding">
                     <Functions
                         items={prompt.functions || []}
                         onMessageChanged={onExampleChanged}

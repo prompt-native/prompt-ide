@@ -6,6 +6,11 @@ body,
     margin: 0;
 }
 
+@font-face {
+    font-family: "lato";
+    src: url("./Lato-Regular.ttf") format("truetype");
+}
+
 #root {
     display: flex;
     flex-direction: column;
@@ -92,6 +97,10 @@ body,
         Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
+.padding-10 {
+    padding: 10px;
+}
+
 .padding-20 {
     padding: 20px;
 }
@@ -108,6 +117,9 @@ body,
     margin-bottom: 10px;
 }
 
+.pl-20 {
+    padding-left: 20px;
+}
 .pl-10 {
     padding-left: 10px;
 }
@@ -116,10 +128,50 @@ body,
     padding-right: 10px;
 }
 
+.pr-20 {
+    padding-right: 20px;
+}
+
+.ph-10 {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.fixed-32 {
+    width: 32px;
+}
+
+.fixed-48 {
+    width: 48px;
+}
+
+.rounded {
+    border-radius: 5px;
+}
+
 .fixed-100 {
     width: 100px;
 }
 
 .fixed-150 {
     width: 150px;
+}
+
+.no-padding {
+    padding: 0;
+}
+
+.bordered {
+    border: 1px solid gray;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.small {
+    font-size: small;
+}
+
+.lato {
+    font-family: "Lato", sans-serif;
 }
