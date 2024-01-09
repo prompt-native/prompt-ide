@@ -1,5 +1,6 @@
 import { Message } from "prompt-schema";
-import MessageEdit from "./MessageEdit";
+import { useState } from "react";
+import MessageItem from "./MessageItem";
 
 interface MessagesProps {
     items: Message[];
@@ -9,11 +10,15 @@ interface MessagesProps {
 }
 
 function Messages({ items, onMessageChanged, onMessageDeleted, onMessageInserted }: MessagesProps) {
+    const [activeIndex, setActiveIndex] = useState(-1);
+
     return (
         <>
             {items.map((message, index) => {
                 return (
-                    <MessageEdit
+                    <MessageItem
+                        selected={activeIndex == index}
+                        setSelected={() => setActiveIndex(index)}
                         key={index}
                         index={index}
                         message={message}
