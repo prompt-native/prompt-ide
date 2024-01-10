@@ -92,7 +92,7 @@ function ChatEditor({
                     onMessageDeleted={onMessageDeleted}
                     onMessageInserted={onMessageInserted}
                 />
-                <VSCodeButton className="button">Submit</VSCodeButton>
+                <VSCodeButton className="button mt-10">Submit</VSCodeButton>
             </div>
             <VSCodePanels activeid={activeTab} onChange={onTabChange}>
                 <VSCodePanelTab id="tab-result">RESULT</VSCodePanelTab>

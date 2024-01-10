@@ -61,6 +61,8 @@ export class PromptEditor implements vscode.CustomTextEditorProvider {
             switch (e.type) {
                 case "sync":
                     this.updateTextDocument(document, e.text);
+                case "error":
+                    vscode.window.showErrorMessage(e.text);
                 default:
                     break;
             }
@@ -106,7 +108,7 @@ export class PromptEditor implements vscode.CustomTextEditorProvider {
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <meta http-equiv="Content-Security-Policy" content="default-src 'none';img-src ${
               webview.cspSource
-          } blob:; connect-src https://us-central1-aiplatform.googleapis.com; style-src ${
+          } blob:; connect-src https://us-central1-aiplatform.googleapis.com https://api.openai.com; style-src ${
             webview.cspSource
         } 'nonce-${nonce}' ; font-src ${
             webview.cspSource

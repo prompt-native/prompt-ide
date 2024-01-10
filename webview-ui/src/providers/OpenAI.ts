@@ -1,4 +1,7 @@
+import { CompletionPrompt } from "prompt-schema";
 import { InterfaceType, ModelType, ParameterType } from "./Common";
+import { PromptExecutor } from "./Executor";
+import Result from "./Result";
 
 const DEFAULT_SYSTEM: ParameterType = {
     name: "system",
@@ -110,3 +113,43 @@ export const GPT3_5_MODELS: ModelType[] = [
             "Currently points to gpt-3.5-turbo-0613. Will point to gpt-3.5-turbo-1106 starting Dec 11, 2023. ",
     },
 ];
+
+class CompletionRequest {
+    constructor(
+        public model: string,
+        public prompt: string,
+        public max_tokens?: number,
+        public temperature?: number,
+        public top_p?: number,
+        public n?: number,
+        public logprobs?: number,
+        public suffix?: string,
+        public stop?: string,
+        public presence_penalty?: number,
+        public frequency_penalty?: number
+    ) {}
+}
+
+export class OpenAIExecutor implements PromptExecutor {
+    constructor(private apiKey: string) {}
+    async executeCompletion(prompt: CompletionPrompt): Promise<Result> {
+        const request = new CompletionRequest(prompt.engine, prompt.prompt);
+        return fetch("https://api.openai.com/v1/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${this.apiKey}`,
+            },
+            body: JSON.stringify(request),
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    return response.json().then((errorBody: any) => {
+                        throw new Error(`HTTP ${response.status}:\n${errorBody.error.message}`);
+                    });
+                }
+                return response.json();
+            })
+            .then((data) => Result.fromJSON(data));
+    }
+}

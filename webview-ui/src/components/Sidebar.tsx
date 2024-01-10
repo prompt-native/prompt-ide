@@ -50,7 +50,6 @@ function Sidebar({ prompt, onPromptChanged }: SidebarProps) {
     const mode = getMode(type);
 
     const parameterProps = buildParameterProps(model, prompt.parameters || []);
-    console.log(parameterProps);
 
     const onTypeChanged = (selectedMode: string) => {
         if (selectedMode != mode) {

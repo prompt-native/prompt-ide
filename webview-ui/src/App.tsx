@@ -1,5 +1,5 @@
 import { ChatPrompt, CompletionPrompt } from "prompt-schema";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import "./codicon.css";
 import ChatEditor from "./components/ChatEditor";
@@ -7,20 +7,20 @@ import CompletionEditor from "./components/CompletionEditor";
 import Error from "./components/Error";
 import Loading from "./components/Loading";
 import Sidebar from "./components/Sidebar";
+import { PromptExecutionDelegate } from "./providers/Executor";
+import Result from "./providers/Result";
+import { syncPrompt } from "./utilities/Message";
 import { loadPrompt } from "./utilities/PromptLoader";
-import { vscode } from "./utilities/vscode";
 
 function App() {
     const [prompt, setPrompt] = useState<ChatPrompt | CompletionPrompt | null>(null);
     const [errors, setErrors] = useState<string[]>([]);
     const [activeTab, setActiveTab] = useState("");
     const [variableBinding, setVariableBinding] = useState({});
+    const [openAIKey, setOpenAIKey] = useState(null);
 
     const onPromptChanged = (newPrompt: ChatPrompt | CompletionPrompt) => {
-        vscode.postMessage({
-            type: "sync",
-            text: JSON.stringify(newPrompt, null, 2),
-        });
+        syncPrompt(newPrompt);
         setPrompt(newPrompt);
     };
 
@@ -40,6 +40,14 @@ function App() {
             }
         }
     };
+
+    const executePrompt = useCallback(
+        (prompt: CompletionPrompt): Promise<Result> => {
+            const deleagate = new PromptExecutionDelegate(openAIKey || "");
+            return deleagate.executeCompletion(prompt);
+        },
+        [openAIKey]
+    );
 
     useEffect(() => {
         window.addEventListener("message", messageListener);
@@ -71,6 +79,7 @@ function App() {
             )}
             {mode == "completion" && (
                 <CompletionEditor
+                    executePrompt={executePrompt}
                     prompt={prompt as CompletionPrompt}
                     onPromptChanged={onPromptChanged}
                     activeTab={activeTab}
