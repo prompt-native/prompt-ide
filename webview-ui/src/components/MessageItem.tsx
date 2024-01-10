@@ -1,17 +1,16 @@
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
-import { FunctionCall, Message } from "prompt-schema";
-import { useState } from "react";
+import { Message } from "prompt-schema";
 import ContentEdit from "./ContentEdit";
 
 interface MessageProps {
-    index: number;
+    messageIndex: number;
     message: Message;
     onMessageChanged: (index: number, message: Message) => void;
     onMessageDeleted?: (index: number) => void;
     onMessageInserted?: (index: number) => void;
     rows?: number;
     selected?: boolean;
-    setSelected?: () => void;
+    onClick?: () => void;
 }
 
 function capitalizeFirstChar(str: string): string {
@@ -19,27 +18,20 @@ function capitalizeFirstChar(str: string): string {
 }
 
 function MessageItem({
-    index: messageIndex,
+    messageIndex,
     message,
     onMessageChanged,
     onMessageDeleted,
     onMessageInserted,
     rows,
     selected,
-    setSelected,
+    onClick,
 }: MessageProps) {
-    const [editing, setEditing] = useState(false);
     const onNextRole = () => {
         if (message.role == "user")
             onMessageChanged(messageIndex, new Message("assistant", undefined, message.content));
         else if (message.role == "assistant")
             onMessageChanged(messageIndex, new Message("user", undefined, message.content));
-        else if (message.role == "function")
-            onMessageChanged(messageIndex, new Message("user", undefined, ""));
-    };
-
-    const onSwitchToFunction = () => {
-        onMessageChanged(messageIndex, new Message("function", "hello_function", "{}"));
     };
 
     const onContentChanged = (text: string) => {
@@ -53,50 +45,9 @@ function MessageItem({
         onMessageChanged(messageIndex, updated);
     };
 
-    const onNameChanged = (name: string | undefined) => {
-        onMessageChanged(messageIndex, { ...message, name: name });
-    };
-
-    const onSwitchToFunctionCall = () => {
-        onMessageChanged(messageIndex, {
-            ...message,
-            content: undefined,
-            function_calls: [new FunctionCall("hello_function", "{}")],
-        });
-    };
-
-    const onSwitchToContent = () => {
-        onMessageChanged(messageIndex, { ...message, content: "", function_calls: undefined });
-    };
-
     const reanderActions = () => {
         return (
             <div className="flex align-start">
-                {message.role == "user" && (
-                    <VSCodeButton appearance="icon" onClick={() => onNameChanged("user")}>
-                        <span className={`codicon codicon-tag`}></span>
-                    </VSCodeButton>
-                )}
-                {message.role == "user" && (
-                    <VSCodeButton appearance="icon" onClick={() => onNameChanged(undefined)}>
-                        <span className={`codicon codicon-clear-all`}></span>
-                    </VSCodeButton>
-                )}
-                {message.role == "assistant" && (
-                    <VSCodeButton appearance="icon" onClick={() => onSwitchToFunctionCall()}>
-                        <span className={`codicon codicon-bracket-dot`}></span>
-                    </VSCodeButton>
-                )}
-                {message.role == "assistant" && (
-                    <VSCodeButton appearance="icon" onClick={() => onSwitchToFunction()}>
-                        <span className={`codicon codicon-call-incoming`}></span>
-                    </VSCodeButton>
-                )}
-                {message.role == "assistant" && (
-                    <VSCodeButton appearance="icon" onClick={() => onSwitchToContent()}>
-                        <span className={`codicon codicon-clear-all`}></span>
-                    </VSCodeButton>
-                )}
                 {onMessageInserted && (
                     <VSCodeButton appearance="icon" onClick={() => onMessageInserted(messageIndex)}>
                         <span className={`codicon codicon-insert`}></span>
@@ -113,10 +64,13 @@ function MessageItem({
 
     return (
         <div
-            onClick={setSelected}
+            onClick={onClick}
             className={`flex justify-space-between ph-10 lato ${selected ? "selected" : ""}`}>
             <div className="mr-10">
-                <div className={`${message.role}-avatar avatar fixed-48 rounded`} />
+                <div
+                    className={`${message.role}-avatar avatar fixed-48 rounded`}
+                    onDoubleClick={onNextRole}
+                />
             </div>
             <div className="fill flex flex-column align-start justify-start">
                 <div className="bold vs-forground fixed-height-32 flex flex-row justify-space-between">
@@ -126,6 +80,14 @@ function MessageItem({
                 {message.content && (
                     <ContentEdit
                         content={message.content}
+                        onContentChanged={onContentChanged}
+                        isJson={message.role == "function"}
+                    />
+                )}
+                {!message.content && !message.function_calls && (
+                    <ContentEdit
+                        content={""}
+                        edit
                         onContentChanged={onContentChanged}
                         isJson={message.role == "function"}
                     />

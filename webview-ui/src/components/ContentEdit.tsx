@@ -6,10 +6,11 @@ interface ContentEditProps {
     content: string;
     rows?: number;
     isJson?: boolean;
+    edit?: boolean;
     onContentChanged: (text: string) => void;
 }
-function ContentEdit({ content, rows, onContentChanged, isJson }: ContentEditProps) {
-    const [editing, setEditing] = useState(false);
+function ContentEdit({ content, rows, onContentChanged, isJson, edit }: ContentEditProps) {
+    const [editing, setEditing] = useState(edit || false);
     const textAreaRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -28,7 +29,7 @@ function ContentEdit({ content, rows, onContentChanged, isJson }: ContentEditPro
                 // @ts-ignore
                 ref={textAreaRef}
                 className="fill"
-                onBlur={() => setEditing(false)}
+                onBlur={() => setEditing(!content)}
                 onChange={(e) => onContentChanged((e.target as HTMLInputElement).value)}
                 initialValue={content || ""}
             />

@@ -25,7 +25,7 @@ function Examples({ items, onMessageChanged, onMessageDeleted, onMessageInserted
                 return (
                     <MessageItem
                         key={index}
-                        index={index}
+                        messageIndex={index}
                         message={message}
                         onMessageChanged={onMessageChanged}
                         onMessageDeleted={onMessageDeleted}

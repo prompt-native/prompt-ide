@@ -10,17 +10,17 @@ interface MessagesProps {
 }
 
 function Messages({ items, onMessageChanged, onMessageDeleted, onMessageInserted }: MessagesProps) {
-    const [activeIndex, setActiveIndex] = useState(-1);
+    const [activeIndex, setActiveIndex] = useState<number>(-1);
 
     return (
         <>
             {items.map((message, index) => {
                 return (
                     <MessageItem
-                        selected={activeIndex == index}
-                        setSelected={() => setActiveIndex(index)}
+                        selected={activeIndex === index}
+                        onClick={() => setActiveIndex(index)}
                         key={index}
-                        index={index}
+                        messageIndex={index}
                         message={message}
                         onMessageChanged={onMessageChanged}
                         onMessageDeleted={items.length > 1 ? onMessageDeleted : undefined}
