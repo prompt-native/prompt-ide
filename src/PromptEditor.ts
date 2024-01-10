@@ -61,8 +61,10 @@ export class PromptEditor implements vscode.CustomTextEditorProvider {
             switch (e.type) {
                 case "sync":
                     this.updateTextDocument(document, e.text);
+                    break;
                 case "error":
                     vscode.window.showErrorMessage(e.text);
+                    break;
                 default:
                     break;
             }
