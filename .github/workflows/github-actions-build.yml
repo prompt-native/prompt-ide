@@ -11,6 +11,8 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: "18.x"
+            - name: test
+              run: ls -la && ls -la ./prompt-schema
             - name: Build dependency
               run: npm run install:schema && npm run build:schema
             - name: Install dependencies
