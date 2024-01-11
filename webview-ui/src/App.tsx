@@ -17,7 +17,7 @@ function App() {
     const [errors, setErrors] = useState<string[]>([]);
     const [activeTab, setActiveTab] = useState("");
     const [variableBinding, setVariableBinding] = useState({});
-    const [openAIKey, setOpenAIKey] = useState(null);
+    const [openAIKey, setOpenAIKey] = useState(undefined);
 
     const onPromptChanged = (newPrompt: ChatPrompt | CompletionPrompt) => {
         syncPrompt(newPrompt);
@@ -43,7 +43,7 @@ function App() {
 
     const executePrompt = useCallback(
         (prompt: CompletionPrompt): Promise<Result> => {
-            const deleagate = new PromptExecutionDelegate(openAIKey || "");
+            const deleagate = new PromptExecutionDelegate(openAIKey);
             return deleagate.executeCompletion(prompt);
         },
         [openAIKey]
@@ -63,6 +63,7 @@ function App() {
         return <Loading />;
     }
 
+    console.log(prompt);
     const mode = prompt.version.split("@")[0];
     return (
         <main className="flex flex-row justify-space-between">

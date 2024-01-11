@@ -27,7 +27,11 @@ export function findModel(engine: string): [string, ModelType] {
 
 export function loadPrompt(text: string): ChatPrompt | CompletionPrompt {
     if (text == "") {
-        return new ChatPrompt("chat@0.1", GPT3_5_MODELS[0].name, []);
+        return new ChatPrompt(
+            "chat@0.1",
+            GPT3_5_MODELS.filter((m) => m.interfaceType == InterfaceType.CHAT)[0].name,
+            []
+        );
     } else {
         const prompt = parsePrompt(text);
         const [g, m] = findModel(prompt.engine);

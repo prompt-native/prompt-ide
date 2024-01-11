@@ -7,12 +7,13 @@ export interface PromptExecutor {
 }
 
 export class PromptExecutionDelegate implements PromptExecutor {
-    private openAiExecutor: OpenAIExecutor;
-    constructor(private openAIApiKey: string) {
-        this.openAiExecutor = new OpenAIExecutor(openAIApiKey);
+    private openAiExecutor: OpenAIExecutor | undefined;
+    constructor(private openAIApiKey?: string) {
+        this.openAiExecutor = openAIApiKey ? new OpenAIExecutor(openAIApiKey) : undefined;
     }
 
     async executeCompletion(prompt: CompletionPrompt): Promise<Result> {
-        return this.openAiExecutor.executeCompletion(prompt);
+        if (this.openAiExecutor) return this.openAiExecutor.executeCompletion(prompt);
+        else throw new Error("OPENAI_KEY not configured, please configure it in vscode settings");
     }
 }
