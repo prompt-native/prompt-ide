@@ -1,5 +1,6 @@
 import { CompletionPrompt } from "prompt-schema";
 import { appendOutput } from "../utilities/Message";
+import { getParameterAsNumber, getParameterAsString } from "../utilities/PromptHelper";
 import { InterfaceType, ModelType, ParameterType } from "./Common";
 import { PromptExecutor } from "./Executor";
 import Result from "./Result";
@@ -130,19 +131,55 @@ export const GPT3_5_MODELS: ModelType[] = [
 ];
 
 class CompletionRequest {
-    constructor(
-        public model: string,
-        public prompt: string,
-        public max_tokens?: number,
-        public temperature?: number,
-        public top_p?: number,
-        public n?: number,
-        public logprobs?: number,
-        public suffix?: string,
-        public stop?: string,
-        public presence_penalty?: number,
-        public frequency_penalty?: number
-    ) {}
+    model: string;
+    prompt: string;
+    max_tokens?: number;
+    temperature?: number;
+    top_p?: number;
+    n?: number;
+    logprobs?: number;
+    suffix?: string;
+    stop?: string;
+    presence_penalty?: number;
+    frequency_penalty?: number;
+
+    constructor({
+        model,
+        prompt,
+        max_tokens,
+        temperature,
+        top_p,
+        n,
+        logprobs,
+        suffix,
+        stop,
+        presence_penalty,
+        frequency_penalty,
+    }: {
+        model: string;
+        prompt: string;
+        max_tokens?: number;
+        temperature?: number;
+        top_p?: number;
+        n?: number;
+        logprobs?: number;
+        suffix?: string;
+        stop?: string;
+        presence_penalty?: number;
+        frequency_penalty?: number;
+    }) {
+        this.model = model;
+        this.prompt = prompt;
+        this.max_tokens = max_tokens;
+        this.temperature = temperature;
+        this.top_p = top_p;
+        this.n = n;
+        this.logprobs = logprobs;
+        this.suffix = suffix;
+        this.stop = stop;
+        this.presence_penalty = presence_penalty;
+        this.frequency_penalty = frequency_penalty;
+    }
 }
 
 const OPENAI_URL = "https://api.openai.com/v1/completions";
@@ -159,8 +196,24 @@ function formatHeaders(headers: Headers): string {
 
 export class OpenAIExecutor implements PromptExecutor {
     constructor(private apiKey: string) {}
+    private assembleRequest(prompt: CompletionPrompt): CompletionRequest {
+        return new CompletionRequest({
+            model: prompt.engine,
+            prompt: prompt.prompt,
+            max_tokens: getParameterAsNumber(prompt, "max_tokens"),
+            temperature: getParameterAsNumber(prompt, "temperature"),
+            top_p: getParameterAsNumber(prompt, "top_p"),
+            n: getParameterAsNumber(prompt, "n"),
+            logprobs: getParameterAsNumber(prompt, "logprobs"),
+            presence_penalty: getParameterAsNumber(prompt, "presence_penalty"),
+            frequency_penalty: getParameterAsNumber(prompt, "frequency_penalty"),
+            suffix: getParameterAsString(prompt, "suffix"),
+            stop: getParameterAsString(prompt, "stop"),
+        });
+    }
+
     async executeCompletion(prompt: CompletionPrompt): Promise<Result> {
-        const request = new CompletionRequest(prompt.engine, prompt.prompt);
+        const request = this.assembleRequest(prompt);
         const body = JSON.stringify(request);
         appendOutput(`-> POST ${OPENAI_URL}\n${body}`);
         return fetch(OPENAI_URL, {

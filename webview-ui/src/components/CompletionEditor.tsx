@@ -55,6 +55,7 @@ function CompletionEditor({
             const result = await executePrompt(prompt);
             setResult(result);
         } catch (err) {
+            console.log(err);
             setError(`${err}`);
         } finally {
             setExecuting(false);
@@ -85,10 +86,7 @@ function CompletionEditor({
                     onChange={(e) => onTextChanged((e.target as HTMLInputElement).value)}
                     placeholder="Enter your prompt here"></VSCodeTextArea>
                 <div className="flex">
-                    <VSCodeButton
-                        className="button fill mr-10"
-                        disabled={executing}
-                        onClick={onSubmit}>
+                    <VSCodeButton className="button fill" disabled={executing} onClick={onSubmit}>
                         Submit
                     </VSCodeButton>
                 </div>
