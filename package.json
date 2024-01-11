@@ -1,11 +1,12 @@
 {
     "name": "prompt-ide",
     "displayName": "Prompt IDE",
-    "description": "An IDE for create and test LLM prompts",
+    "description": "PromptIDE is a Visual Studio Code extension that streamlines prompt creation and testing for LLM applications using a unified format based on the Prompt Schema.",
     "version": "0.0.1",
     "engines": {
         "vscode": "^1.75.0"
     },
+    "repository": "https://github.com/prompt-native/prompt-ide",
     "main": "./out/extension.js",
     "contributes": {
         "customEditors": [
