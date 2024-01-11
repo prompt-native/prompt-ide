@@ -32,7 +32,7 @@ function CompletionEditor({
 }: CompletionEditorProps) {
     const [executing, setExecuting] = useState<boolean>(false);
     const [error, setError] = useState<null | string>(null);
-    const [result, setResult] = useState<null | Result>(null);
+    const [result, setResult] = useState<null | Result>();
 
     const variables = parseVariables(prompt.prompt).map((v) => new VariableBinding(v, ""));
     const onTextChanged = (text: string) => {
@@ -53,11 +53,25 @@ function CompletionEditor({
         try {
             setExecuting(true);
             const result = await executePrompt(prompt);
+            setResult(result);
         } catch (err) {
             setError(`${err}`);
         } finally {
             setExecuting(false);
         }
+    };
+
+    const renderResult = () => {
+        if (executing)
+            return (
+                <div className="padding-10 flex flex-column align-center fill">
+                    <VSCodeProgressRing />
+                    <p>Requesting...</p>
+                </div>
+            );
+        if (!error && !result) return <p>No result yet, click submit to execute the prompt.</p>;
+        if (error) return <p className="danger pre-line">{error}</p>;
+        return <div className="mt-10">{result?.choices[0].text}</div>;
     };
 
     return (
@@ -72,20 +86,18 @@ function CompletionEditor({
                     placeholder="Enter your prompt here"></VSCodeTextArea>
                 <div className="flex">
                     <VSCodeButton
-                        className="button fixed-100"
+                        className="button fill mr-10"
                         disabled={executing}
                         onClick={onSubmit}>
                         Submit
                     </VSCodeButton>
-                    {executing && <VSCodeProgressRing />}
                 </div>
             </div>
             <VSCodePanels activeid={activeTab} onChange={onTabChange}>
                 <VSCodePanelTab id="tab-result">RESULT</VSCodePanelTab>
                 <VSCodePanelTab id="tab-variables">VARIABLES</VSCodePanelTab>
                 <VSCodePanelView id="view-result" className="no-padding">
-                    {!error && !result && <p>No result yet, click submit to execute the prompt.</p>}
-                    {error && <p className="danger pre-line">{error}</p>}
+                    {renderResult()}
                 </VSCodePanelView>
                 <VSCodePanelView id="view-variables" className="no-padding">
                     <Variables

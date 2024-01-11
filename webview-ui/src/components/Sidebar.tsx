@@ -48,7 +48,6 @@ function Sidebar({ prompt, onPromptChanged }: SidebarProps) {
     const availableModels = getAvailableModels(group, model.interfaceType);
     const type = model.interfaceType;
     const mode = getMode(type);
-
     const parameterProps = buildParameterProps(model, prompt.parameters || []);
 
     const onTypeChanged = (selectedMode: string) => {
@@ -102,13 +101,17 @@ function Sidebar({ prompt, onPromptChanged }: SidebarProps) {
                 <VSCodeRadio value="completion">Completion</VSCodeRadio>
             </VSCodeRadioGroup>
             <label>Group</label>
+            {/**
+             * fixme: vscode dropdown does not show selected value
+             * see: https://github.com/microsoft/vscode-webview-ui-toolkit/issues/433
+             */}
             <VSCodeDropdown
                 className="button mb-10"
                 position="below"
                 value={group}
                 onChange={(e) => onGroupChanged((e.target as HTMLInputElement).value)}>
                 {groups.map((t) => (
-                    <VSCodeOption value={t} key={t}>
+                    <VSCodeOption value={t} key={t} selected={t === group}>
                         {t}
                     </VSCodeOption>
                 ))}
@@ -120,7 +123,7 @@ function Sidebar({ prompt, onPromptChanged }: SidebarProps) {
                 value={model?.name || ""}
                 onChange={(e) => onModelChanged((e.target as HTMLInputElement).value)}>
                 {availableModels.map((t) => (
-                    <VSCodeOption value={t.name} key={t.name}>
+                    <VSCodeOption value={t.name} key={t.name} selected={t.name === model?.name}>
                         {t.name}
                     </VSCodeOption>
                 ))}

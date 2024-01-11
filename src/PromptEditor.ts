@@ -46,8 +46,8 @@ export class PromptEditor implements vscode.CustomTextEditorProvider {
         };
         const sendConfiguration = () => {
             console.log("updating webview");
-            const configuration = vscode.workspace.getConfiguration("prompt-ide");
-            const openaiKey = configuration.get("promptIde.openaiKey");
+            const configuration = vscode.workspace.getConfiguration("promptIde");
+            const openaiKey = configuration.get("openaiKey");
             webviewPanel.webview.postMessage({
                 type: "configuration",
                 text: JSON.stringify({ openaiKey: openaiKey }),
@@ -61,8 +61,17 @@ export class PromptEditor implements vscode.CustomTextEditorProvider {
             }
         });
 
+        const changeConfigurationSubscription = vscode.workspace.onDidChangeConfiguration(
+            (event) => {
+                if (event.affectsConfiguration("promptIde.openaiKey")) {
+                    sendConfiguration();
+                }
+            }
+        );
+
         webviewPanel.onDidDispose(() => {
             changeDocumentSubscription.dispose();
+            changeConfigurationSubscription.dispose();
         });
 
         webviewPanel.webview.onDidReceiveMessage((e) => {
