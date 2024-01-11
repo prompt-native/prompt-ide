@@ -1,37 +1,9 @@
-# Hello World (React + Vite)
+# Prompt IDE
 
-This is an implementation of the default [Hello World](https://github.com/microsoft/vscode-webview-ui-toolkit-samples/tree/main/default/hello-world) sample extension that demonstrates how to set up and use a [React](https://reactjs.org/) + [Vite](https://vitejs.dev/) + [Webview UI Toolkit](https://github.com/microsoft/vscode-webview-ui-toolkit) webview extension.
+_**ALERT: Prompt IDE IS IN ALPHA AND IS SUBJECT TO CHANGE.**_
 
-![A screenshot of the sample extension.](./assets/hello-world.png)
+When developing applications using LLM, you may encounter different types of LLM providers and frequently need to modify prompts. However, since there is no standard tool for this, you often have to switch between different playgrounds and message formats.
 
-## Documentation
+PromptIDE is a Visual Studio Code extension that helps you create and test prompts in a unified format provided by Prompt Schema.
 
-For a deeper dive into how this sample works, read the guides below.
-
-- [Extension structure](./docs/extension-structure.md)
-- [Extension commands](./docs/extension-commands.md)
-- [Extension development cycle](./docs/extension-development-cycle.md)
-
-## Run The Sample
-
-```bash
-# Copy sample extension locally
-npx degit microsoft/vscode-webview-ui-toolkit-samples/frameworks/hello-world-react-vite hello-world
-
-# Navigate into sample directory
-cd hello-world
-
-# Install dependencies for both the extension and webview UI source code
-npm run install:all
-
-# Build webview UI source code
-npm run build:webview
-
-# Open sample in VS Code
-code .
-```
-
-Once the sample is open inside VS Code you can run the extension by doing the following:
-
-1. Press `F5` to open a new Extension Development Host window
-2. Inside the host window, open the command palette (`Ctrl+Shift+P` or `Cmd+Shift+P` on Mac) and type `Hello World (React + Vite): Show`
+![](./screenshot.png)
