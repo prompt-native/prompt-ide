@@ -20,10 +20,15 @@ function Functions({
             <div>
                 <p>
                     Function calling allows you to more reliably get structured data back from the
-                    model.{" "}
+                    model.
                 </p>
+                <strong>
+                    Note: function editing is currently not implemented, please edit the source file
+                    manually.
+                </strong>
+
                 <VSCodeLink href="#" onClick={() => onFunctionInserted(0)}>
-                    Add function
+                    Add function example
                 </VSCodeLink>
             </div>
         );

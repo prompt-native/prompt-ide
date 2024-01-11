@@ -105,8 +105,14 @@ export function removeMessage(prompt: ChatPrompt, index: number): ChatPrompt {
 }
 
 export function insertMessage(prompt: ChatPrompt, index: number): ChatPrompt {
-    const role = prompt.messages[index].role == "user" ? "assistant" : "user";
-    const message = new Message(role, undefined, "");
+    let message;
+    if (index > prompt.messages.length - 1) {
+        message = new Message("user", undefined, "");
+    } else {
+        const role = prompt.messages[index].role == "user" ? "assistant" : "user";
+        message = new Message(role, undefined, "");
+    }
+
     prompt.messages.splice(index + 1, 0, message);
     return { ...prompt, messages: prompt.messages };
 }

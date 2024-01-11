@@ -82,17 +82,29 @@ function ChatEditor({
     };
 
     const variables = parseChatVariables(prompt.messages).map((v) => new VariableBinding(v, ""));
+    const noMessages = !prompt.messages || prompt.messages.length == 0;
 
     return (
         <div className="flex-grow flex-column pl-10 pr-10">
             <div className="flex flex-column">
+                {noMessages && (
+                    <div className="flex  flex-column align-center">
+                        <p>No messages found</p>
+                        <VSCodeButton className="button mt-10" onClick={() => onMessageInserted(0)}>
+                            <span className="codicon codicon-plus"></span>
+                            Create message
+                        </VSCodeButton>
+                    </div>
+                )}
                 <Messages
                     items={prompt.messages || []}
                     onMessageChanged={onMessageChanged}
                     onMessageDeleted={onMessageDeleted}
                     onMessageInserted={onMessageInserted}
                 />
-                <VSCodeButton className="button mt-10">Submit</VSCodeButton>
+                <VSCodeButton disabled={noMessages} className="button mt-10">
+                    Submit
+                </VSCodeButton>
             </div>
             <VSCodePanels activeid={activeTab} onChange={onTabChange}>
                 <VSCodePanelTab id="tab-result">RESULT</VSCodePanelTab>

@@ -9,7 +9,7 @@ import Loading from "./components/Loading";
 import Sidebar from "./components/Sidebar";
 import { PromptExecutionDelegate } from "./providers/Executor";
 import Result from "./providers/Result";
-import { syncPrompt } from "./utilities/Message";
+import { showError, syncPrompt } from "./utilities/Message";
 import { loadPrompt } from "./utilities/PromptLoader";
 
 function App() {
@@ -17,7 +17,7 @@ function App() {
     const [errors, setErrors] = useState<string[]>([]);
     const [activeTab, setActiveTab] = useState("");
     const [variableBinding, setVariableBinding] = useState({});
-    const [openAIKey, setOpenAIKey] = useState(undefined);
+    const [openAIKey, setOpenAIKey] = useState<string | undefined>(undefined);
 
     const onPromptChanged = (newPrompt: ChatPrompt | CompletionPrompt) => {
         syncPrompt(newPrompt);
@@ -37,6 +37,14 @@ function App() {
             } catch (error) {
                 console.error(error);
                 setErrors([`${error}`]);
+            }
+        } else if (message.type == "configuration") {
+            const text = message.text;
+            try {
+                const config = JSON.parse(text);
+                setOpenAIKey(config.openaiKey);
+            } catch (error) {
+                showError(`${error}`);
             }
         }
     };

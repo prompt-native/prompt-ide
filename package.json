@@ -22,6 +22,17 @@
     "repository": "https://github.com/prompt-native/prompt-ide",
     "main": "./out/extension.js",
     "contributes": {
+        "configuration": [
+            {
+                "title": "Prompt IDE",
+                "properties": {
+                    "promptIde.openaiKey": {
+                        "type": "string",
+                        "description": "OpenAI API key"
+                    }
+                }
+            }
+        ],
         "customEditors": [
             {
                 "viewType": "promptIde.editor",
