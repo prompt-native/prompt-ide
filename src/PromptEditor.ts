@@ -69,9 +69,12 @@ export class PromptEditor implements vscode.CustomTextEditorProvider {
             }
         );
 
+        const outputChannel = vscode.window.createOutputChannel("Prompt IDE");
+
         webviewPanel.onDidDispose(() => {
             changeDocumentSubscription.dispose();
             changeConfigurationSubscription.dispose();
+            outputChannel.dispose();
         });
 
         webviewPanel.webview.onDidReceiveMessage((e) => {
@@ -82,6 +85,9 @@ export class PromptEditor implements vscode.CustomTextEditorProvider {
                     break;
                 case "error":
                     vscode.window.showErrorMessage(e.text);
+                    break;
+                case "output":
+                    outputChannel.appendLine(e.text);
                     break;
                 default:
                     break;

@@ -14,3 +14,10 @@ export function showError(info: string) {
         text: info,
     });
 }
+
+export function appendOutput(info: string) {
+    vscode.postMessage({
+        type: "output",
+        text: info,
+    });
+}

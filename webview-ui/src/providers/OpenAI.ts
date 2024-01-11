@@ -1,4 +1,5 @@
 import { CompletionPrompt } from "prompt-schema";
+import { appendOutput } from "../utilities/Message";
 import { InterfaceType, ModelType, ParameterType } from "./Common";
 import { PromptExecutor } from "./Executor";
 import Result from "./Result";
@@ -144,25 +145,46 @@ class CompletionRequest {
     ) {}
 }
 
+const OPENAI_URL = "https://api.openai.com/v1/completions";
+
+function formatHeaders(headers: Headers): string {
+    let formattedHeaders = "";
+
+    headers.forEach((value, name) => {
+        formattedHeaders += `${name}: ${value}\n`;
+    });
+
+    return formattedHeaders;
+}
+
 export class OpenAIExecutor implements PromptExecutor {
     constructor(private apiKey: string) {}
     async executeCompletion(prompt: CompletionPrompt): Promise<Result> {
         const request = new CompletionRequest(prompt.engine, prompt.prompt);
-        return fetch("https://api.openai.com/v1/completions", {
+        const body = JSON.stringify(request);
+        appendOutput(`-> POST ${OPENAI_URL}\n${body}`);
+        return fetch(OPENAI_URL, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${this.apiKey}`,
             },
-            body: JSON.stringify(request),
+            body,
         })
             .then((response) => {
+                appendOutput(
+                    `-> Got response: ${response.status}\n${formatHeaders(response.headers)}`
+                );
                 if (!response.ok) {
                     return response.json().then((errorBody: any) => {
                         throw new Error(`HTTP ${response.status}:\n${errorBody.error.message}`);
                     });
                 }
                 return response.json();
+            })
+            .then((data) => {
+                appendOutput(JSON.stringify(data));
+                return data;
             })
             .then((data) => Result.fromJSON(data));
     }
