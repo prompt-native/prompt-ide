@@ -1,8 +1,8 @@
-import { ModelType } from "../providers/Common";
+import { EngineType } from "../providers/EngineProvider";
 import { MINIMAX_MODELS } from "../providers/Minimax";
 import { GPT3_5_MODELS, GPT_BASE_MODELS } from "../providers/OpenAI";
 
-export const MODEL_GROUPS: { [key: string]: ModelType[] } = {
+export const MODEL_GROUPS: { [key: string]: EngineType[] } = {
     "GPTbase": GPT_BASE_MODELS,
     "GPT3.5": GPT3_5_MODELS,
     "Minimax": MINIMAX_MODELS,

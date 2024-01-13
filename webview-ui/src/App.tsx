@@ -1,4 +1,4 @@
-import { ChatPrompt, CompletionPrompt } from "prompt-schema";
+import { ChatPrompt, CompletionPrompt, Prompt } from "prompt-schema";
 import { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import "./codicon.css";
@@ -7,17 +7,25 @@ import CompletionEditor from "./components/CompletionEditor";
 import Error from "./components/Error";
 import Loading from "./components/Loading";
 import Sidebar from "./components/Sidebar";
-import { PromptExecutionDelegate } from "./providers/Executor";
+import ExecuteDelegate from "./providers/ExecuteDelegate";
 import Result from "./providers/Result";
 import { showError, syncPrompt } from "./utilities/Message";
 import { loadPrompt } from "./utilities/PromptLoader";
+
+export class Configuration {
+    constructor(
+        public openaiKey?: string,
+        public minimaxKey?: string,
+        public minimaxGroupId?: string
+    ) {}
+}
 
 function App() {
     const [prompt, setPrompt] = useState<ChatPrompt | CompletionPrompt | null>(null);
     const [errors, setErrors] = useState<string[]>([]);
     const [activeTab, setActiveTab] = useState("");
     const [variableBinding, setVariableBinding] = useState({});
-    const [openAIKey, setOpenAIKey] = useState<string | undefined>(undefined);
+    const [configuration, setConfiguration] = useState<Configuration | {}>({});
 
     const onPromptChanged = (newPrompt: ChatPrompt | CompletionPrompt) => {
         syncPrompt(newPrompt);
@@ -42,7 +50,7 @@ function App() {
             const text = message.text;
             try {
                 const config = JSON.parse(text);
-                setOpenAIKey(config.openaiKey);
+                setConfiguration(config);
             } catch (error) {
                 showError(`${error}`);
             }
@@ -50,11 +58,15 @@ function App() {
     };
 
     const executePrompt = useCallback(
-        (prompt: CompletionPrompt): Promise<Result> => {
-            const deleagate = new PromptExecutionDelegate(openAIKey);
-            return deleagate.executeCompletion(prompt);
+        (prompt: Prompt): Promise<Result> => {
+            const deleagate = new ExecuteDelegate(configuration);
+            if (prompt.version.startsWith("chat@"))
+                return deleagate.executeChat(prompt as ChatPrompt);
+            else if (prompt.version.startsWith("completion@"))
+                return deleagate.executeCompletion(prompt as CompletionPrompt);
+            else return Promise.reject("Unsupported prompt type");
         },
-        [openAIKey]
+        [configuration]
     );
 
     useEffect(() => {
@@ -77,6 +89,7 @@ function App() {
         <main className="flex flex-row justify-space-between">
             {mode == "chat" && (
                 <ChatEditor
+                    executePrompt={executePrompt}
                     prompt={prompt as ChatPrompt}
                     onPromptChanged={onPromptChanged}
                     activeTab={activeTab}

@@ -45,12 +45,18 @@ export class PromptEditor implements vscode.CustomTextEditorProvider {
             });
         };
         const sendConfiguration = () => {
-            console.log("updating webview");
+            console.log("syncing configuration");
             const configuration = vscode.workspace.getConfiguration("promptIde");
             const openaiKey = configuration.get("openaiKey");
+            const minimaxKey = configuration.get("minimaxKey");
+            const minimaxGroupId = configuration.get("minimaxGroupId");
             webviewPanel.webview.postMessage({
                 type: "configuration",
-                text: JSON.stringify({ openaiKey: openaiKey }),
+                text: JSON.stringify({
+                    openaiKey: openaiKey,
+                    minimaxGroupId: minimaxGroupId,
+                    minimaxKey: minimaxKey,
+                }),
             });
         };
 
@@ -135,7 +141,7 @@ export class PromptEditor implements vscode.CustomTextEditorProvider {
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <meta http-equiv="Content-Security-Policy" content="default-src 'none';img-src ${
               webview.cspSource
-          } blob:; connect-src https://us-central1-aiplatform.googleapis.com https://api.openai.com; style-src ${
+          } blob:; connect-src https://us-central1-aiplatform.googleapis.com https://api.openai.com https://api.minimax.chat; style-src ${
             webview.cspSource
         } 'nonce-${nonce}' ; font-src ${
             webview.cspSource

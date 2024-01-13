@@ -21,3 +21,13 @@ export function appendOutput(info: string) {
         text: info,
     });
 }
+
+export function formatHeaders(headers: Headers): string {
+    let formattedHeaders = "";
+
+    headers.forEach((value, name) => {
+        formattedHeaders += `${name}: ${value}\n`;
+    });
+
+    return formattedHeaders;
+}

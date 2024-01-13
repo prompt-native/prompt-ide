@@ -5,7 +5,7 @@ import {
     VSCodeRadioGroup,
 } from "@vscode/webview-ui-toolkit/react";
 import { ChatPrompt, CompletionPrompt, Parameter } from "prompt-schema";
-import { InterfaceType, ModelType, ParameterType } from "../providers/Common";
+import { EngineType, InterfaceType, ParameterType } from "../providers/EngineProvider";
 import { findModel, getAvailableGroups, getAvailableModels } from "../utilities/PromptLoader";
 import {
     changeParameter,
@@ -33,7 +33,7 @@ class ParameterProps {
     constructor(public type: ParameterType, public value?: Parameter) {}
 }
 
-function buildParameterProps(model: ModelType, parameters: Parameter[]): ParameterProps[] {
+function buildParameterProps(model: EngineType, parameters: Parameter[]): ParameterProps[] {
     let availableParameters: ParameterType[] = getModelParameters(model);
     return availableParameters.map((p) => {
         const value = parameters.filter((v) => p.name == v.name);
@@ -44,9 +44,9 @@ function buildParameterProps(model: ModelType, parameters: Parameter[]): Paramet
 
 function Sidebar({ prompt, onPromptChanged }: SidebarProps) {
     const [group, model] = findModel(prompt.engine);
-    const groups = getAvailableGroups(model.interfaceType);
-    const availableModels = getAvailableModels(group, model.interfaceType);
-    const type = model.interfaceType;
+    const type = model.id.interfaceType;
+    const groups = getAvailableGroups(type);
+    const availableModels = getAvailableModels(group, type);
     const mode = getMode(type);
     const parameterProps = buildParameterProps(model, prompt.parameters || []);
 
@@ -63,7 +63,7 @@ function Sidebar({ prompt, onPromptChanged }: SidebarProps) {
         if (selectedGroup != group) {
             const availableModels = getAvailableModels(selectedGroup, type);
             const model = availableModels[0];
-            const newPrompt = resetModel(prompt, model.name);
+            const newPrompt = resetModel(prompt, model.id.name);
             onPromptChanged(newPrompt as typeof prompt);
         }
     };
@@ -120,11 +120,14 @@ function Sidebar({ prompt, onPromptChanged }: SidebarProps) {
             <VSCodeDropdown
                 className="button mb-10"
                 position="below"
-                value={model?.name || ""}
+                value={model?.id.name || ""}
                 onChange={(e) => onModelChanged((e.target as HTMLInputElement).value)}>
                 {availableModels.map((t) => (
-                    <VSCodeOption value={t.name} key={t.name} selected={t.name === model?.name}>
-                        {t.name}
+                    <VSCodeOption
+                        value={t.id.name}
+                        key={t.id.name}
+                        selected={t.id.name === model?.id.name}>
+                        {t.id.name}
                     </VSCodeOption>
                 ))}
                 {availableModels.length == 0 && (

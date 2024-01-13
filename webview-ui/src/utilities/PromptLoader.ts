@@ -1,19 +1,19 @@
 import { ChatPrompt, CompletionPrompt, parsePrompt } from "prompt-schema";
 import { MODEL_GROUPS } from "../config/Constants";
-import { InterfaceType, ModelType } from "../providers/Common";
+import { EngineType, InterfaceType } from "../providers/EngineProvider";
 import { GPT3_5_MODELS } from "../providers/OpenAI";
 
-export function getAvailableModels(group: string, type: InterfaceType): ModelType[] {
-    return MODEL_GROUPS[group].filter((m) => m.interfaceType === type);
+export function getAvailableModels(group: string, type: InterfaceType): EngineType[] {
+    return MODEL_GROUPS[group].filter((m) => m.id.interfaceType === type);
 }
 
 export function getAvailableGroups(type: InterfaceType): string[] {
     return Object.keys(MODEL_GROUPS).filter((group) => getAvailableModels(group, type).length > 0);
 }
 
-export function findModel(engine: string): [string, ModelType] {
+export function findModel(engine: string): [string, EngineType] {
     for (const group of Object.keys(MODEL_GROUPS)) {
-        const candidates = MODEL_GROUPS[group].filter((m) => m.name === engine);
+        const candidates = MODEL_GROUPS[group].filter((m) => m.id.name === engine);
         if (candidates.length > 1) {
             throw new Error(`Multiple models with the same name detected: ${engine}`);
         }
@@ -29,7 +29,7 @@ export function loadPrompt(text: string): ChatPrompt | CompletionPrompt {
     if (text == "") {
         return new ChatPrompt(
             "chat@0.1",
-            GPT3_5_MODELS.filter((m) => m.interfaceType == InterfaceType.CHAT)[0].name,
+            GPT3_5_MODELS.filter((m) => m.id.interfaceType == InterfaceType.CHAT)[0].id.name,
             []
         );
     } else {
@@ -38,8 +38,8 @@ export function loadPrompt(text: string): ChatPrompt | CompletionPrompt {
         const interfaceType = prompt.version.startsWith("chat@")
             ? InterfaceType.CHAT
             : InterfaceType.COMPLETION;
-        if (m.interfaceType != interfaceType)
-            throw new Error(`Model ${m.name} does not support mode ${interfaceType}`);
+        if (m.id.interfaceType != interfaceType)
+            throw new Error(`Model ${m.id.name} does not support mode ${interfaceType}`);
         return prompt;
     }
 }

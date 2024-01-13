@@ -3,9 +3,13 @@ import {
     VSCodePanelTab,
     VSCodePanelView,
     VSCodePanels,
+    VSCodeProgressRing,
     VSCodeTextArea,
 } from "@vscode/webview-ui-toolkit/react";
 import { ChatPrompt, Message } from "prompt-schema";
+import { useState } from "react";
+import Result from "../providers/Result";
+import { showError } from "../utilities/Message";
 import { parseChatVariables } from "../utilities/PromptHelper";
 import {
     changeExample,
@@ -28,6 +32,7 @@ interface ChatEditorProps {
     activeTab?: string;
     onTabActive: (id: string) => void;
     onVariableBinded: (name: string, value: string) => void;
+    executePrompt: (prompt: ChatPrompt) => Promise<Result>;
 }
 
 function ChatEditor({
@@ -36,7 +41,12 @@ function ChatEditor({
     activeTab,
     onTabActive,
     onVariableBinded,
+    executePrompt,
 }: ChatEditorProps) {
+    const [executing, setExecuting] = useState<boolean>(false);
+    const [error, setError] = useState<null | string>(null);
+    const [result, setResult] = useState<null | Result>();
+
     const onMessageChanged = (index: number, message: Message) => {
         const newPrompt = changeMessage(prompt, index, message);
         onPromptChanged(newPrompt as typeof prompt);
@@ -81,6 +91,36 @@ function ChatEditor({
         if (e.detail && e.detail.id) onTabActive(e.detail.id);
     };
 
+    const onSubmit = async () => {
+        if (prompt.messages.length == 0) {
+            showError("Please add messages first");
+            return;
+        }
+        try {
+            setExecuting(true);
+            const result = await executePrompt(prompt);
+            setResult(result);
+        } catch (err) {
+            console.log(err);
+            setError(`${err}`);
+        } finally {
+            setExecuting(false);
+        }
+    };
+
+    const renderResult = () => {
+        if (executing)
+            return (
+                <div className="padding-10 flex flex-column align-center fill">
+                    <VSCodeProgressRing />
+                    <p>Requesting...</p>
+                </div>
+            );
+        if (!error && !result) return <p>No result yet, click submit to execute the prompt.</p>;
+        if (error) return <p className="danger pre-line">{error}</p>;
+        return <div className="mt-10">{result?.choices[0].text}</div>;
+    };
+
     const variables = parseChatVariables(prompt.messages).map((v) => new VariableBinding(v, ""));
     const noMessages = !prompt.messages || prompt.messages.length == 0;
 
@@ -102,7 +142,7 @@ function ChatEditor({
                     onMessageDeleted={onMessageDeleted}
                     onMessageInserted={onMessageInserted}
                 />
-                <VSCodeButton disabled={noMessages} className="button mt-10">
+                <VSCodeButton className="button mt-10" disabled={executing} onClick={onSubmit}>
                     Submit
                 </VSCodeButton>
             </div>
@@ -113,7 +153,7 @@ function ChatEditor({
                 <VSCodePanelTab id="tab-samples">SAMPLES</VSCodePanelTab>
                 <VSCodePanelTab id="tab-functions">FUNCTIONS</VSCodePanelTab>
                 <VSCodePanelView id="view-result" className="no-padding">
-                    <p>No result yet, click submit to execute the prompt.</p>
+                    {renderResult()}
                 </VSCodePanelView>
                 <VSCodePanelView id="view-variables" className="no-padding">
                     <Variables

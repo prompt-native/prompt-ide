@@ -12,7 +12,7 @@ import {
     DEFAULT_COMPLETION_ENGINE,
     SCHEMA_VERSION,
 } from "../config/Constants";
-import { InterfaceType, ModelType, ParameterType } from "../providers/Common";
+import { EngineType, InterfaceType, ParameterType } from "../providers/EngineProvider";
 import { findModel } from "./PromptLoader";
 
 export function createDefaultPrompt(type: InterfaceType): ChatPrompt | CompletionPrompt {
@@ -47,7 +47,7 @@ export function removeParameter(prompt: Prompt, name: string): Prompt {
     return { ...prompt, parameters: parameters };
 }
 
-export function getModelParameters(model: ModelType): ParameterType[] {
+export function getModelParameters(model: EngineType): ParameterType[] {
     if (typeof model.parameters == "function") {
         return model.parameters();
     } else {

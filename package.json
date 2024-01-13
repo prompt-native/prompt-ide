@@ -29,6 +29,14 @@
                     "promptIde.openaiKey": {
                         "type": "string",
                         "description": "OpenAI API key"
+                    },
+                    "promptIde.minimaxKey": {
+                        "type": "string",
+                        "description": "Minimax API key"
+                    },
+                    "promptIde.minimaxGroupId": {
+                        "type": "string",
+                        "description": "Minimax groupId"
                     }
                 }
             }

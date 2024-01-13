@@ -1,8 +1,7 @@
-import { CompletionPrompt } from "prompt-schema";
+import { ChatPrompt, CompletionPrompt } from "prompt-schema";
 import { appendOutput } from "../utilities/Message";
 import { getParameterAsNumber, getParameterAsString } from "../utilities/PromptHelper";
-import { InterfaceType, ModelType, ParameterType } from "./Common";
-import { PromptExecutor } from "./Executor";
+import EngineProvider, { EngineId, EngineType, ParameterType } from "./EngineProvider";
 import Result from "./Result";
 
 const DEFAULT_SYSTEM: ParameterType = {
@@ -78,52 +77,45 @@ const getParamaters = (maxTokens: number): ParameterType[] => {
     ];
 };
 
-export const GPT_BASE_MODELS: ModelType[] = [
+export const GPT_BASE_MODELS: EngineType[] = [
     {
-        name: "babbage-002",
-        interfaceType: InterfaceType.COMPLETION,
+        id: EngineId.completion("babbage-002"),
         parameters: () => getParamaters(4000),
         description: "Replacement for the GPT-3 ada and babbage base models.",
     },
     {
-        name: "davinci-002",
-        interfaceType: InterfaceType.COMPLETION,
+        id: EngineId.completion("davinci-002"),
         parameters: () => getParamaters(4000),
         description: "Replacement for the GPT-3 curie and davinci base models.",
     },
 ];
-export const GPT3_5_MODELS: ModelType[] = [
+export const GPT3_5_MODELS: EngineType[] = [
     {
-        name: "gpt-3.5-turbo-instruct",
-        interfaceType: InterfaceType.COMPLETION,
+        id: EngineId.completion("gpt-3.5-turbo-instruct"),
         parameters: () => getParamaters(4096),
         description:
             "Similar capabilities as text-davinci-003 but compatible with legacy Completions endpoint and not Chat Completions.",
     },
     {
-        name: "gpt-3.5-turbo-instruct-0914",
-        interfaceType: InterfaceType.COMPLETION,
+        id: EngineId.chat("gpt-3.5-turbo-instruct-0914"),
         parameters: () => getParamaters(4096),
         description:
             "Similar capabilities as text-davinci-003 but compatible with legacy Completions endpoint and not Chat Completions.",
     },
     {
-        name: "gpt-3.5-turbo",
-        interfaceType: InterfaceType.CHAT,
+        id: EngineId.chat("gpt-3.5-turbo"),
         parameters: () => getParamaters(4096),
         description:
             "Currently points to gpt-3.5-turbo-0613. Will point to gpt-3.5-turbo-1106 starting Dec 11, 2023. ",
     },
     {
-        name: "gpt-3.5-turbo-1106",
-        interfaceType: InterfaceType.CHAT,
+        id: EngineId.chat("gpt-3.5-turbo-1106"),
         parameters: () => getParamaters(4096),
         description:
             "The latest GPT-3.5 Turbo model with improved instruction following, JSON mode, reproducible outputs, parallel function calling, and more. Returns a maximum of 4,096 output tokens.",
     },
     {
-        name: "gpt-3.5-turbo-16k",
-        interfaceType: InterfaceType.CHAT,
+        id: EngineId.chat("gpt-3.5-turbo-16k"),
         parameters: () => getParamaters(16384),
         description:
             "Currently points to gpt-3.5-turbo-0613. Will point to gpt-3.5-turbo-1106 starting Dec 11, 2023. ",
@@ -184,19 +176,14 @@ class CompletionRequest {
 
 const OPENAI_URL = "https://api.openai.com/v1/completions";
 
-function formatHeaders(headers: Headers): string {
-    let formattedHeaders = "";
+export class OpenAIExecutor implements EngineProvider {
+    getEngines(): EngineType[] {
+        return [...GPT_BASE_MODELS, ...GPT3_5_MODELS];
+    }
 
-    headers.forEach((value, name) => {
-        formattedHeaders += `${name}: ${value}\n`;
-    });
-
-    return formattedHeaders;
-}
-
-export class OpenAIExecutor implements PromptExecutor {
     constructor(private apiKey: string) {}
     private assembleRequest(prompt: CompletionPrompt): CompletionRequest {
+        // FIXME: variable substitution
         return new CompletionRequest({
             model: prompt.engine,
             prompt: prompt.prompt,
@@ -210,6 +197,9 @@ export class OpenAIExecutor implements PromptExecutor {
             suffix: getParameterAsString(prompt, "suffix"),
             stop: getParameterAsString(prompt, "stop"),
         });
+    }
+    executeChat(prompt: ChatPrompt): Promise<Result> {
+        throw new Error("Method not implemented.");
     }
 
     async executeCompletion(prompt: CompletionPrompt): Promise<Result> {
@@ -241,4 +231,7 @@ export class OpenAIExecutor implements PromptExecutor {
             })
             .then((data) => Result.fromJSON(data));
     }
+}
+function formatHeaders(headers: Headers) {
+    throw new Error("Function not implemented.");
 }
