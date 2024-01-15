@@ -24,7 +24,9 @@ function App() {
     const [prompt, setPrompt] = useState<ChatPrompt | CompletionPrompt | null>(null);
     const [errors, setErrors] = useState<string[]>([]);
     const [activeTab, setActiveTab] = useState("");
-    const [variableBinding, setVariableBinding] = useState({});
+    const [variableBinding, setVariableBinding] = useState<Map<string, string>>(
+        new Map<string, string>()
+    );
     const [configuration, setConfiguration] = useState<Configuration | {}>({});
 
     const onPromptChanged = (newPrompt: ChatPrompt | CompletionPrompt) => {
@@ -61,12 +63,12 @@ function App() {
         (prompt: Prompt): Promise<Result> => {
             const deleagate = new ExecuteDelegate(configuration);
             if (prompt.version.startsWith("chat@"))
-                return deleagate.executeChat(prompt as ChatPrompt);
+                return deleagate.executeChat(prompt as ChatPrompt, variableBinding);
             else if (prompt.version.startsWith("completion@"))
-                return deleagate.executeCompletion(prompt as CompletionPrompt);
+                return deleagate.executeCompletion(prompt as CompletionPrompt, variableBinding);
             else return Promise.reject("Unsupported prompt type");
         },
-        [configuration]
+        [configuration, variableBinding]
     );
 
     useEffect(() => {
@@ -94,9 +96,13 @@ function App() {
                     onPromptChanged={onPromptChanged}
                     activeTab={activeTab}
                     onTabActive={setActiveTab}
-                    onVariableBinded={(name, value) =>
-                        setVariableBinding({ ...variableBinding, [name]: value })
-                    }
+                    onVariableBinded={(name, value) => {
+                        const binding = new Map<string, string>([
+                            ...variableBinding,
+                            [name, value],
+                        ]);
+                        setVariableBinding(binding);
+                    }}
                 />
             )}
             {mode == "completion" && (
@@ -106,9 +112,13 @@ function App() {
                     onPromptChanged={onPromptChanged}
                     activeTab={activeTab}
                     onTabActive={setActiveTab}
-                    onVariableBinded={(name, value) =>
-                        setVariableBinding({ ...variableBinding, [name]: value })
-                    }
+                    onVariableBinded={(name, value) => {
+                        const binding = new Map<string, string>([
+                            ...variableBinding,
+                            [name, value],
+                        ]);
+                        setVariableBinding(binding);
+                    }}
                 />
             )}
             <Sidebar prompt={prompt} onPromptChanged={onPromptChanged}></Sidebar>

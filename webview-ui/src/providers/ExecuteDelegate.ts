@@ -1,6 +1,7 @@
 import { ChatPrompt, CompletionPrompt, Prompt } from "prompt-schema";
 import { Configuration } from "../App";
 import { appendOutput } from "../utilities/Message";
+import SubstitutionProcessor from "../utilities/SubstitutionProcessor";
 import EngineProvider, { EngineId, EngineType, InterfaceType } from "./EngineProvider";
 import { GptAdaptor } from "./GptAdaptor";
 import { MinimaxAdaptor } from "./MinimaxAdaptor";
@@ -55,13 +56,26 @@ export default class ExecuteDelegate implements EngineProvider {
 
         return executor;
     }
-    public async executeChat(prompt: ChatPrompt): Promise<Result> {
+    public async executeChat(
+        prompt: ChatPrompt,
+        variableBindings?: Map<string, string>
+    ): Promise<Result> {
+        console.log("~", variableBindings);
         const executor = this.getExecutor(prompt, InterfaceType.CHAT);
-        return executor.executeChat(prompt);
+        if (variableBindings) {
+            const processor = new SubstitutionProcessor(variableBindings);
+            return executor.executeChat(processor.substituteChat(prompt));
+        } else return executor.executeChat(prompt);
     }
 
-    public async executeCompletion(prompt: CompletionPrompt): Promise<Result> {
+    public async executeCompletion(
+        prompt: CompletionPrompt,
+        variableBindings?: Map<string, string>
+    ): Promise<Result> {
         const executor = this.getExecutor(prompt, InterfaceType.COMPLETION);
-        return executor.executeCompletion(prompt);
+        if (variableBindings) {
+            const processor = new SubstitutionProcessor(variableBindings);
+            return executor.executeCompletion(processor.substituteCompletion(prompt));
+        } else return executor.executeCompletion(prompt);
     }
 }
