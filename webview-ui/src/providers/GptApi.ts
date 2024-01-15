@@ -216,7 +216,8 @@ export class GptResponseBody {
     }
 }
 
-export const OPENAI_URL = "https://api.openai.com/v1/completions";
+export const GPT_COMPLETION_URL = "https://api.openai.com/v1/completions";
+export const GPT_CHAT_URL = "https://api.openai.com/v1/chat/completions";
 
 export function getResult(json: any): Result {
     const choices = json.choices.map(

@@ -1,8 +1,15 @@
-import { ChatPrompt, CompletionPrompt } from "prompt-schema";
-import { appendOutput } from "../utilities/Message";
+import { ChatPrompt, CompletionPrompt, Message } from "prompt-schema";
+import { appendOutput, formatHeaders } from "../utilities/Message";
 import EngineProvider, { EngineId, EngineType, ParameterType } from "./EngineProvider";
-import { GptCompletionRequest, OPENAI_URL, getResult } from "./OpenAIAPI";
-import Result from "./Result";
+import {
+    GPT_CHAT_URL,
+    GPT_COMPLETION_URL,
+    GptChatRequest,
+    GptCompletionRequest,
+    GptResponseBody,
+    getResult,
+} from "./GptApi";
+import Result, { Choice } from "./Result";
 
 const DEFAULT_SYSTEM: ParameterType = {
     name: "system",
@@ -122,7 +129,7 @@ export const GPT3_5_MODELS: EngineType[] = [
     },
 ];
 
-export class OpenAIAdaptor implements EngineProvider {
+export class GptAdaptor implements EngineProvider {
     getEngines(): EngineType[] {
         return [...GPT_BASE_MODELS, ...GPT3_5_MODELS];
     }
@@ -130,14 +137,51 @@ export class OpenAIAdaptor implements EngineProvider {
     constructor(private apiKey: string) {}
 
     executeChat(prompt: ChatPrompt): Promise<Result> {
-        throw new Error("Method not implemented.");
+        const request = GptChatRequest.fromPrompt(prompt);
+        const body = JSON.stringify(request);
+        appendOutput(`-> POST ${GPT_CHAT_URL}\n${body}`);
+        return fetch(GPT_CHAT_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${this.apiKey}`,
+            },
+            body,
+        })
+            .then((response) => {
+                appendOutput(
+                    `-> Got response: ${response.status}\n${formatHeaders(response.headers)}`
+                );
+                if (!response.ok) {
+                    return response.json().then((errorBody: any) => {
+                        throw new Error(`HTTP ${response.status}:\n${errorBody.error.message}`);
+                    });
+                }
+                return response.json();
+            })
+            .then((data) => {
+                appendOutput(JSON.stringify(data));
+                const response = GptResponseBody.fromJson(data);
+                return new Result(
+                    response.id,
+                    response.created,
+                    response.choices.map(
+                        (c, i) =>
+                            new Choice(
+                                [new Message(c.message.role, undefined, c.message.content)],
+                                i,
+                                c.finish_reason
+                            )
+                    )
+                );
+            });
     }
 
     async executeCompletion(prompt: CompletionPrompt): Promise<Result> {
         const request = GptCompletionRequest.fromPrompt(prompt);
         const body = JSON.stringify(request);
-        appendOutput(`-> POST ${OPENAI_URL}\n${body}`);
-        return fetch(OPENAI_URL, {
+        appendOutput(`-> POST ${GPT_COMPLETION_URL}\n${body}`);
+        return fetch(GPT_COMPLETION_URL, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -162,7 +206,4 @@ export class OpenAIAdaptor implements EngineProvider {
             })
             .then((data) => getResult(data));
     }
-}
-function formatHeaders(headers: Headers) {
-    throw new Error("Function not implemented.");
 }
