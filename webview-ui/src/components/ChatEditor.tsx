@@ -91,6 +91,13 @@ function ChatEditor({
         if (e.detail && e.detail.id) onTabActive(e.detail.id);
     };
 
+    const onAppendResult = (index: number) => {
+        const choices = result!.choices[0].content as Message[];
+        const newPrompt = { ...prompt, messages: [...prompt.messages, choices[index]] };
+        console.log(newPrompt);
+        onPromptChanged(newPrompt as typeof prompt);
+    };
+
     const onSubmit = async () => {
         if (prompt.messages.length == 0) {
             showError("Please add messages first");
@@ -121,7 +128,10 @@ function ChatEditor({
         if (error) return <p className="danger pre-line">{error}</p>;
         return (
             <div className="mt-10 fill">
-                <Messages items={(result?.choices[0].content as Message[]) || []} />
+                <Messages
+                    onMessageAppended={onAppendResult}
+                    items={(result?.choices[0].content as Message[]) || []}
+                />
             </div>
         );
     };

@@ -8,6 +8,7 @@ interface MessageProps {
     onMessageChanged?: (index: number, message: Message) => void;
     onMessageDeleted?: (index: number) => void;
     onMessageInserted?: (index: number) => void;
+    onMessageAppended?: (index: number) => void;
     rows?: number;
     selected?: boolean;
     onClick?: () => void;
@@ -23,6 +24,7 @@ function MessageItem({
     onMessageChanged,
     onMessageDeleted,
     onMessageInserted,
+    onMessageAppended,
     rows,
     selected,
     onClick,
@@ -61,6 +63,11 @@ function MessageItem({
                 {onMessageDeleted && (
                     <VSCodeButton appearance="icon" onClick={() => onMessageDeleted(messageIndex)}>
                         <span className={`codicon codicon-close danger`}></span>
+                    </VSCodeButton>
+                )}
+                {onMessageAppended && (
+                    <VSCodeButton appearance="icon" onClick={() => onMessageAppended(messageIndex)}>
+                        <span className={`codicon codicon-arrow-up`}></span>
                     </VSCodeButton>
                 )}
             </div>
