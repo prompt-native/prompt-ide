@@ -1,4 +1,5 @@
 import { ChatPrompt, Message } from "prompt-schema";
+import { formatHeaders } from "../utilities/Message";
 import { getParameterAsBoolean, getParameterAsNumber } from "../utilities/PromptHelper";
 
 export class CCPMessage {
@@ -117,5 +118,44 @@ export class CCPResponseBody {
         const usage = new CCPUsage(json.usage.total_tokens);
 
         return new CCPResponseBody(json.id, json.created, base_resp, json.reply, choices, usage);
+    }
+}
+
+export class MinimaxCcpClient {
+    constructor(
+        private groupId: string,
+        private apiKey: string,
+        private logger?: (line: string) => void
+    ) {}
+
+    public chatcompletion_pro(request: CCPRequestBody): Promise<CCPResponseBody> {
+        const requestUrl = `https://api.minimax.chat/v1/text/chatcompletion_pro?GroupId=${this.groupId}`;
+        const body = JSON.stringify(request);
+        this.logger && this.logger(`-> POST ${requestUrl}\n${body}`);
+
+        return fetch(requestUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${this.apiKey}`,
+            },
+            body,
+        })
+            .then((response) => {
+                this.logger &&
+                    this.logger(
+                        `-> Got response: ${response.status}\n${formatHeaders(response.headers)}`
+                    );
+                if (!response.ok) {
+                    return response.json().then((errorBody: any) => {
+                        throw new Error(`HTTP ${response.status}:\n${errorBody.error.message}`);
+                    });
+                }
+                return response.json();
+            })
+            .then((data) => {
+                this.logger && this.logger(JSON.stringify(data));
+                return CCPResponseBody.fromJson(data);
+            });
     }
 }

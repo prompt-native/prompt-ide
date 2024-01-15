@@ -1,14 +1,7 @@
 import { ChatPrompt, CompletionPrompt, Message } from "prompt-schema";
-import { appendOutput, formatHeaders } from "../utilities/Message";
+import { appendOutput } from "../utilities/Message";
 import EngineProvider, { EngineId, EngineType, ParameterType } from "./EngineProvider";
-import {
-    GPT_CHAT_URL,
-    GPT_COMPLETION_URL,
-    GptChatRequest,
-    GptCompletionRequest,
-    GptResponseBody,
-    getResult,
-} from "./GptApi";
+import { GptChatRequest, GptClient, GptCompletionRequest } from "./GptApi";
 import Result, { Choice } from "./Result";
 
 const DEFAULT_SYSTEM: ParameterType = {
@@ -130,80 +123,34 @@ export const GPT3_5_MODELS: EngineType[] = [
 ];
 
 export class GptAdaptor implements EngineProvider {
-    getEngines(): EngineType[] {
+    private client: GptClient;
+    constructor(apiKey: string) {
+        this.client = new GptClient(apiKey, appendOutput);
+    }
+
+    public getEngines(): EngineType[] {
         return [...GPT_BASE_MODELS, ...GPT3_5_MODELS];
     }
 
-    constructor(private apiKey: string) {}
-
-    executeChat(prompt: ChatPrompt): Promise<Result> {
+    public async executeChat(prompt: ChatPrompt): Promise<Result> {
         const request = GptChatRequest.fromPrompt(prompt);
-        const body = JSON.stringify(request);
-        appendOutput(`-> POST ${GPT_CHAT_URL}\n${body}`);
-        return fetch(GPT_CHAT_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${this.apiKey}`,
-            },
-            body,
-        })
-            .then((response) => {
-                appendOutput(
-                    `-> Got response: ${response.status}\n${formatHeaders(response.headers)}`
-                );
-                if (!response.ok) {
-                    return response.json().then((errorBody: any) => {
-                        throw new Error(`HTTP ${response.status}:\n${errorBody.error.message}`);
-                    });
-                }
-                return response.json();
-            })
-            .then((data) => {
-                appendOutput(JSON.stringify(data));
-                const response = GptResponseBody.fromJson(data);
-                return new Result(
-                    response.id,
-                    response.created,
-                    response.choices.map(
-                        (c, i) =>
-                            new Choice(
-                                [new Message(c.message.role, undefined, c.message.content)],
-                                i,
-                                c.finish_reason
-                            )
+        const response = await this.client.chat(request);
+        return new Result(
+            response.id,
+            response.created,
+            response.choices.map(
+                (c, i) =>
+                    new Choice(
+                        [new Message(c.message.role, undefined, c.message.content)],
+                        i,
+                        c.finish_reason
                     )
-                );
-            });
+            )
+        );
     }
 
-    async executeCompletion(prompt: CompletionPrompt): Promise<Result> {
+    public async executeCompletion(prompt: CompletionPrompt): Promise<Result> {
         const request = GptCompletionRequest.fromPrompt(prompt);
-        const body = JSON.stringify(request);
-        appendOutput(`-> POST ${GPT_COMPLETION_URL}\n${body}`);
-        return fetch(GPT_COMPLETION_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${this.apiKey}`,
-            },
-            body,
-        })
-            .then((response) => {
-                appendOutput(
-                    `-> Got response: ${response.status}\n${formatHeaders(response.headers)}`
-                );
-                if (!response.ok) {
-                    return response.json().then((errorBody: any) => {
-                        throw new Error(`HTTP ${response.status}:\n${errorBody.error.message}`);
-                    });
-                }
-                return response.json();
-            })
-            .then((data) => {
-                appendOutput(JSON.stringify(data));
-                return data;
-            })
-            .then((data) => getResult(data));
+        return this.client.completion(request);
     }
 }

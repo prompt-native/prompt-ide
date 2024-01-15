@@ -1,7 +1,7 @@
 import { ChatPrompt, CompletionPrompt } from "prompt-schema";
-import { appendOutput, formatHeaders } from "../utilities/Message";
+import { appendOutput } from "../utilities/Message";
 import EngineProvider, { EngineId, EngineType, ParameterType } from "./EngineProvider";
-import { CCPRequestBody, CCPResponseBody } from "./MinimaxCcpApi";
+import { CCPRequestBody, MinimaxCcpClient } from "./MinimaxCcpApi";
 import Result, { Choice } from "./Result";
 
 const DEFAULT_TEMPERATURE: ParameterType = {
@@ -54,59 +54,34 @@ export const MINIMAX_MODELS: EngineType[] = [
 ];
 
 export class MinimaxAdaptor implements EngineProvider {
-    constructor(private groupId: string, private apiKey: string) {}
+    private client: MinimaxCcpClient;
+    constructor(private groupId: string, private apiKey: string) {
+        this.client = new MinimaxCcpClient(groupId, apiKey, appendOutput);
+    }
     getEngines(): EngineType[] {
         return MINIMAX_MODELS;
     }
 
-    executeCompletion(prompt: CompletionPrompt): Promise<Result> {
+    public executeCompletion(prompt: CompletionPrompt): Promise<Result> {
         throw new Error("Completion is not supported by this provider.");
     }
 
-    executeChat(prompt: ChatPrompt): Promise<Result> {
-        const requestUrl = `https://api.minimax.chat/v1/text/chatcompletion_pro?GroupId=${this.groupId}`;
+    public async executeChat(prompt: ChatPrompt): Promise<Result> {
         const request = CCPRequestBody.fromPrompt(prompt);
-        const body = JSON.stringify(request);
-        appendOutput(`-> POST ${requestUrl}\n${body}`);
-
-        return fetch(requestUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${this.apiKey}`,
-            },
-            body,
-        })
-            .then((response) => {
-                appendOutput(
-                    `-> Got response: ${response.status}\n${formatHeaders(response.headers)}`
-                );
-                if (!response.ok) {
-                    return response.json().then((errorBody: any) => {
-                        throw new Error(`HTTP ${response.status}:\n${errorBody.error.message}`);
-                    });
-                }
-                return response.json();
-            })
-            .then((data) => {
-                appendOutput(JSON.stringify(data));
-                const response = CCPResponseBody.fromJson(data);
-                if (response.base_resp.status_code !== 0)
-                    throw new Error(
-                        `Minimax response error with msg=${response.base_resp.status_msg}`
-                    );
-                return new Result(
-                    response.id,
-                    response.created,
-                    response.choices.map(
-                        (c, i) =>
-                            new Choice(
-                                c.messages.map((m) => m.toMessage()),
-                                i,
-                                c.finish_reason
-                            )
+        const response = await this.client.chatcompletion_pro(request);
+        if (response.base_resp.status_code !== 0)
+            throw new Error(`Minimax response error with msg=${response.base_resp.status_msg}`);
+        return new Result(
+            response.id,
+            response.created,
+            response.choices.map(
+                (c, i) =>
+                    new Choice(
+                        c.messages.map((m) => m.toMessage()),
+                        i,
+                        c.finish_reason
                     )
-                );
-            });
+            )
+        );
     }
 }

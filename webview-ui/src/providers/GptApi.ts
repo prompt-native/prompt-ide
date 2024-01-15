@@ -1,4 +1,5 @@
 import { ChatPrompt, CompletionPrompt, Message } from "prompt-schema";
+import { formatHeaders } from "../utilities/Message";
 import { getParameterAsNumber, getParameterAsString } from "../utilities/PromptHelper";
 import Result, { Choice } from "./Result";
 
@@ -219,7 +220,70 @@ export class GptResponseBody {
 export const GPT_COMPLETION_URL = "https://api.openai.com/v1/completions";
 export const GPT_CHAT_URL = "https://api.openai.com/v1/chat/completions";
 
-export function getResult(json: any): Result {
+export class GptClient {
+    constructor(private apiKey: string, private logger?: (line: string) => void) {}
+
+    public async chat(request: GptChatRequest): Promise<GptResponseBody> {
+        const body = JSON.stringify(request);
+        this.logger && this.logger(`-> POST ${GPT_CHAT_URL}\n${body}`);
+        return fetch(GPT_CHAT_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${this.apiKey}`,
+            },
+            body,
+        })
+            .then((response) => {
+                this.logger &&
+                    this.logger(
+                        `-> Got response: ${response.status}\n${formatHeaders(response.headers)}`
+                    );
+                if (!response.ok) {
+                    return response.json().then((errorBody: any) => {
+                        throw new Error(`HTTP ${response.status}:\n${errorBody.error.message}`);
+                    });
+                }
+                return response.json();
+            })
+            .then((data) => {
+                this.logger && this.logger(JSON.stringify(data));
+                return GptResponseBody.fromJson(data);
+            });
+    }
+
+    public async completion(request: GptCompletionRequest): Promise<Result> {
+        const body = JSON.stringify(request);
+        this.logger && this.logger(`-> POST ${GPT_COMPLETION_URL}\n${body}`);
+        return fetch(GPT_COMPLETION_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${this.apiKey}`,
+            },
+            body,
+        })
+            .then((response) => {
+                this.logger &&
+                    this.logger(
+                        `-> Got response: ${response.status}\n${formatHeaders(response.headers)}`
+                    );
+                if (!response.ok) {
+                    return response.json().then((errorBody: any) => {
+                        throw new Error(`HTTP ${response.status}:\n${errorBody.error.message}`);
+                    });
+                }
+                return response.json();
+            })
+            .then((data) => {
+                this.logger && this.logger(JSON.stringify(data));
+                return data;
+            })
+            .then((data) => getResult(data));
+    }
+}
+
+function getResult(json: any): Result {
     const choices = json.choices.map(
         (choiceJSON: any) => new Choice(choiceJSON.text, choiceJSON.index, choiceJSON.finishReason)
     );

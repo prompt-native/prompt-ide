@@ -35,7 +35,7 @@ export default class ExecuteDelegate implements EngineProvider {
         });
     }
 
-    getEngines(): EngineType[] {
+    public getEngines(): EngineType[] {
         throw new Error("Method not implemented.");
     }
 
@@ -55,12 +55,12 @@ export default class ExecuteDelegate implements EngineProvider {
 
         return executor;
     }
-    async executeChat(prompt: ChatPrompt): Promise<Result> {
+    public async executeChat(prompt: ChatPrompt): Promise<Result> {
         const executor = this.getExecutor(prompt, InterfaceType.CHAT);
         return executor.executeChat(prompt);
     }
 
-    async executeCompletion(prompt: CompletionPrompt): Promise<Result> {
+    public async executeCompletion(prompt: CompletionPrompt): Promise<Result> {
         const executor = this.getExecutor(prompt, InterfaceType.COMPLETION);
         return executor.executeCompletion(prompt);
     }
