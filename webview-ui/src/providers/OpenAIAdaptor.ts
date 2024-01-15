@@ -1,8 +1,7 @@
 import { ChatPrompt, CompletionPrompt } from "prompt-schema";
 import { appendOutput } from "../utilities/Message";
-import { getParameterAsNumber, getParameterAsString } from "../utilities/PromptHelper";
 import EngineProvider, { EngineId, EngineType, ParameterType } from "./EngineProvider";
-import { OPENAI_URL, OpenAICompletionRequest, getResult } from "./OpenAIRequest";
+import { GptCompletionRequest, OPENAI_URL, getResult } from "./OpenAIAPI";
 import Result from "./Result";
 
 const DEFAULT_SYSTEM: ParameterType = {
@@ -129,28 +128,13 @@ export class OpenAIAdaptor implements EngineProvider {
     }
 
     constructor(private apiKey: string) {}
-    private assembleRequest(prompt: CompletionPrompt): OpenAICompletionRequest {
-        // FIXME: variable substitution
-        return new OpenAICompletionRequest({
-            model: prompt.engine,
-            prompt: prompt.prompt,
-            max_tokens: getParameterAsNumber(prompt, "max_tokens"),
-            temperature: getParameterAsNumber(prompt, "temperature"),
-            top_p: getParameterAsNumber(prompt, "top_p"),
-            n: getParameterAsNumber(prompt, "n"),
-            logprobs: getParameterAsNumber(prompt, "logprobs"),
-            presence_penalty: getParameterAsNumber(prompt, "presence_penalty"),
-            frequency_penalty: getParameterAsNumber(prompt, "frequency_penalty"),
-            suffix: getParameterAsString(prompt, "suffix"),
-            stop: getParameterAsString(prompt, "stop"),
-        });
-    }
+
     executeChat(prompt: ChatPrompt): Promise<Result> {
         throw new Error("Method not implemented.");
     }
 
     async executeCompletion(prompt: CompletionPrompt): Promise<Result> {
-        const request = this.assembleRequest(prompt);
+        const request = GptCompletionRequest.fromPrompt(prompt);
         const body = JSON.stringify(request);
         appendOutput(`-> POST ${OPENAI_URL}\n${body}`);
         return fetch(OPENAI_URL, {

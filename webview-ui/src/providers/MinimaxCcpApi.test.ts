@@ -1,8 +1,8 @@
 import { ChatPrompt, Message, Parameter } from "prompt-schema";
-import { CCPRequestBody, CCPResponseBody } from "./MinimaxCCP";
+import { CCPRequestBody, CCPResponseBody } from "./MinimaxCcpApi";
 
-describe("conver response to CCPResponseBody", () => {
-    test("should return valid response if prompt is valid", () => {
+describe("conver prompt to CCPRequestBody", () => {
+    test("should return valid request if prompt is valid", () => {
         const prompt = new ChatPrompt("chat@0.1", "abab5.5-chat", [
             new Message("user", undefined, "Hello!"),
         ]);
@@ -36,7 +36,7 @@ describe("conver response to CCPResponseBody", () => {
     });
 });
 
-describe("convert prompt to CCP request body", () => {
+describe("convert response to CCPResponseBody", () => {
     test("should return response if request succeed", () => {
         const text = `
         {

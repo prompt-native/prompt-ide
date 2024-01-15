@@ -1,7 +1,7 @@
 import { ChatPrompt, CompletionPrompt } from "prompt-schema";
 import { appendOutput, formatHeaders } from "../utilities/Message";
 import EngineProvider, { EngineId, EngineType, ParameterType } from "./EngineProvider";
-import { CCPRequestBody, CCPResponseBody } from "./MinimaxCCP";
+import { CCPRequestBody, CCPResponseBody } from "./MinimaxCcpApi";
 import Result, { Choice } from "./Result";
 
 const DEFAULT_TEMPERATURE: ParameterType = {
