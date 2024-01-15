@@ -1,8 +1,8 @@
-import { ChatPrompt, CompletionPrompt } from "prompt-schema";
+import { ChatPrompt, CompletionPrompt, Message } from "prompt-schema";
 import { appendOutput, formatHeaders } from "../utilities/Message";
 import { getParameterAsBoolean, getParameterAsNumber } from "../utilities/PromptHelper";
 import EngineProvider, { EngineId, EngineType, ParameterType } from "./EngineProvider";
-import Result from "./Result";
+import Result, { Choice } from "./Result";
 
 const DEFAULT_TEMPERATURE: ParameterType = {
     name: "temperature",
@@ -53,8 +53,25 @@ export const MINIMAX_MODELS: EngineType[] = [
     },
 ];
 
-class Message {
+class MinimaxMessage {
     constructor(public sender_type: string, public sender_name: string, public text: string) {}
+
+    public toMessage(): Message {
+        return new Message(this.convertRole(), this.sender_name, this.text);
+    }
+
+    private convertRole(): string {
+        switch (this.sender_type) {
+            case "USER":
+                return "user";
+            case "BOT":
+                return "assistant";
+            case "FUNCTION":
+                return "function";
+            default:
+                throw new Error("Unknown sender_type:" + this.sender_type);
+        }
+    }
 }
 
 class BotSetting {
@@ -71,9 +88,9 @@ class CCPRequestBody {
     public mask_sensitive_info?: boolean;
     constructor(
         public model: string,
-        public messages: Message[],
+        public messages: MinimaxMessage[],
         public bot_setting: BotSetting[],
-        public reply_constraints: ReplyConstraint[],
+        public reply_constraints: ReplyConstraint,
         {
             tokens_to_generate,
             temperature,
@@ -96,8 +113,33 @@ class CCPRequestBody {
 class Status {
     constructor(public status_code: number, public status_msg: string) {}
 }
+
+class MinimaxChoice {
+    constructor(public finish_reason: string, public messages: MinimaxMessage[]) {}
+}
+
+class Usage {
+    constructor(public total_tokens: number) {}
+}
 class CCPResponseBody {
-    constructor(public base_resp: Status) {}
+    constructor(
+        public id: string,
+        public created: number,
+        public base_resp: Status,
+        public reply: string,
+        public choices: MinimaxChoice[],
+        public usage: Usage
+    ) {}
+
+    public static fromJson(json: any): CCPResponseBody {
+        const base_resp = new Status(json.base_resp.status_code, json.base_resp.status_msg);
+        const choices = json.choices.map((choice: any) => {
+            return new MinimaxChoice(choice.finish_reason, choice.messages);
+        });
+        const usage = new Usage(json.usage.total_tokens);
+
+        return new CCPResponseBody(json.id, json.created, base_resp, json.reply, choices, usage);
+    }
 }
 
 export class MinimaxAdaptor implements EngineProvider {
@@ -107,8 +149,23 @@ export class MinimaxAdaptor implements EngineProvider {
     }
 
     private assembleRequest(prompt: ChatPrompt): CCPRequestBody {
+        // FIXME: allow users to customize it
+        const botSetting = new BotSetting(
+            "Assistant",
+            prompt.context ||
+                "MM智能助理是一款由MiniMax自研的，没有调用其他产品的接口的大型语言模型。MiniMax是一家中国科技公司，一直致力于进行大模型相关的研究。"
+        );
+        const replyConstraint = new ReplyConstraint("BOT", botSetting.bot_name);
+        const messages = prompt.messages.map((m) => {
+            // FIXME: support other types
+            if (m.role == "user")
+                return new MinimaxMessage("USER", m.name || "User", m.content || "");
+            else if (m.role == "assistant" && m.content)
+                return new MinimaxMessage("BOT", botSetting.bot_name, m.content);
+            else throw new Error("Unsupported message");
+        });
         // FIXME: variable substitution
-        return new CCPRequestBody(prompt.engine, [], [], [], {
+        return new CCPRequestBody(prompt.engine, messages, [botSetting], replyConstraint, {
             tokens_to_generate: getParameterAsNumber(prompt, "tokens_to_generate"),
             temperature: getParameterAsNumber(prompt, "temperature"),
             top_p: getParameterAsNumber(prompt, "top_p"),
@@ -147,8 +204,23 @@ export class MinimaxAdaptor implements EngineProvider {
             })
             .then((data) => {
                 appendOutput(JSON.stringify(data));
-                return data;
-            })
-            .then((data) => Result.fromJSON(data));
+                const response = CCPResponseBody.fromJson(data);
+                if (response.base_resp.status_code !== 0)
+                    throw new Error(
+                        `Minimax response error with msg=${response.base_resp.status_msg}`
+                    );
+                return new Result(
+                    response.id,
+                    response.created,
+                    response.choices.map(
+                        (c, i) =>
+                            new Choice(
+                                c.messages.map((m) => m.toMessage()),
+                                i,
+                                c.finish_reason
+                            )
+                    )
+                );
+            });
     }
 }

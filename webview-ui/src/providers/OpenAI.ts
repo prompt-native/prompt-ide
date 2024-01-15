@@ -2,7 +2,7 @@ import { ChatPrompt, CompletionPrompt } from "prompt-schema";
 import { appendOutput } from "../utilities/Message";
 import { getParameterAsNumber, getParameterAsString } from "../utilities/PromptHelper";
 import EngineProvider, { EngineId, EngineType, ParameterType } from "./EngineProvider";
-import Result from "./Result";
+import Result, { Choice } from "./Result";
 
 const DEFAULT_SYSTEM: ParameterType = {
     name: "system",
@@ -176,6 +176,14 @@ class CompletionRequest {
 
 const OPENAI_URL = "https://api.openai.com/v1/completions";
 
+function fromJSON(json: any): Result {
+    const choices = json.choices.map(
+        (choiceJSON: any) => new Choice(choiceJSON.text, choiceJSON.index, choiceJSON.finishReason)
+    );
+
+    return new Result(json.id, json.created, choices);
+}
+
 export class OpenAIExecutor implements EngineProvider {
     getEngines(): EngineType[] {
         return [...GPT_BASE_MODELS, ...GPT3_5_MODELS];
@@ -229,7 +237,7 @@ export class OpenAIExecutor implements EngineProvider {
                 appendOutput(JSON.stringify(data));
                 return data;
             })
-            .then((data) => Result.fromJSON(data));
+            .then((data) => fromJSON(data));
     }
 }
 function formatHeaders(headers: Headers) {

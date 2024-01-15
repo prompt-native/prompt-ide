@@ -5,7 +5,8 @@
     "scripts": {
         "start": "vite",
         "build": "tsc && vite build",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "test": "jest"
     },
     "dependencies": {
         "@types/highlightjs": "^9.12.6",
@@ -20,6 +21,13 @@
         "yaml": "^2.3.4"
     },
     "devDependencies": {
+        "@babel/core": "^7.23.7",
+        "@babel/plugin-transform-modules-commonjs": "^7.23.3",
+        "@babel/plugin-transform-runtime": "^7.23.7",
+        "@babel/preset-react": "^7.23.3",
+        "@babel/preset-env": "^7.23.8",
+        "@babel/preset-typescript": "^7.23.3",
+        "babel-jest": "^29.7.0",
         "@types/jest": "^29.5.11",
         "@types/react": "^18.2.45",
         "@types/react-dom": "^18.2.17",
