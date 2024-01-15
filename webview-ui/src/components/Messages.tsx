@@ -4,7 +4,7 @@ import MessageItem from "./MessageItem";
 
 interface MessagesProps {
     items: Message[];
-    onMessageChanged: (index: number, message: Message) => void;
+    onMessageChanged?: (index: number, message: Message) => void;
     onMessageDeleted?: (index: number) => void;
     onMessageInserted?: (index: number) => void;
 }

@@ -107,7 +107,12 @@ export class CCPResponseBody {
     public static fromJson(json: any): CCPResponseBody {
         const base_resp = new CCPStatus(json.base_resp.status_code, json.base_resp.status_msg);
         const choices = json.choices.map((choice: any) => {
-            return new CCPChoice(choice.finish_reason, choice.messages);
+            return new CCPChoice(
+                choice.finish_reason,
+                choice.messages.map(
+                    (m: any) => new CCPMessage(m.sender_type, m.sender_name, m.text)
+                )
+            );
         });
         const usage = new CCPUsage(json.usage.total_tokens);
 

@@ -5,7 +5,7 @@ import ContentEdit from "./ContentEdit";
 interface MessageProps {
     messageIndex: number;
     message: Message;
-    onMessageChanged: (index: number, message: Message) => void;
+    onMessageChanged?: (index: number, message: Message) => void;
     onMessageDeleted?: (index: number) => void;
     onMessageInserted?: (index: number) => void;
     rows?: number;
@@ -29,20 +29,25 @@ function MessageItem({
 }: MessageProps) {
     const onNextRole = () => {
         if (message.role == "user")
-            onMessageChanged(messageIndex, new Message("assistant", undefined, message.content));
+            onMessageChanged &&
+                onMessageChanged(
+                    messageIndex,
+                    new Message("assistant", undefined, message.content)
+                );
         else if (message.role == "assistant")
-            onMessageChanged(messageIndex, new Message("user", undefined, message.content));
+            onMessageChanged &&
+                onMessageChanged(messageIndex, new Message("user", undefined, message.content));
     };
 
     const onContentChanged = (text: string) => {
-        onMessageChanged(messageIndex, { ...message, content: text });
+        onMessageChanged && onMessageChanged(messageIndex, { ...message, content: text });
     };
 
     const onFunctionCallChanged = (functionCallIndex: number, name: string, args: string) => {
         const updated = { ...message };
         updated.function_calls![functionCallIndex].name = name;
         updated.function_calls![functionCallIndex].arguments = args;
-        onMessageChanged(messageIndex, updated);
+        onMessageChanged && onMessageChanged(messageIndex, updated);
     };
 
     const reanderActions = () => {

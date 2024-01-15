@@ -100,6 +100,7 @@ function ChatEditor({
             setExecuting(true);
             const result = await executePrompt(prompt);
             setResult(result);
+            setError(null);
         } catch (err) {
             console.log(err);
             setError(`${err}`);
@@ -118,7 +119,11 @@ function ChatEditor({
             );
         if (!error && !result) return <p>No result yet, click submit to execute the prompt.</p>;
         if (error) return <p className="danger pre-line">{error}</p>;
-        return <div className="mt-10">{result?.choices[0].content as string}</div>;
+        return (
+            <div className="mt-10 fill">
+                <Messages items={(result?.choices[0].content as Message[]) || []} />
+            </div>
+        );
     };
 
     const variables = parseChatVariables(prompt.messages).map((v) => new VariableBinding(v, ""));
