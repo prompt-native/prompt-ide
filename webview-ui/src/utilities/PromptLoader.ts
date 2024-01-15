@@ -1,7 +1,7 @@
 import { ChatPrompt, CompletionPrompt, parsePrompt } from "prompt-schema";
 import { MODEL_GROUPS } from "../config/Constants";
 import { EngineType, InterfaceType } from "../providers/EngineProvider";
-import { GPT3_5_MODELS } from "../providers/OpenAI";
+import { GPT3_5_MODELS } from "../providers/OpenAIAdaptor";
 
 export function getAvailableModels(group: string, type: InterfaceType): EngineType[] {
     return MODEL_GROUPS[group].filter((m) => m.id.interfaceType === type);

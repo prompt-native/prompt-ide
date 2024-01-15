@@ -2,8 +2,8 @@ import { ChatPrompt, CompletionPrompt, Prompt } from "prompt-schema";
 import { Configuration } from "../App";
 import { appendOutput } from "../utilities/Message";
 import EngineProvider, { EngineId, EngineType, InterfaceType } from "./EngineProvider";
-import { MinimaxAdaptor } from "./Minimax";
-import { OpenAIExecutor } from "./OpenAI";
+import { MinimaxAdaptor } from "./MinimaxAdaptor";
+import { OpenAIAdaptor } from "./OpenAIAdaptor";
 import Result from "./Result";
 
 export default class ExecuteDelegate implements EngineProvider {
@@ -11,7 +11,7 @@ export default class ExecuteDelegate implements EngineProvider {
 
     constructor({ openaiKey, minimaxKey, minimaxGroupId }: Configuration) {
         if (openaiKey) {
-            const openaiExecutor = new OpenAIExecutor(openaiKey);
+            const openaiExecutor = new OpenAIAdaptor(openaiKey);
             this.register(openaiExecutor);
         } else {
             appendOutput("openaiApiKey not configured, open ai executor is disabled.");

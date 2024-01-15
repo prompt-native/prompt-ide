@@ -2,7 +2,8 @@ import { ChatPrompt, CompletionPrompt } from "prompt-schema";
 import { appendOutput } from "../utilities/Message";
 import { getParameterAsNumber, getParameterAsString } from "../utilities/PromptHelper";
 import EngineProvider, { EngineId, EngineType, ParameterType } from "./EngineProvider";
-import Result, { Choice } from "./Result";
+import { OPENAI_URL, OpenAICompletionRequest, getResult } from "./OpenAIRequest";
+import Result from "./Result";
 
 const DEFAULT_SYSTEM: ParameterType = {
     name: "system",
@@ -122,77 +123,15 @@ export const GPT3_5_MODELS: EngineType[] = [
     },
 ];
 
-class CompletionRequest {
-    model: string;
-    prompt: string;
-    max_tokens?: number;
-    temperature?: number;
-    top_p?: number;
-    n?: number;
-    logprobs?: number;
-    suffix?: string;
-    stop?: string;
-    presence_penalty?: number;
-    frequency_penalty?: number;
-
-    constructor({
-        model,
-        prompt,
-        max_tokens,
-        temperature,
-        top_p,
-        n,
-        logprobs,
-        suffix,
-        stop,
-        presence_penalty,
-        frequency_penalty,
-    }: {
-        model: string;
-        prompt: string;
-        max_tokens?: number;
-        temperature?: number;
-        top_p?: number;
-        n?: number;
-        logprobs?: number;
-        suffix?: string;
-        stop?: string;
-        presence_penalty?: number;
-        frequency_penalty?: number;
-    }) {
-        this.model = model;
-        this.prompt = prompt;
-        this.max_tokens = max_tokens;
-        this.temperature = temperature;
-        this.top_p = top_p;
-        this.n = n;
-        this.logprobs = logprobs;
-        this.suffix = suffix;
-        this.stop = stop;
-        this.presence_penalty = presence_penalty;
-        this.frequency_penalty = frequency_penalty;
-    }
-}
-
-const OPENAI_URL = "https://api.openai.com/v1/completions";
-
-function fromJSON(json: any): Result {
-    const choices = json.choices.map(
-        (choiceJSON: any) => new Choice(choiceJSON.text, choiceJSON.index, choiceJSON.finishReason)
-    );
-
-    return new Result(json.id, json.created, choices);
-}
-
-export class OpenAIExecutor implements EngineProvider {
+export class OpenAIAdaptor implements EngineProvider {
     getEngines(): EngineType[] {
         return [...GPT_BASE_MODELS, ...GPT3_5_MODELS];
     }
 
     constructor(private apiKey: string) {}
-    private assembleRequest(prompt: CompletionPrompt): CompletionRequest {
+    private assembleRequest(prompt: CompletionPrompt): OpenAICompletionRequest {
         // FIXME: variable substitution
-        return new CompletionRequest({
+        return new OpenAICompletionRequest({
             model: prompt.engine,
             prompt: prompt.prompt,
             max_tokens: getParameterAsNumber(prompt, "max_tokens"),
@@ -237,7 +176,7 @@ export class OpenAIExecutor implements EngineProvider {
                 appendOutput(JSON.stringify(data));
                 return data;
             })
-            .then((data) => fromJSON(data));
+            .then((data) => getResult(data));
     }
 }
 function formatHeaders(headers: Headers) {
