@@ -7,7 +7,7 @@
 <h2>Prompt IDE</h2>
 <div>
 
-_**ALERT: Prompt IDE IS IN ALPHA AND IS SUBJECT TO CHANGE.**_
+_**ALERT: Prompt IDE IS CURRENTLY UNDER DEVELOPMENT AND NOT FULLY IMPLEMENTED YET.**_
 
 When developing applications using LLM, you may encounter different types of LLM providers and frequently need to modify prompts. However, since there is no standard tool for this, you often have to switch between different playgrounds and message formats.
 
@@ -18,3 +18,7 @@ You can install the extension from Visual Studio [Marketplace](https://marketpla
 ![](./screenshot.png)
 
 The extension logo is <a href="http://www.freepik.com">Designed by Mudassir101 / Freepik</a>.
+
+## Get Started
+
+To get started, create an empty file named "\*.prompt.json", and then you should be able to open it with the editor. You may need to configure an OpenAI api key inorder to execute it.

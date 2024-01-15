@@ -15,7 +15,7 @@
         "prompt engineering"
     ],
     "description": "PromptIDE is a Visual Studio Code extension that streamlines prompt creation and testing for LLM applications using a unified format based on the Prompt Schema.",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "engines": {
         "vscode": "^1.75.0"
     },
